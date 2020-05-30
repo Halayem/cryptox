@@ -20,12 +20,11 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
-        runGetBalance();
     }
 
     private void runAddOrder() {
         exchangeService.addOrder(
-            AddOrderInput.builder        ()
+            AddOrderInput.builder   ()
                     .assetPair      (AssetPair.LITECOIN_TO_EURO)
                     .addOrderType   (AddOrderType.SELL)
                     .orderType      (OrderType.LIMIT)

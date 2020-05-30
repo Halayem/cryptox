@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 public class AddOrderOutput {
 
+    private List<String> errors;
     private String description;
     private List<String> transactionIds;
 

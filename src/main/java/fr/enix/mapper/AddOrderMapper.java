@@ -21,6 +21,7 @@ public class AddOrderMapper {
 
     public AddOrderOutput mapAddOrderResponseToAddOrderOutput(final AddOrderResponse addOrderResponse) {
         return  AddOrderOutput.builder()
+                              .errors           (addOrderResponse.getError())
                               .description      (addOrderResponse.getResult().getDescr().getOrder())
                               .transactionIds   (addOrderResponse.getResult().getTxid())
                               .build            ();
