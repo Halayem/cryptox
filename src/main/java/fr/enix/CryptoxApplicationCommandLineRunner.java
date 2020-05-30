@@ -1,6 +1,6 @@
 package fr.enix;
 
-import fr.enix.exchanges.model.business.AddOrder;
+import fr.enix.exchanges.model.business.AddOrderInput;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.kraken.*;
 import lombok.AllArgsConstructor;
@@ -20,12 +20,11 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
-        runGetBalance();
     }
 
     private void runAddOrder() {
         exchangeService.addOrder(
-            AddOrder.builder        ()
+            AddOrderInput.builder   ()
                     .assetPair      (AssetPair.LITECOIN_TO_EURO)
                     .addOrderType   (AddOrderType.SELL)
                     .orderType      (OrderType.LIMIT)

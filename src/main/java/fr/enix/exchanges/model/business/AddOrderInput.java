@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Builder
 @Getter
-public class AddOrder {
+public class AddOrderInput {
 
     private AssetPair assetPair;
     private AddOrderType addOrderType;

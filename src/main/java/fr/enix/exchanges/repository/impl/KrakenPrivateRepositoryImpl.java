@@ -1,10 +1,11 @@
 package fr.enix.exchanges.repository.impl;
 
 import fr.enix.common.service.KrakenRepositoryService;
-import fr.enix.exchanges.model.business.AddOrder;
+import fr.enix.exchanges.model.business.AddOrderInput;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import fr.enix.exchanges.model.ws.request.BalanceRequest;
 import fr.enix.exchanges.model.ws.request.TradeBalanceRequest;
+import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.kraken.AssetClass;
@@ -81,9 +82,9 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
     private final String addOrderUri = "/0/private/AddOrder";
 
     @Override
-    public Flux<String> addOrder(final AddOrder addOrder) {
+    public Flux<AddOrderResponse> addOrder(final AddOrderInput addOrderInput) {
         final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
-                                                    addOrder,
+                addOrderInput,
                                                     krakenRepositoryService.getNewNonce());
         return krakenPrivateWebClient
                 .post       ()
@@ -101,7 +102,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                                     ));
                 })
                 .retrieve   ()
-                .bodyToFlux (String.class);
+                .bodyToFlux (AddOrderResponse.class);
     }
 
 }
