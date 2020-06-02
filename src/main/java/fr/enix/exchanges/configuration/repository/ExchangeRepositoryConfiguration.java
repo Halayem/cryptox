@@ -1,5 +1,6 @@
 package fr.enix.exchanges.configuration.repository;
 
+import fr.enix.common.interceptor.ws.KrakenInterceptorWebService;
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
@@ -23,6 +24,11 @@ public class ExchangeRepositoryConfiguration {
                         .defaultHeaders (httpHeaders -> {
                             httpHeaders.set(HttpHeaders.CONTENT_TYPE,   MediaType.APPLICATION_FORM_URLENCODED_VALUE);
                             httpHeaders.set("API-Key",                  exchangeProperties.getApiKey());
+                        })
+                        .filters(exchangeFilterFunctions -> {
+                            exchangeFilterFunctions.add(
+                                new KrakenInterceptorWebService().exchangeFilterFunctionResponseErrorInterceptor()
+                            );
                         })
                         .build          ();
     }

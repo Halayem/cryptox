@@ -1,7 +1,6 @@
 {
   "scenarioName": "GET_BALANCE",
-  "requiredScenarioState": "Started",
-  "newScenarioState": "GET_BALANCE_EAPI_INVALID_KEY",
+  "requiredScenarioState": "GET_BALANCE_EAPI_INVALID_KEY",
   "request": {
     "urlPath": "/0/private/Balance",
     "method": "POST",
@@ -25,6 +24,6 @@
       "Content-Type": "application/json"
     },
     "status": 200,
-    "body": "{\"error\": [], \"result\": { \"XLTC\": 2.48, \"ZEUR\": 40.25 } }"
+    "body": "{\"error\": [\"EAPI:Invalid key\"] }"
   }
 }

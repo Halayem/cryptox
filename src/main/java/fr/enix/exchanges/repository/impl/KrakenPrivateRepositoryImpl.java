@@ -1,5 +1,6 @@
 package fr.enix.exchanges.repository.impl;
 
+import fr.enix.common.exception.KrakenExceptionFactoryProvider;
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.model.business.AddOrderInput;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
@@ -7,6 +8,7 @@ import fr.enix.exchanges.model.ws.request.BalanceRequest;
 import fr.enix.exchanges.model.ws.request.TradeBalanceRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
+import fr.enix.exchanges.model.ws.response.ErrorResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.kraken.AssetClass;
 import fr.enix.mapper.AddOrderMapper;
@@ -32,7 +34,8 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
         final BalanceRequest balanceRequest = BalanceRequest.builder    ()
                                                             .nonce      (krakenRepositoryService.getNewNonce())
                                                             .build      ();
-        return krakenPrivateWebClient
+        return
+                krakenPrivateWebClient
                 .post       ()
                 .uri        (balanceUri)
                 .body       (BodyInserters.fromPublisher(
@@ -48,9 +51,18 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                                     ));
                 })
                 .retrieve   ()
-                .bodyToFlux (BalanceResponse.class);
+                .bodyToFlux (BalanceResponse.class)
+                .doOnNext   (balanceResponse -> checkKrakenBodyResponse(balanceResponse));
     }
 
+    private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
+        if ( errorResponse.getError().size() == 0 ) {
+            return;
+        }
+
+        throw KrakenExceptionFactoryProvider.getFactory         (errorResponse.getError().get( 0 ))
+                                            .getKrakenException ();
+    }
 
     private final String tradeBalanceUri = "/0/private/TradeBalance";
     @Override
