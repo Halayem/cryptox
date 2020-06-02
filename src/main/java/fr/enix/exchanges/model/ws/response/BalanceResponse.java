@@ -10,7 +10,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BalanceResponse extends ErrorResponse{
+public class BalanceResponse extends ErrorResponse {
 
     private Map<String, BigDecimal> result;
 
