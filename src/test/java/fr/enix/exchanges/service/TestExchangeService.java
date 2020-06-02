@@ -1,12 +1,14 @@
 package fr.enix.exchanges.service;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.AddOrderInput;
 import fr.enix.kraken.AddOrderType;
 import fr.enix.kraken.Asset;
 import fr.enix.kraken.AssetPair;
 import fr.enix.kraken.OrderType;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,14 +26,26 @@ public class TestExchangeService {
     private ExchangeService exchangeService;
 
     @Test
+    @Order(0)
     public void testGetBalance_success() {
-        StepVerifier.create         (exchangeService.getBalance())
-                    .consumeNextWith(balanceResponse -> {
+        StepVerifier.create         ( exchangeService.getBalance() )
+                    .consumeNextWith( balanceResponse -> {
+
                         assertEquals( new BigDecimal("2.48"), balanceResponse.getResult().get( Asset.LITECOIN.getCode() ));
                         assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( Asset.EURO.getCode() ));
+
                         assertTrue( balanceResponse.getError().size() == 0 );
+
                     })
-                    .verifyComplete();
+                    .verifyComplete ();
+    }
+
+    @Test
+    @Order(1)
+    public void testGetBalance_eapiInvalidKey() {
+        StepVerifier.create ( exchangeService.getBalance() )
+                .expectError( KrakenEapiInvalidKeyException.class )
+                .verify     ();
     }
 
     @Test

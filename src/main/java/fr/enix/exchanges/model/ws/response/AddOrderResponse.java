@@ -9,9 +9,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddOrderResponse {
+public class AddOrderResponse extends ErrorResponse {
 
-    private List<String> error;
     private Result result;
 
     @Getter
