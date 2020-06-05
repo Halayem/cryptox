@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class TestExchangeService {
+public class ExchangeServiceTest {
 
     @Autowired
     private ExchangeService exchangeService;
@@ -30,7 +30,6 @@ public class TestExchangeService {
     public void testGetBalance_success() {
         StepVerifier.create         ( exchangeService.getBalance() )
                     .consumeNextWith( balanceResponse -> {
-
                         assertEquals( new BigDecimal("2.48"), balanceResponse.getResult().get( Asset.LITECOIN.getCode() ));
                         assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( Asset.EURO.getCode() ));
 
