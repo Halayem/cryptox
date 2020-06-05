@@ -7,8 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import org.springframework.web.reactive.socket.client.WebSocketClient;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.time.Duration;
 
 @Component
 @Slf4j
@@ -21,6 +27,26 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
     }
+
+    private void startWebSocketClient() {
+        WebSocketClient webSocketClient = new ReactorNettyWebSocketClient();
+        webSocketClient.execute(
+            URI.create("wss://ws.kraken.com/"),
+            webSocketSession ->
+                webSocketSession.send(
+                    Mono.just(
+                        webSocketSession.textMessage("{ \"event\": \"subscribe\", \"pair\": [\"LTC/EUR\"], \"subscription\": { \"name\": \"ticker\" }}")
+                    ))
+                .thenMany(webSocketSession.receive  ()
+                                          .map      (WebSocketMessage::getPayloadAsText)
+                        .doOnNext(payload -> {
+                          System.out.println( "new data arrived: " + payload );
+                        })
+                )
+                .then())
+                .block();
+    }
+
 
     private void runAddOrder() {
         exchangeService.addOrder(
