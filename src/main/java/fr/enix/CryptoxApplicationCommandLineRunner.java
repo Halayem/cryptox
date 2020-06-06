@@ -22,31 +22,13 @@ import java.time.Duration;
 public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
 
     private final ExchangeService exchangeService;
+    private final Mono<Void> tickerWebSocketClient;
 
     @Override
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
+        tickerWebSocketClient.block();
     }
-
-    private void startWebSocketClient() {
-        WebSocketClient webSocketClient = new ReactorNettyWebSocketClient();
-        webSocketClient.execute(
-            URI.create("wss://ws.kraken.com/"),
-            webSocketSession ->
-                webSocketSession.send(
-                    Mono.just(
-                        webSocketSession.textMessage("{ \"event\": \"subscribe\", \"pair\": [\"LTC/EUR\"], \"subscription\": { \"name\": \"ticker\" }}")
-                    ))
-                .thenMany(webSocketSession.receive  ()
-                                          .map      (WebSocketMessage::getPayloadAsText)
-                        .doOnNext(payload -> {
-                          System.out.println( "new data arrived: " + payload );
-                        })
-                )
-                .then())
-                .block();
-    }
-
 
     private void runAddOrder() {
         exchangeService.addOrder(
