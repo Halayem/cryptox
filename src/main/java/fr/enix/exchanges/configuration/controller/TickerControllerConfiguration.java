@@ -2,6 +2,7 @@ package fr.enix.exchanges.configuration.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.websocket.request.TickerRequest;
 import fr.enix.kraken.AssetPair;
@@ -32,15 +33,23 @@ public class TickerControllerConfiguration {
     }
 
     @Bean
-    public WebSocketHandler tickerWebSocketHandler(final String tickerSubscriptionMessage) {
+    public WebSocketHandler tickerWebSocketHandler(final WebSocketSubscriptionFactory webSocketSubscriptionFactory,
+                                                   final String tickerSubscriptionMessage) {
         return  webSocketSession ->
                     webSocketSession.send(
                         Mono.just       ( webSocketSession.textMessage(tickerSubscriptionMessage)))
-                            .thenMany   ( webSocketSession.receive  ()
-                                                          .map      (WebSocketMessage::getPayloadAsText)
-                                                          .doOnNext ( payload -> {
-                                                                System.out.println( ">>>new data arrived: " + payload );
-                                                          })
+                            .thenMany   (
+                                webSocketSession.receive  ()
+                                                .map      (WebSocketMessage::getPayloadAsText)
+                                                .filter   ( payload -> payload.contains("heartbeat") == false )
+                                                .doOnNext ( payload -> {
+                                                    try {
+                                                        webSocketSubscriptionFactory.getWebSocketSubscriptionManager(payload)
+                                                                                    .managePayload                  (payload);
+                                                    } catch (JsonProcessingException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                })
                             )
                             .then();
     }

@@ -22,12 +22,10 @@ import java.time.Duration;
 public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
 
     private final ExchangeService exchangeService;
-    private final Mono<Void> tickerWebSocketClient;
 
     @Override
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
-        tickerWebSocketClient.block();
     }
 
     private void runAddOrder() {
