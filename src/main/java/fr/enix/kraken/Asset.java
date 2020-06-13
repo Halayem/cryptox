@@ -9,13 +9,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Asset {
-    EURO    ("ZEUR", AssetType.FIAT),
-    USDOLLAR("ZUSD", AssetType.FIAT),
+    EURO    ("ZEUR", "EUR", AssetType.FIAT),
+    USDOLLAR("ZUSD", "USD", AssetType.FIAT),
 
-    BITCOIN ("XBTC",    AssetType.CRYPTOCURRENCY),
-    LITECOIN("XLTC",    AssetType.CRYPTOCURRENCY),
-    CARDANO ("ADA",     AssetType.CRYPTOCURRENCY);
+    BITCOIN ("XBTC", "BTC", AssetType.CRYPTOCURRENCY),
+    LITECOIN("XLTC", "LTC", AssetType.CRYPTOCURRENCY),
+    CARDANO ("ADA",  "ADA", AssetType.CRYPTOCURRENCY);
 
     private String code;
+    private String wsCode;
     private AssetType type;
 }

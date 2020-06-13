@@ -19,7 +19,7 @@ public class ExchangeRepositoryConfiguration {
     @Bean
     public WebClient krakenPrivateWebClient(final ExchangeProperties exchangeProperties) {
         return WebClient.builder        ()
-                        .baseUrl        (exchangeProperties.getUrl())
+                        .baseUrl        (exchangeProperties.getUrl().get("webservice"))
                         .defaultHeaders (httpHeaders -> {
                             httpHeaders.set(HttpHeaders.CONTENT_TYPE,   MediaType.APPLICATION_FORM_URLENCODED_VALUE);
                             httpHeaders.set("API-Key",                  exchangeProperties.getApiKey());
