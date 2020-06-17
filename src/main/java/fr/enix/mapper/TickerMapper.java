@@ -2,9 +2,8 @@ package fr.enix.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.enix.exchanges.model.business.TickerOutput;
+import fr.enix.exchanges.model.business.output.TickerOutput;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
-import fr.enix.kraken.AssetPair;
 
 import java.math.BigDecimal;
 import java.util.List;

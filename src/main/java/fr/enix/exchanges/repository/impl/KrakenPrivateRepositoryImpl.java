@@ -2,13 +2,14 @@ package fr.enix.exchanges.repository.impl;
 
 import fr.enix.common.exception.KrakenExceptionFactoryProvider;
 import fr.enix.common.service.KrakenRepositoryService;
-import fr.enix.exchanges.model.business.AddOrderInput;
+import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
-import fr.enix.exchanges.model.ws.request.BalanceRequest;
+import fr.enix.exchanges.model.ws.request.NonceRequest;
 import fr.enix.exchanges.model.ws.request.TradeBalanceRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.model.ws.response.ErrorResponse;
+import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.kraken.AssetClass;
 import fr.enix.mapper.AddOrderMapper;
@@ -27,26 +28,55 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
     private final KrakenRepositoryService krakenRepositoryService;
     private final AddOrderMapper addOrderMapper;
 
+
+    private final String openOrdersUri = "/0/private/OpenOrders";
+
+    @Override
+    public Flux<OpenOrdersResponse> getOpenOrders() {
+        final NonceRequest nonceRequest = NonceRequest.builder    ()
+                                                      .nonce      (krakenRepositoryService.getNewNonce())
+                                                      .build      ();
+        return
+        krakenPrivateWebClient
+                .post       ()
+                .uri        (openOrdersUri)
+                .body       (BodyInserters.fromPublisher(
+                                Mono.just(nonceRequest.getQueryParametersRepresentation()), String.class
+                            )
+                )
+                .headers    (httpHeaders -> {
+                    httpHeaders.set("API-Sign",
+                            krakenRepositoryService.getHmacDigest(
+                                    nonceRequest.getNonce(),
+                                    nonceRequest.getQueryParametersRepresentation(),
+                                    openOrdersUri
+                            ));
+                })
+                .retrieve   ()
+                .bodyToFlux (OpenOrdersResponse.class);
+                //.doOnNext   (balanceResponse -> checkKrakenBodyResponse(balanceResponse));
+    }
+
     private final String balanceUri = "/0/private/Balance";
 
     @Override
     public Flux<BalanceResponse> getBalance() {
-        final BalanceRequest balanceRequest = BalanceRequest.builder    ()
-                                                            .nonce      (krakenRepositoryService.getNewNonce())
-                                                            .build      ();
+        final NonceRequest nonceRequest = NonceRequest.builder    ()
+                                                      .nonce      (krakenRepositoryService.getNewNonce())
+                                                      .build      ();
         return
                 krakenPrivateWebClient
                 .post       ()
                 .uri        (balanceUri)
                 .body       (BodyInserters.fromPublisher(
-                                Mono.just(balanceRequest.getQueryParametersRepresentation()), String.class
+                                Mono.just(nonceRequest.getQueryParametersRepresentation()), String.class
                             )
                 )
                 .headers    (httpHeaders -> {
                     httpHeaders.set("API-Sign",
                                     krakenRepositoryService.getHmacDigest(
-                                        balanceRequest.getNonce(),
-                                        balanceRequest.getQueryParametersRepresentation(),
+                                        nonceRequest.getNonce(),
+                                        nonceRequest.getQueryParametersRepresentation(),
                                         balanceUri
                                     ));
                 })

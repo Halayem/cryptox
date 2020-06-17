@@ -1,4 +1,4 @@
-package fr.enix.exchanges.model.business;
+package fr.enix.exchanges.model.business.output;
 
 import lombok.Builder;
 import lombok.Getter;

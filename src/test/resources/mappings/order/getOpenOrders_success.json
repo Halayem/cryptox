@@ -1,0 +1,27 @@
+{
+  "request": {
+    "urlPath": "/0/private/OpenOrders",
+    "method": "POST",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/x-www-form-urlencoded"
+      },
+      "API-Key": {
+        "equalTo": "ARhllSp+6hRurZfDbK64sXliA7th+/hGg5aTKXo/MP0Tlb0GikZUtg6K"
+      },
+      "API-Sign": {
+        "matches": "[0-9A-Za-z/+]{86,86}==$"
+      }
+    },
+    "bodyPatterns": [{
+      "matches": "nonce=[0-9]{16,16}"
+    }]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200,
+    "body": "{\"error\":[],\"result\":{\"open\":{\"O7AHQZ-MAJTT-NIAZWV\":{\"refid\":null,\"userref\":0,\"status\":\"open\",\"opentm\":1591967509.8451,\"starttm\":0,\"expiretm\":0,\"descr\":{\"pair\":\"LTCEUR\",\"type\":\"sell\",\"ordertype\":\"limit\",\"price\":\"43.00\",\"price2\":\"0\",\"leverage\":\"none\",\"order\":\"sell 3.50143000 LTCEUR @ limit 43.00\",\"close\":\"\"},\"vol\":\"3.50143000\",\"vol_exec\":\"0.00000000\",\"cost\":\"0.00000\",\"fee\":\"0.00000\",\"price\":\"0.00000\",\"stopprice\":\"0.00000\",\"limitprice\":\"0.00000\",\"misc\":\"\",\"oflags\":\"fciq\"}}}}"
+  }
+}

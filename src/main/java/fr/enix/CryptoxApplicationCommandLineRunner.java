@@ -1,20 +1,14 @@
 package fr.enix;
 
-import fr.enix.exchanges.model.business.AddOrderInput;
+import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.kraken.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.socket.WebSocketMessage;
-import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
-import org.springframework.web.reactive.socket.client.WebSocketClient;
-import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.net.URI;
-import java.time.Duration;
 
 @Component
 @Slf4j
@@ -26,6 +20,8 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         log.info("ready to run something on startup!");
+        //runGetBalance();
+        runGetOpenOrders();
     }
 
     private void runAddOrder() {
@@ -54,6 +50,12 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     private void runGetTradeBalance() {
         exchangeService.getTradeBalance(AssetClass.CURRENCY).subscribe(response -> {
             log.info("trade balance: {}", response);
+        });
+    }
+
+    private void runGetOpenOrders() {
+        exchangeService.getOpenOrders().subscribe(response -> {
+            log.info("open orders: {}", response);
         });
     }
 }

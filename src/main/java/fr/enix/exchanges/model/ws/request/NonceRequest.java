@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class BalanceRequest {
+public class NonceRequest {
     private String nonce;
 
     public String getQueryParametersRepresentation() {

@@ -1,4 +1,4 @@
-package fr.enix.exchanges.model.business;
+package fr.enix.exchanges.model.business.input;
 
 import fr.enix.kraken.AddOrderType;
 import fr.enix.kraken.AssetPair;

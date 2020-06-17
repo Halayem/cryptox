@@ -1,7 +1,7 @@
 package fr.enix.mapper;
 
-import fr.enix.exchanges.model.business.AddOrderInput;
-import fr.enix.exchanges.model.business.AddOrderOutput;
+import fr.enix.exchanges.model.business.input.AddOrderInput;
+import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 
