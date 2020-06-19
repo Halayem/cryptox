@@ -1,4 +1,4 @@
-package fr.enix.mapper;
+package fr.enix.exchanges.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package fr.enix.mapper;
+package fr.enix.exchanges.mapper;
 
 import fr.enix.exchanges.model.websocket.AssetPair;
 

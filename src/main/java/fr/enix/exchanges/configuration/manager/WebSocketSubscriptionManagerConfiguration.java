@@ -6,7 +6,7 @@ import fr.enix.exchanges.manager.TickerResponseManager;
 import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.repository.ChannelRepository;
 import fr.enix.exchanges.service.TickerService;
-import fr.enix.mapper.TickerMapper;
+import fr.enix.exchanges.mapper.TickerMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

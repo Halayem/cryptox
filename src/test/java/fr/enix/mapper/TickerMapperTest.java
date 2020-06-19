@@ -1,6 +1,7 @@
 package fr.enix.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.model.business.output.TickerOutput;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
 import org.junit.jupiter.api.Test;

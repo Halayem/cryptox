@@ -1,4 +1,4 @@
-package fr.enix.mapper;
+package fr.enix.exchanges.mapper;
 
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;

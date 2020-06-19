@@ -5,7 +5,7 @@ import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.ws.AssetPair;
 import fr.enix.exchanges.model.parameters.Asset;
-import fr.enix.mapper.AssetMapper;
+import fr.enix.exchanges.mapper.AssetMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

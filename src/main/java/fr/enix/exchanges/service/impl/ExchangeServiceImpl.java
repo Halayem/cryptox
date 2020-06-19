@@ -7,8 +7,8 @@ import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.model.parameters.AssetClass;
-import fr.enix.mapper.AddOrderMapper;
-import fr.enix.mapper.OpenOrdersMapper;
+import fr.enix.exchanges.mapper.AddOrderMapper;
+import fr.enix.exchanges.mapper.OpenOrdersMapper;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 

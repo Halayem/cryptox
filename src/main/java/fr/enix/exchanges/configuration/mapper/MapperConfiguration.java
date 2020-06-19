@@ -1,9 +1,9 @@
 package fr.enix.exchanges.configuration.mapper;
 
-import fr.enix.mapper.AddOrderMapper;
-import fr.enix.mapper.AssetMapper;
-import fr.enix.mapper.OpenOrdersMapper;
-import fr.enix.mapper.TickerMapper;
+import fr.enix.exchanges.mapper.AddOrderMapper;
+import fr.enix.exchanges.mapper.AssetMapper;
+import fr.enix.exchanges.mapper.OpenOrdersMapper;
+import fr.enix.exchanges.mapper.TickerMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
