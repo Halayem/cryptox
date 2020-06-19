@@ -1,6 +1,6 @@
 package fr.enix.exchanges.model.websocket;
 
-import fr.enix.kraken.XzAsset;
+import fr.enix.exchanges.model.parameters.XzAsset;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -4,7 +4,7 @@ import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
-import fr.enix.kraken.AssetClass;
+import fr.enix.exchanges.model.parameters.AssetClass;
 import reactor.core.publisher.Flux;
 
 public interface KrakenPrivateRepository {

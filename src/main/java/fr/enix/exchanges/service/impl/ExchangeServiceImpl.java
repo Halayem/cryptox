@@ -6,7 +6,7 @@ import fr.enix.exchanges.model.business.output.OpenOrderOutput;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.kraken.AssetClass;
+import fr.enix.exchanges.model.parameters.AssetClass;
 import fr.enix.mapper.AddOrderMapper;
 import fr.enix.mapper.OpenOrdersMapper;
 import lombok.AllArgsConstructor;

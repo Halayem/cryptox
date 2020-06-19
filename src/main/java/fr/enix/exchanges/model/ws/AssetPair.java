@@ -1,6 +1,6 @@
 package fr.enix.exchanges.model.ws;
 
-import fr.enix.kraken.Asset;
+import fr.enix.exchanges.model.parameters.Asset;
 import lombok.Builder;
 import lombok.Getter;
 

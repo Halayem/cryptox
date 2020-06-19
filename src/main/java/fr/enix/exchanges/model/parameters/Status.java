@@ -1,4 +1,4 @@
-package fr.enix.kraken;
+package fr.enix.exchanges.model.parameters;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

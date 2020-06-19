@@ -1,6 +1,6 @@
 package fr.enix.exchanges.model.ws.response;
 
-import fr.enix.kraken.XzAsset;
+import fr.enix.exchanges.model.parameters.XzAsset;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

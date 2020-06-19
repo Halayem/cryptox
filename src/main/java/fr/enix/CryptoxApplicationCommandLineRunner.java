@@ -1,9 +1,12 @@
 package fr.enix;
 
 import fr.enix.exchanges.model.business.input.AddOrderInput;
+import fr.enix.exchanges.model.parameters.AddOrderType;
+import fr.enix.exchanges.model.parameters.AssetClass;
+import fr.enix.exchanges.model.parameters.OrderType;
+import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.kraken.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

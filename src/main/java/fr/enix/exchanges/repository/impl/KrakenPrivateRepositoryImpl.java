@@ -11,7 +11,7 @@ import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.model.ws.response.ErrorResponse;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
-import fr.enix.kraken.AssetClass;
+import fr.enix.exchanges.model.parameters.AssetClass;
 import fr.enix.mapper.AddOrderMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

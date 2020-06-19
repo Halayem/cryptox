@@ -1,7 +1,7 @@
 package fr.enix.exchanges.model.business.output;
 
-import fr.enix.kraken.AddOrderType;
-import fr.enix.kraken.Status;
+import fr.enix.exchanges.model.parameters.AddOrderType;
+import fr.enix.exchanges.model.parameters.Status;
 import lombok.Builder;
 import lombok.Getter;
 

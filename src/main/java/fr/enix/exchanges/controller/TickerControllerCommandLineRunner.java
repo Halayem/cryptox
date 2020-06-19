@@ -2,7 +2,7 @@ package fr.enix.exchanges.controller;
 
 import fr.enix.exchanges.model.CryptoxControllerProperties;
 import fr.enix.exchanges.model.websocket.AssetPair;
-import fr.enix.kraken.XzAsset;
+import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.mapper.AssetMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
