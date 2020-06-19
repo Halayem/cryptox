@@ -1,7 +1,6 @@
 package fr.enix.exchanges.model.business.output;
 
 import fr.enix.kraken.AddOrderType;
-import fr.enix.kraken.AssetPair;
 import fr.enix.kraken.Status;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ public class OpenOrderOutput {
 
     private String transactionId;
     private Status status;
-    private AssetPair assetPair;
+    private String assetPair;
     private AddOrderType orderType;
     private BigDecimal price;
     private BigDecimal volume;

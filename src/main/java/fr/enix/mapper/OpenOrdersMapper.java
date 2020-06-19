@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 public class OpenOrdersMapper {
 
     public List<OpenOrderOutput> mapFromOpenOrdersResponseToOpenOrderOutput(final OpenOrdersResponse openOrdersResponse ) {
-        System.out.println("received object: " + openOrdersResponse);
         return
             openOrdersResponse.getResult()
                               .getOpen  ()

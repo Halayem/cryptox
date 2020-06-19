@@ -126,8 +126,8 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
     @Override
     public Flux<AddOrderResponse> addOrder(final AddOrderInput addOrderInput) {
         final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
-                addOrderInput,
-                                                    krakenRepositoryService.getNewNonce());
+                                                    addOrderInput, krakenRepositoryService.getNewNonce()
+                                                );
         return krakenPrivateWebClient
                 .post       ()
                 .uri        (addOrderUri)

@@ -3,20 +3,6 @@
  */
 package fr.enix.kraken;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
 public enum Asset {
-    EURO    ("ZEUR", "EUR", AssetType.FIAT),
-    USDOLLAR("ZUSD", "USD", AssetType.FIAT),
-
-    BITCOIN ("XBTC", "BTC", AssetType.CRYPTOCURRENCY),
-    LITECOIN("XLTC", "LTC", AssetType.CRYPTOCURRENCY),
-    CARDANO ("ADA",  "ADA", AssetType.CRYPTOCURRENCY);
-
-    private String code;
-    private String wsCode;
-    private AssetType type;
+    EUR, LTC
 }

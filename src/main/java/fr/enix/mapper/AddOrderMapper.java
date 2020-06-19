@@ -4,14 +4,18 @@ import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class AddOrderMapper {
+
+    private final AssetMapper assetMapper;
 
     public AddOrderRequest mapAddOrderBusinessToAddOrderRequest(final AddOrderInput addOrderInput,
                                                                 final String nonce) {
         return AddOrderRequest.builder  ()
                               .nonce    (nonce)
-                              .pair     (addOrderInput.getAssetPair().getCode())
+                              .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
                               .type     (addOrderInput.getAddOrderType().getValue())
                               .ordertype(addOrderInput.getOrderType().getValue())
                               .price    (addOrderInput.getPrice())

@@ -1,5 +1,6 @@
 package fr.enix.exchanges.model.ws.response;
 
+import fr.enix.kraken.XzAsset;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,6 @@ import java.util.Map;
 @Setter
 public class BalanceResponse extends ErrorResponse {
 
-    private Map<String, BigDecimal> result;
+    private Map<XzAsset, BigDecimal> result;
 
 }

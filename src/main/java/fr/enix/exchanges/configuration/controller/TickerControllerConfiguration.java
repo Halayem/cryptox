@@ -3,7 +3,10 @@ package fr.enix.exchanges.configuration.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.model.ExchangeProperties;
-import fr.enix.kraken.AssetPair;
+import fr.enix.exchanges.model.ws.AssetPair;
+import fr.enix.kraken.Asset;
+import fr.enix.kraken.XzAsset;
+import fr.enix.mapper.AssetMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +23,11 @@ import java.util.function.Consumer;
 public class TickerControllerConfiguration {
 
     private final TickerControllerConfigurationHelper tickerControllerConfigurationHelper;
+    private final AssetMapper assetMapper;
 
-    public TickerControllerConfiguration() {
-        tickerControllerConfigurationHelper = new TickerControllerConfigurationHelper();
+    public TickerControllerConfiguration(final AssetMapper assetMapper) {
+        this.assetMapper = assetMapper;
+        this.tickerControllerConfigurationHelper = new TickerControllerConfigurationHelper();
     }
 
     @Bean
@@ -57,9 +62,14 @@ public class TickerControllerConfiguration {
 
     @Bean
     public String litecoinToEuroTickerSubscriptionMessage() throws JsonProcessingException {
-        return tickerControllerConfigurationHelper.getNewTickerSubscriptionMessage(AssetPair.LITECOIN_TO_EURO);
+        return tickerControllerConfigurationHelper.getNewTickerSubscriptionMessage(
+            assetMapper.mapAssetPairForWebSocket(
+                AssetPair.builder   ()
+                         .from      (Asset.LTC)
+                         .to        (Asset.EUR)
+                         .build     ()
+            )
+        );
     }
-
-
 
 }

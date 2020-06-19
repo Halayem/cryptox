@@ -1,6 +1,5 @@
 package fr.enix.exchanges.model;
 
-import fr.enix.kraken.AssetPair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +14,7 @@ public class CryptoxControllerProperties {
 
     private List<Ticker> tickers;
 
-    public Ticker getTickerByAssetPair(final AssetPair assetPair) {
+    public Ticker getTickerByAssetPair(final String assetPair) {
         return tickers.stream   ()
                       .filter   (ticker -> ticker.getAssetPair().equals(assetPair))
                       .findFirst()
@@ -27,7 +26,7 @@ public class CryptoxControllerProperties {
     @ToString
     public static class Ticker {
 
-        private AssetPair assetPair;
+        private String assetPair;
         private boolean run;
         private Long block;
     }

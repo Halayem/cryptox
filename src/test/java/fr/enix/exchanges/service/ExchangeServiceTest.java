@@ -4,10 +4,11 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.OpenOrderOutput;
+import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.kraken.AddOrderType;
 import fr.enix.kraken.Asset;
-import fr.enix.kraken.AssetPair;
 import fr.enix.kraken.OrderType;
+import fr.enix.kraken.XzAsset;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,8 @@ public class ExchangeServiceTest {
     public void testGetBalance_success() {
         StepVerifier.create         ( exchangeService.getBalance() )
                     .consumeNextWith( balanceResponse -> {
-                        assertEquals( new BigDecimal("2.48"), balanceResponse.getResult().get( Asset.LITECOIN.getCode() ));
-                        assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( Asset.EURO.getCode() ));
+                        assertEquals( new BigDecimal("2.48"),  balanceResponse.getResult().get( XzAsset.XLTC  ));
+                        assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( XzAsset.ZEUR ));
 
                         assertTrue( balanceResponse.getError().size() == 0 );
 
@@ -50,8 +51,12 @@ public class ExchangeServiceTest {
 
     @Test
     public void testAddOrder_success() {
-        StepVerifier.create(exchangeService.addOrder    ( AddOrderInput.builder   ()
-                                                                       .assetPair   (AssetPair.LITECOIN_TO_EURO)
+        StepVerifier.create(exchangeService.addOrder    ( AddOrderInput.builder     ()
+                                                                       .assetPair   (AssetPair.builder  ()
+                                                                                              .from     (XzAsset.XLTC)
+                                                                                              .to       (XzAsset.ZEUR)
+                                                                                              .build    ()
+                                                                       )
                                                                        .addOrderType(AddOrderType.SELL)
                                                                        .orderType   (OrderType.LIMIT)
                                                                        .price       (new BigDecimal(40  ))

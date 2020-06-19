@@ -1,6 +1,7 @@
 package fr.enix;
 
 import fr.enix.exchanges.model.business.input.AddOrderInput;
+import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.kraken.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,11 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     private void runAddOrder() {
         exchangeService.addOrder(
             AddOrderInput.builder   ()
-                    .assetPair      (AssetPair.LITECOIN_TO_EURO)
+                    .assetPair      (AssetPair.builder  ()
+                                              .from     (XzAsset.XLTC)
+                                              .to       (XzAsset.ZEUR)
+                                              .build    ()
+                                    )
                     .addOrderType   (AddOrderType.SELL)
                     .orderType      (OrderType.LIMIT)
                     .price          (new BigDecimal(40  ))
@@ -41,8 +46,8 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     private void runGetBalance() {
         exchangeService.getBalance().subscribe(response -> {
             if ( response != null && response.getResult() != null ) {
-                log.info("balance in litecoin: {}", response.getResult().get( Asset.LITECOIN.getCode() ));
-                log.info("balance in euro: {}", response.getResult().get( Asset.EURO.getCode() ));
+                log.info("balance in litecoin: {}", response.getResult().get( XzAsset.XLTC  ));
+                log.info("balance in euro: {}",     response.getResult().get( XzAsset.ZEUR ));
             }
         });
     }
