@@ -23,6 +23,7 @@ public class OpenOrdersResponse extends ErrorResponse {
     public static class Order {
 
         private Description descr;
+        private String status;
         private BigDecimal vol;
     }
 

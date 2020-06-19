@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.OpenOrderOutput;
+import fr.enix.exchanges.model.parameters.Status;
 import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
@@ -78,9 +79,10 @@ public class ExchangeServiceTest {
                     .consumeNextWith(openOrderOutputs -> {
                         final OpenOrderOutput openOrderOutput = openOrderOutputs.get(0);
                         assertTrue  (openOrderOutputs.size() == 1);
-                        assertEquals("O7AHQZ-MAJTT-NIAZWV", openOrderOutput.getTransactionId() );
+                        assertEquals("O7AHQZ-MAJTT-NIAZWV",    openOrderOutput.getTransactionId() );
                         assertEquals(new BigDecimal("43.00"),       openOrderOutput.getPrice());
                         assertEquals(new BigDecimal("3.50143000"),  openOrderOutput.getVolume());
+                        assertEquals(Status.OPEN,                       openOrderOutput.getStatus());
                     })
                     .verifyComplete();
     }

@@ -1,6 +1,7 @@
 package fr.enix.exchanges.mapper;
 
 import fr.enix.exchanges.model.business.output.OpenOrderOutput;
+import fr.enix.exchanges.model.parameters.Status;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class OpenOrdersMapper {
                                                  .transactionId (entry.getKey())
                                                  .price         (entry.getValue().getDescr().getPrice())
                                                  .volume        (entry.getValue().getVol())
+                                                 .status        (Status.find(entry.getValue().getStatus()))
                                                  .build         ()
                               )
                               .collect(Collectors.toList());
