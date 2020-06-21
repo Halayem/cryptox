@@ -24,127 +24,79 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
-    private final WebClient krakenPrivateWebClient;
-    private final KrakenRepositoryService krakenRepositoryService;
-    private final AddOrderMapper addOrderMapper;
+    private final WebClient                 krakenPrivateWebClient;
+    private final KrakenRepositoryService   krakenRepositoryService;
+    private final AddOrderMapper            addOrderMapper;
 
-
-    private final String openOrdersUri = "/0/private/OpenOrders";
+    private final String openOrdersUri      = "/0/private/OpenOrders";
+    private final String balanceUri         = "/0/private/Balance";
+    private final String tradeBalanceUri    = "/0/private/TradeBalance";
+    private final String addOrderUri        = "/0/private/AddOrder";
 
     @Override
     public Flux<OpenOrdersResponse> getOpenOrders() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
-        return
-        krakenPrivateWebClient
-                .post       ()
-                .uri        (openOrdersUri)
-                .body       (BodyInserters.fromPublisher(
-                                Mono.just(nonceRequest.getQueryParametersRepresentation()), String.class
-                            )
-                )
-                .headers    (httpHeaders -> {
-                    httpHeaders.set("API-Sign",
-                            krakenRepositoryService.getHmacDigest(
-                                    nonceRequest.getNonce(),
-                                    nonceRequest.getQueryParametersRepresentation(),
-                                    openOrdersUri
-                            ));
-                })
-                .retrieve   ()
-                .bodyToFlux (OpenOrdersResponse.class);
-                //.doOnNext   (balanceResponse -> checkKrakenBodyResponse(balanceResponse));
+        return executeWebClient(openOrdersUri,
+                                nonceRequest.getQueryParametersRepresentation(),
+                                nonceRequest.getNonce(),
+                                OpenOrdersResponse.class);
     }
-
-    private final String balanceUri = "/0/private/Balance";
 
     @Override
     public Flux<BalanceResponse> getBalance() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
-        return
-                krakenPrivateWebClient
-                .post       ()
-                .uri        (balanceUri)
-                .body       (BodyInserters.fromPublisher(
-                                Mono.just(nonceRequest.getQueryParametersRepresentation()), String.class
-                            )
-                )
-                .headers    (httpHeaders -> {
-                    httpHeaders.set("API-Sign",
-                                    krakenRepositoryService.getHmacDigest(
-                                        nonceRequest.getNonce(),
-                                        nonceRequest.getQueryParametersRepresentation(),
-                                        balanceUri
-                                    ));
-                })
-                .retrieve   ()
-                .bodyToFlux (BalanceResponse.class)
-                .doOnNext   (balanceResponse -> checkKrakenBodyResponse(balanceResponse));
+        return executeWebClient(balanceUri,
+                                nonceRequest.getQueryParametersRepresentation(),
+                                nonceRequest.getNonce(),
+                                BalanceResponse.class);
     }
 
-    private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
-        if ( errorResponse.getError().size() == 0 ) {
-            return;
-        }
-
-        throw KrakenExceptionFactoryProvider.getFactory         (errorResponse.getError().get( 0 ))
-                                            .getKrakenException ();
-    }
-
-    private final String tradeBalanceUri = "/0/private/TradeBalance";
     @Override
     public Flux<String> getTradeBalance(final AssetClass assetClass) {
         final TradeBalanceRequest tradeBalanceRequest = TradeBalanceRequest.builder ()
                                                                            .nonce   (krakenRepositoryService.getNewNonce())
                                                                            .aclass  (assetClass.getValue())
                                                                            .build   ();
-        return krakenPrivateWebClient
-                .post       ()
-                .uri        (tradeBalanceUri)
-                .body       (BodyInserters.fromPublisher(
-                                Mono.just(tradeBalanceRequest.getQueryParametersRepresentation()), String.class
-                            )
-                )
-                .headers    (httpHeaders -> {
-                    httpHeaders.set("API-Sign",
-                                    krakenRepositoryService.getHmacDigest(
-                                        tradeBalanceRequest.getNonce(),
-                                        tradeBalanceRequest.getQueryParametersRepresentation(),
-                                        tradeBalanceUri
-                                    ));
-                })
-                .retrieve   ()
-                .bodyToFlux (String.class);
+        return executeWebClient(tradeBalanceUri,
+                                tradeBalanceRequest.getQueryParametersRepresentation(),
+                                tradeBalanceRequest.getNonce(),
+                                String.class);
     }
-
-
-    private final String addOrderUri = "/0/private/AddOrder";
 
     @Override
     public Flux<AddOrderResponse> addOrder(final AddOrderInput addOrderInput) {
         final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
-                                                    addOrderInput, krakenRepositoryService.getNewNonce()
+                                                        addOrderInput, krakenRepositoryService.getNewNonce()
                                                 );
-        return krakenPrivateWebClient
-                .post       ()
-                .uri        (addOrderUri)
-                .body       (BodyInserters.fromPublisher(
-                                Mono.just(addOrderRequest.getQueryParametersRepresentation()), String.class
-                            )
-                )
-                .headers    (httpHeaders -> {
-                    httpHeaders.set("API-Sign",
-                                    krakenRepositoryService.getHmacDigest(
-                                        addOrderRequest.getNonce(),
-                                        addOrderRequest.getQueryParametersRepresentation(),
-                                        addOrderUri
-                                    ));
-                })
-                .retrieve   ()
-                .bodyToFlux (AddOrderResponse.class);
+        return executeWebClient(addOrderUri,
+                                addOrderRequest.getQueryParametersRepresentation(),
+                                addOrderRequest.getNonce(),
+                                AddOrderResponse.class);
+    }
+
+    private Flux executeWebClient(String uri, String query, String nonce, Class clazz) {
+        return
+                krakenPrivateWebClient
+                        .post       ()
+                        .uri        (uri)
+                        .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
+                        .headers    (httpHeaders -> {
+                            httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri ));
+                        })
+                        .retrieve   ()
+                        .bodyToFlux (clazz)
+                        .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
+    }
+
+    private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
+        if ( errorResponse.getError().size() > 0 ) {
+            throw KrakenExceptionFactoryProvider.getFactory         (errorResponse.getError().get( 0 ))
+                                                .getKrakenException ();
+        }
     }
 
 }

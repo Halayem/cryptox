@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KrakenExceptionFactoryProvider {
 
-    private static final String EAPI_MESSAGE_PREFIX     = "EAPI:";
     private static final String EORDER_MESSAGE_PREFIX   = "EOrder:";
+    private static final String EAPI_MESSAGE_PREFIX     = "EAPI:";
 
     public static KrakenExceptionAbstractFactory getFactory(final String message) {
         if ( message.startsWith(EORDER_MESSAGE_PREFIX   )) return new KrakenEorderExceptionFactory  (message.replace(EORDER_MESSAGE_PREFIX, ""));
