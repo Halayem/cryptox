@@ -13,7 +13,7 @@ public enum Status {
 
     private String value;
 
-    public static Status find(final String value){
+    public static Status find(final String value) {
         return Arrays.stream        (Status.values())
                      .filter        (status -> status.value.equals(value))
                      .findFirst     ()

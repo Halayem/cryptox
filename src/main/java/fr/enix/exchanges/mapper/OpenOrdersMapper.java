@@ -1,6 +1,7 @@
 package fr.enix.exchanges.mapper;
 
 import fr.enix.exchanges.model.business.output.OpenOrderOutput;
+import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.Status;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 
@@ -20,6 +21,7 @@ public class OpenOrdersMapper {
                                                  .transactionId (entry.getKey())
                                                  .price         (entry.getValue().getDescr().getPrice())
                                                  .volume        (entry.getValue().getVol())
+                                                 .orderType     (AddOrderType.find(entry.getValue().getDescr().getType()))
                                                  .status        (Status.find(entry.getValue().getStatus()))
                                                  .build         ()
                               )

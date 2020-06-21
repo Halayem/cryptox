@@ -79,10 +79,11 @@ public class ExchangeServiceTest {
                     .consumeNextWith(openOrderOutputs -> {
                         final OpenOrderOutput openOrderOutput = openOrderOutputs.get(0);
                         assertTrue  (openOrderOutputs.size() == 1);
-                        assertEquals("O7AHQZ-MAJTT-NIAZWV",    openOrderOutput.getTransactionId() );
-                        assertEquals(new BigDecimal("43.00"),       openOrderOutput.getPrice());
-                        assertEquals(new BigDecimal("3.50143000"),  openOrderOutput.getVolume());
-                        assertEquals(Status.OPEN,                       openOrderOutput.getStatus());
+                        assertEquals("O7AHQZ-MAJTT-NIAZWV",    openOrderOutput.getTransactionId()  );
+                        assertEquals(new BigDecimal("43.00"),       openOrderOutput.getPrice()          );
+                        assertEquals(new BigDecimal("3.50143000"),  openOrderOutput.getVolume()         );
+                        assertEquals(AddOrderType.SELL,                 openOrderOutput.getOrderType()      );
+                        assertEquals(Status.OPEN,                       openOrderOutput.getStatus()         );
                     })
                     .verifyComplete();
     }
