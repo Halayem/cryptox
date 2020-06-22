@@ -6,11 +6,12 @@ import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 import fr.enix.exchanges.model.parameters.AssetClass;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface KrakenPrivateRepository {
 
     Flux<BalanceResponse> getBalance();
     Flux<String> getTradeBalance(final AssetClass assetClass);
     Flux<AddOrderResponse> addOrder(final AddOrderInput addOrderInput);
-    Flux<OpenOrdersResponse> getOpenOrders();
+    Mono<OpenOrdersResponse> getOpenOrders();
 }

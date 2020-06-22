@@ -6,6 +6,7 @@ import fr.enix.exchanges.model.business.output.OpenOrderOutput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
+import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.model.parameters.AssetClass;
@@ -13,9 +14,11 @@ import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.OpenOrdersMapper;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
 public class ExchangeServiceImpl implements ExchangeService  {
@@ -41,12 +44,11 @@ public class ExchangeServiceImpl implements ExchangeService  {
     }
 
     @Override
-    public Flux<List<OpenOrderOutput>> getOpenOrders() {
-
+    public Flux<OpenOrderOutput> getOpenOrders() {
         return krakenPrivateRepository.getOpenOrders()
-                                      .map          (openOrdersResponse ->
-                                          openOrdersMapper.mapFromOpenOrdersResponseToOpenOrderOutput(openOrdersResponse)
-                                      );
+                                      .map          (openOrdersMapper::mapFromOpenOrdersResponseToOpenOrderOutput)
+                                      .flatMapMany  (Flux::fromIterable);
+
     }
 
     /*
@@ -57,13 +59,11 @@ public class ExchangeServiceImpl implements ExchangeService  {
                 return null;
     }
 
+
     public BigDecimal doSumAllOpenedOrdersForBuying() {
-        getOpenOrders().flatMapIterable(openOrderOutputs ->
-                openOrderOutputs.stream().filter(
-                        openOrderOutput -> openOrderOutput.getOrderType().equals(AddOrderType.BUY))
-        );
+        getOpenOrders().filter()
         return null;
     }
+*/
 
-     */
 }

@@ -76,9 +76,7 @@ public class ExchangeServiceTest {
     @Test
     public void testOpenOrders_success() {
         StepVerifier.create         (exchangeService.getOpenOrders())
-                    .consumeNextWith(openOrderOutputs -> {
-                        final OpenOrderOutput openOrderOutput = openOrderOutputs.get(0);
-                        assertTrue  (openOrderOutputs.size() == 1);
+                    .consumeNextWith(openOrderOutput -> {
                         assertEquals("O7AHQZ-MAJTT-NIAZWV",    openOrderOutput.getTransactionId()  );
                         assertEquals(new BigDecimal("43.00"),       openOrderOutput.getPrice()          );
                         assertEquals(new BigDecimal("3.50143000"),  openOrderOutput.getVolume()         );

@@ -4,6 +4,8 @@ import fr.enix.exchanges.model.business.output.OpenOrderOutput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.Status;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class OpenOrdersMapper {
                                                  .status        (Status.find(entry.getValue().getStatus()))
                                                  .build         ()
                               )
-                              .collect(Collectors.toList());
+                              .collect(Collectors.toList())
+            ;
     }
 }

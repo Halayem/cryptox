@@ -34,11 +34,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
     private final String addOrderUri        = "/0/private/AddOrder";
 
     @Override
-    public Flux<OpenOrdersResponse> getOpenOrders() {
+    public Mono<OpenOrdersResponse> getOpenOrders() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
-        return executeWebClient(openOrdersUri,
+        return executeWebClientMono(openOrdersUri,
                                 nonceRequest.getQueryParametersRepresentation(),
                                 nonceRequest.getNonce(),
                                 OpenOrdersResponse.class);
@@ -89,6 +89,20 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                         })
                         .retrieve   ()
                         .bodyToFlux (clazz)
+                        .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
+    }
+
+    private Mono executeWebClientMono(String uri, String query, String nonce, Class clazz) {
+        return
+                krakenPrivateWebClient
+                        .post       ()
+                        .uri        (uri)
+                        .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
+                        .headers    (httpHeaders -> {
+                            httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri ));
+                        })
+                        .retrieve   ()
+                        .bodyToMono (clazz)
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
     }
 
