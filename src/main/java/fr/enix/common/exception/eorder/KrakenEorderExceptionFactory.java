@@ -15,8 +15,8 @@ public class KrakenEorderExceptionFactory extends KrakenExceptionAbstractFactory
     @Override
     public KrakenException getKrakenException() {
         switch (message) {
-            case "Positions limit exceeded":    return new KrakenEorderPositionsLimitExceeded();
-            case "Trading agreement required":  return new KrakenEorderTradingAgreementRequired();
+            case "Positions limit exceeded":    return new KrakenEorderPositionsLimitExceededException();
+            case "Trading agreement required":  return new KrakenEorderTradingAgreementRequiredException();
             default:                            return new KrakenUnknownException();
         }
     }

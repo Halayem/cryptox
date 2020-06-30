@@ -1,9 +1,9 @@
 package fr.enix.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.enix.exchanges.model.business.TickerOutput;
+import fr.enix.exchanges.mapper.TickerMapper;
+import fr.enix.exchanges.model.business.output.TickerOutput;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
-import fr.enix.kraken.AssetPair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,8 +1,8 @@
-package fr.enix.exchanges.model.business;
+package fr.enix.exchanges.model.business.input;
 
-import fr.enix.kraken.AddOrderType;
-import fr.enix.kraken.AssetPair;
-import fr.enix.kraken.OrderType;
+import fr.enix.exchanges.model.websocket.AssetPair;
+import fr.enix.exchanges.model.parameters.AddOrderType;
+import fr.enix.exchanges.model.parameters.OrderType;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -2,7 +2,7 @@ package fr.enix.exchanges.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.service.TickerService;
-import fr.enix.mapper.TickerMapper;
+import fr.enix.exchanges.mapper.TickerMapper;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

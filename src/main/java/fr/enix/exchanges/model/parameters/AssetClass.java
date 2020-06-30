@@ -1,13 +1,12 @@
-package fr.enix.kraken;
+package fr.enix.exchanges.model.parameters;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum OrderType {
+public enum AssetClass {
+    CURRENCY("currency");
 
-    MARKET("market"),
-    LIMIT("limit");
     private String value;
 }
