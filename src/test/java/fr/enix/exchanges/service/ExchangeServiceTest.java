@@ -3,12 +3,8 @@ package fr.enix.exchanges.service;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
-import fr.enix.exchanges.model.business.output.OpenOrderOutput;
-import fr.enix.exchanges.model.parameters.Status;
+import fr.enix.exchanges.model.parameters.*;
 import fr.enix.exchanges.model.websocket.AssetPair;
-import fr.enix.exchanges.model.parameters.AddOrderType;
-import fr.enix.exchanges.model.parameters.OrderType;
-import fr.enix.exchanges.model.parameters.XzAsset;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -83,7 +79,49 @@ public class ExchangeServiceTest {
                         assertEquals(AddOrderType.SELL,                 openOrderOutput.getOrderType()      );
                         assertEquals(Status.OPEN,                       openOrderOutput.getStatus()         );
                     })
+                    .consumeNextWith(openOrderOutput -> {
+                        assertEquals("OIM6VX-CCEKP-7DBOKM",    openOrderOutput.getTransactionId()  );
+                        assertEquals(new BigDecimal("35.02"),       openOrderOutput.getPrice()          );
+                        assertEquals(new BigDecimal("0.50000000"),  openOrderOutput.getVolume()         );
+                        assertEquals(AddOrderType.BUY,                  openOrderOutput.getOrderType()      );
+                        assertEquals(Status.OPEN,                       openOrderOutput.getStatus()         );
+                    })
+                    .consumeNextWith(openOrderOutput -> {
+                        assertEquals("OPW54R-RZGFZ-EAGNT3",    openOrderOutput.getTransactionId()  );
+                        assertEquals(new BigDecimal("35.20"),       openOrderOutput.getPrice()          );
+                        assertEquals(new BigDecimal("0.40000000"),  openOrderOutput.getVolume()         );
+                        assertEquals(AddOrderType.BUY,                  openOrderOutput.getOrderType()      );
+                        assertEquals(Status.OPEN,                       openOrderOutput.getStatus()         );
+                    })
                     .verifyComplete();
+    }
+
+    @Test
+    public void testGetTotalBuyPlacements_success() {
+        StepVerifier.create(
+            exchangeService.getTotalBuyPlacements(fr.enix.exchanges.model.ws.AssetPair.builder  ()
+                                                                                      .from     (Asset.LTC)
+                                                                                      .to       (Asset.EUR)
+                                                                                      .build    ())
+        )
+        .consumeNextWith(totalBuyPlacements -> {
+            assertEquals(new BigDecimal("31.5900000000"), totalBuyPlacements);
+        })
+        .verifyComplete();
+    }
+
+    @Test
+    public void testGetTotalSellPlacements_success() {
+        StepVerifier.create(
+                exchangeService.getTotalSellPlacements(fr.enix.exchanges.model.ws.AssetPair.builder  ()
+                                                                                           .from     (Asset.LTC)
+                                                                                           .to       (Asset.EUR)
+                                                                                           .build    ())
+        )
+        .consumeNextWith(totalSellPlacements -> {
+            assertEquals(new BigDecimal("150.5614900000"), totalSellPlacements);
+        })
+        .verifyComplete();
     }
 
     @BeforeAll

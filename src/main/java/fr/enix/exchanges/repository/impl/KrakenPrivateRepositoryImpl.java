@@ -38,10 +38,13 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
-        return executeWebClientMono(openOrdersUri,
-                                nonceRequest.getQueryParametersRepresentation(),
-                                nonceRequest.getNonce(),
-                                OpenOrdersResponse.class);
+
+        return executeWebClientMono(
+                    openOrdersUri,
+                    nonceRequest.getQueryParametersRepresentation(),
+                    nonceRequest.getNonce(),
+                    OpenOrdersResponse.class
+        );
     }
 
     @Override
