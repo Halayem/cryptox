@@ -6,8 +6,9 @@ import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.business.output.OpenOrderOutput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
+import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.parameters.AssetClass;
-import fr.enix.exchanges.model.ws.AssetPair;
+import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.service.ExchangeService;
@@ -50,36 +51,49 @@ public class ExchangeServiceImpl implements ExchangeService  {
 
     }
 
-    /*
-    public BigDecimal getAvailableFiatCurrencyForBuying() {
-        getBalance().map(balanceResponse -> balanceResponse.getResult().get(XzAsset.ZEUR))
-                    .map(balanceInEuro -> );
-
-                return null;
-    }
-     */
-
-
     @Override
-    public Mono<BigDecimal> getTotalBuyPlacements(final AssetPair assetPair) {
-        return getTotalPlacements(AddOrderType.BUY, (assetPair.getFrom().toString() + assetPair.getTo().toString()));
+    public Flux<BigDecimal> getAvailableAssetForBuyPlacement(final XzAsset balanceXzAsset, final Asset openOrdersAsset) {
+
+        return Flux.zip(
+            getBalance(), getTotalBuyPlacements(openOrdersAsset),
+            (balanceResponse, totalBuyPlacements) -> balanceResponse.getResult  ()
+                                                                    .get        (balanceXzAsset)
+                                                                    .subtract   (totalBuyPlacements)
+        );
     }
 
     @Override
-    public Mono<BigDecimal> getTotalSellPlacements(final AssetPair assetPair) {
-        return getTotalPlacements(AddOrderType.SELL, (assetPair.getFrom().toString() + assetPair.getTo().toString()));
+    public Flux<BigDecimal> getAvailableAssetForSellPlacement(final XzAsset balanceXzAsset, final Asset openOrdersAsset) {
+        return Flux.zip(
+                getBalance(), getTotalSellPlacements(openOrdersAsset),
+                (balanceResponse, totalSellPlacements) -> balanceResponse.getResult  ()
+                                                                        .get        (balanceXzAsset)
+                                                                        .subtract   (totalSellPlacements)
+        );
     }
 
-    private Mono<BigDecimal> getTotalPlacements(final AddOrderType addOrderType, final String assetPair) {
+    @Override
+    public Mono<BigDecimal> getTotalBuyPlacements(final Asset asset) {
+        return getTotalPlacements(AddOrderType.BUY, asset.toString());
+    }
+
+    @Override
+    public Mono<BigDecimal> getTotalSellPlacements(final Asset asset) {
+        return getTotalPlacements(AddOrderType.SELL, asset.toString());
+    }
+
+    private Mono<BigDecimal> getTotalPlacements(final AddOrderType addOrderType, final String asset) {
         return getOpenOrders()
                 .filter(openOrderOutput ->
                     (addOrderType.equals(openOrderOutput.getOrderType()) )
                     &&
-                    assetPair.equals(openOrderOutput.getAssetPair())
+                    (openOrderOutput.getAssetPair().contains(asset))
                 )
-                .map(openOrderOutput ->
-                        openOrderOutput.getPrice().multiply(openOrderOutput.getVolume())
-                )
+                .map(openOrderOutput -> {
+                    return  AddOrderType.SELL.equals(addOrderType)
+                            ? openOrderOutput.getVolume()
+                            : openOrderOutput.getPrice().multiply(openOrderOutput.getVolume());
+                })
                 .reduce(ZERO, (blockedFiatCurrencyForBuying1, blockedFiatCurrencyForBuying2) ->
                         blockedFiatCurrencyForBuying1.add(blockedFiatCurrencyForBuying2)
                 );

@@ -5,9 +5,7 @@ import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.parameters.*;
 import fr.enix.exchanges.model.websocket.AssetPair;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
@@ -18,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ExchangeServiceTest {
 
     @Autowired
@@ -28,7 +27,7 @@ public class ExchangeServiceTest {
     public void testGetBalance_success() {
         StepVerifier.create         ( exchangeService.getBalance() )
                     .consumeNextWith( balanceResponse -> {
-                        assertEquals( new BigDecimal("2.48"),  balanceResponse.getResult().get( XzAsset.XLTC  ));
+                        assertEquals( new BigDecimal("8.48"),  balanceResponse.getResult().get( XzAsset.XLTC  ));
                         assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( XzAsset.ZEUR ));
 
                         assertTrue( balanceResponse.getError().size() == 0 );
@@ -37,12 +36,33 @@ public class ExchangeServiceTest {
                     .verifyComplete ();
     }
 
+
     @Test
     @Order(1)
     public void testGetBalance_eapiInvalidKey() {
         StepVerifier.create ( exchangeService.getBalance() )
                 .expectError( KrakenEapiInvalidKeyException.class )
                 .verify     ();
+    }
+
+    @Test
+    @Order(2)
+    public void testGetAvailableAssetForBuyPlacement_success() {
+        StepVerifier.create         (exchangeService.getAvailableAssetForBuyPlacement(XzAsset.ZEUR, Asset.EUR))
+                .consumeNextWith(availableAssetForBuyPlacement -> {
+                    assertEquals(new BigDecimal("8.6600000000"), availableAssetForBuyPlacement);
+                })
+                .verifyComplete ();
+    }
+
+    @Test
+    @Order(3)
+    public void testGetAvailableAssetForSellPlacement_success() {
+        StepVerifier.create         (exchangeService.getAvailableAssetForSellPlacement(XzAsset.XLTC, Asset.LTC))
+                .consumeNextWith(availableAssetForSellPlacement -> {
+                    assertEquals(new BigDecimal("4.97857000"), availableAssetForSellPlacement);
+                })
+                .verifyComplete ();
     }
 
     @Test
@@ -98,30 +118,20 @@ public class ExchangeServiceTest {
 
     @Test
     public void testGetTotalBuyPlacements_success() {
-        StepVerifier.create(
-            exchangeService.getTotalBuyPlacements(fr.enix.exchanges.model.ws.AssetPair.builder  ()
-                                                                                      .from     (Asset.LTC)
-                                                                                      .to       (Asset.EUR)
-                                                                                      .build    ())
-        )
-        .consumeNextWith(totalBuyPlacements -> {
-            assertEquals(new BigDecimal("31.5900000000"), totalBuyPlacements);
-        })
-        .verifyComplete();
+        StepVerifier.create         (exchangeService.getTotalBuyPlacements(Asset.EUR)        )
+                    .consumeNextWith(totalBuyPlacements -> {
+                        assertEquals(new BigDecimal("31.5900000000"), totalBuyPlacements);
+                    })
+                    .verifyComplete ();
     }
 
     @Test
     public void testGetTotalSellPlacements_success() {
-        StepVerifier.create(
-                exchangeService.getTotalSellPlacements(fr.enix.exchanges.model.ws.AssetPair.builder  ()
-                                                                                           .from     (Asset.LTC)
-                                                                                           .to       (Asset.EUR)
-                                                                                           .build    ())
-        )
-        .consumeNextWith(totalSellPlacements -> {
-            assertEquals(new BigDecimal("150.5614900000"), totalSellPlacements);
-        })
-        .verifyComplete();
+        StepVerifier.create         (exchangeService.getTotalSellPlacements(Asset.LTC))
+                    .consumeNextWith(totalSellPlacements -> {
+                        assertEquals(new BigDecimal("3.50143000"), totalSellPlacements);
+                    })
+                    .verifyComplete ();
     }
 
     @BeforeAll

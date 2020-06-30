@@ -1,7 +1,7 @@
 {
   "scenarioName": "GET_BALANCE",
-  "requiredScenarioState": "GET_BALANCE_EAPI_INVALID_KEY",
-  "newScenarioState": "GET_BALANCE_AVAILABLE_ASSET_FOR_BUY_PLACEMENT",
+  "requiredScenarioState": "GET_BALANCE_AVAILABLE_ASSET_FOR_BUY_PLACEMENT",
+  "newScenarioState": "GET_BALANCE_AVAILABLE_ASSET_FOR_SELL_PLACEMENT",
   "request": {
     "urlPath": "/0/private/Balance",
     "method": "POST",
@@ -25,6 +25,6 @@
       "Content-Type": "application/json"
     },
     "status": 200,
-    "body": "{\"error\": [\"EAPI:Invalid key\"] }"
+    "body": "{\"error\": [], \"result\": { \"XLTC\": 8.48, \"ZEUR\": 40.25 } }"
   }
 }

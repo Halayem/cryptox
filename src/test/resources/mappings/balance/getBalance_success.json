@@ -25,6 +25,6 @@
       "Content-Type": "application/json"
     },
     "status": 200,
-    "body": "{\"error\": [], \"result\": { \"XLTC\": 2.48, \"ZEUR\": 40.25 } }"
+    "body": "{\"error\": [], \"result\": { \"XLTC\": 8.48, \"ZEUR\": 40.25 } }"
   }
 }
