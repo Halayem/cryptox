@@ -38,10 +38,10 @@ public class MarketOfferHistoryRepositoryTest {
     @Order(1)
     public void testSaveNewMarketPrice_shouldReturnMarketPriceObjectAsNewestMarketOffer() {
 
-        StepVerifier.create (marketOfferHistoryRepository.saveNewMarketOffer(firstMarketOfferAssetPair, firstMarketOfferPrice))
-                    .consumeNextWith(marketPrice -> {
-                        assertEquals    (firstMarketOfferAssetPair, marketPrice.getAssetPair());
-                        assertEquals    (firstMarketOfferPrice,     marketPrice.getPrice());
+        StepVerifier.create(marketOfferHistoryRepository.saveNewMarketOffer(firstMarketOfferAssetPair, firstMarketOfferPrice))
+                    .consumeNextWith(marketPriceHistory -> {
+                        assertEquals    (firstMarketOfferAssetPair, marketPriceHistory.getCurrentMarketOffer().getAssetPair());
+                        assertEquals    (firstMarketOfferPrice,     marketPriceHistory.getCurrentMarketOffer().getPrice());
                     })
                     .verifyComplete ();
 

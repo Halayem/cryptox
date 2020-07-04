@@ -12,22 +12,24 @@ import java.util.Map;
 
 public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepository {
 
-    private final Map<AssetPair, MarketPriceHistory> records;
+    private Map<AssetPair, MarketPriceHistory> records;
 
     public MarketOfferHistoryRepositoryImpl() {
         records = new HashMap<>();
     }
 
     @Override
-    public Mono<MarketPriceHistory.MarketPrice> saveNewMarketOffer(final AssetPair assetPair, final BigDecimal price) {
+    public void resetAllMarketOfferHistory() {
+        records = new HashMap<>();
+    }
+
+    @Override
+    public Mono<MarketPriceHistory> saveNewMarketOffer(final AssetPair assetPair, final BigDecimal price) {
         initRecords         (assetPair);
         updatePreviousPrice (records.get(assetPair));
         updateCurrentPrice  (records.get(assetPair), assetPair, price);
 
-        return Mono.just(
-                records.get(assetPair)
-                       .getCurrentMarketOffer()
-        );
+        return Mono.just(records.get(assetPair));
     }
 
     @Override

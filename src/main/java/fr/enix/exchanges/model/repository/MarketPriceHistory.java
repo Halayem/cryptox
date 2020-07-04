@@ -12,13 +12,14 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class MarketPriceHistory {
 
     private MarketPrice previousMarketOffer;
     private MarketPrice currentMarketOffer;
 
     @Getter
-
+    @ToString
     @Builder(toBuilder = true)
     public static class MarketPrice {
         private AssetPair       assetPair;

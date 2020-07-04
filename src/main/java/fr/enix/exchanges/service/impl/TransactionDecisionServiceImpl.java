@@ -2,8 +2,6 @@ package fr.enix.exchanges.service.impl;
 
 import fr.enix.exchanges.model.repository.Decision;
 import fr.enix.exchanges.model.repository.MarketPriceHistory;
-import fr.enix.exchanges.model.ws.AssetPair;
-import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.TransactionDecisionService;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -11,16 +9,9 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class TransactionDecisionServiceImpl implements TransactionDecisionService {
 
-    private final MarketOfferService marketOfferService;
-
     @Override
-    public Mono<Decision> getDecision(final AssetPair assetPair) {
-        return marketOfferService.getMarketPriceHistory (assetPair)
-                                 .flatMap               (marketPriceHistory -> getDecision(marketPriceHistory));
-    }
-
-    private Mono<Decision> getDecision(final MarketPriceHistory marketPriceHistory) {
-        if( marketPriceHistory.getCurrentMarketOffer() == null || marketPriceHistory.getCurrentMarketOffer() == null) {
+    public Mono<Decision> getDecision(final MarketPriceHistory marketPriceHistory) {
+        if( marketPriceHistory.getCurrentMarketOffer() == null || marketPriceHistory.getPreviousMarketOffer() == null) {
             return Mono.just(Decision.DO_NOTHING);
         }
         return compareCurrentAndPreviousPrice(marketPriceHistory) < 0
