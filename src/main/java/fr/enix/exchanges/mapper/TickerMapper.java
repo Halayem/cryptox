@@ -3,7 +3,9 @@ package fr.enix.exchanges.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.exchanges.model.business.output.TickerOutput;
+import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
+import fr.enix.exchanges.model.ws.AssetPair;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,6 +45,10 @@ public class TickerMapper {
                                                                 .today       (new BigDecimal(tickerResponse.getTicker().getH().get(0)))
                                                                 .last24Hours (new BigDecimal(tickerResponse.getTicker().getH().get(1)))
                                                                 .build()
+                           ).assetPair(AssetPair.builder()
+                                                .from   (Asset.find(tickerResponse.getAssetPair().split("/")[0]))
+                                                .to     (Asset.find(tickerResponse.getAssetPair().split("/")[1]))
+                                                .build  ()
                            )
                            .build();
     }

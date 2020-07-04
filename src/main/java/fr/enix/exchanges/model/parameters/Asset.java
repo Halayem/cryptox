@@ -4,5 +4,15 @@
 package fr.enix.exchanges.model.parameters;
 
 public enum Asset {
-    EUR, LTC
+    EUR, LTC;
+
+    public static Asset find(final String value) {
+        try {
+            return Asset.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                String.format("this value: %s is unknown by enum: %s ", value, Asset.class.getName())
+            );
+        }
+    }
 }
