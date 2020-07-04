@@ -1,6 +1,7 @@
 package fr.enix.exchanges.model.repository;
 
 import fr.enix.exchanges.model.parameters.Asset;
+import fr.enix.exchanges.model.ws.AssetPair;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class MarketPriceHistory {
 
     @Builder(toBuilder = true)
     public static class MarketPrice {
-        private Asset           asset;
+        private AssetPair       assetPair;
         private BigDecimal      price;
         private LocalDateTime   date;
     }

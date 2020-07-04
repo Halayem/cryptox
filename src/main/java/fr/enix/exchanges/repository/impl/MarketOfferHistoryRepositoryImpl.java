@@ -1,7 +1,7 @@
 package fr.enix.exchanges.repository.impl;
 
-import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.repository.MarketPriceHistory;
+import fr.enix.exchanges.model.ws.AssetPair;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import reactor.core.publisher.Mono;
 
@@ -12,32 +12,32 @@ import java.util.Map;
 
 public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepository {
 
-    private final Map<Asset, MarketPriceHistory> records;
+    private final Map<AssetPair, MarketPriceHistory> records;
 
     public MarketOfferHistoryRepositoryImpl() {
         records = new HashMap<>();
     }
 
     @Override
-    public Mono<MarketPriceHistory.MarketPrice> saveNewMarketOffer(final Asset asset, final BigDecimal price) {
-        initRecords         (asset);
-        updatePreviousPrice (records.get(asset));
-        updateCurrentPrice  (records.get(asset), asset, price);
+    public Mono<MarketPriceHistory.MarketPrice> saveNewMarketOffer(final AssetPair assetPair, final BigDecimal price) {
+        initRecords         (assetPair);
+        updatePreviousPrice (records.get(assetPair));
+        updateCurrentPrice  (records.get(assetPair), assetPair, price);
 
         return Mono.just(
-                records.get(asset)
+                records.get(assetPair)
                        .getCurrentMarketOffer()
         );
     }
 
     @Override
-    public Mono<MarketPriceHistory> getMarketOfferHistory(final Asset asset) {
-        return Mono.justOrEmpty(records.get(asset));
+    public Mono<MarketPriceHistory> getMarketOfferHistory(final AssetPair assetPair) {
+        return Mono.justOrEmpty(records.get(assetPair));
     }
 
-    private void initRecords(final Asset asset) {
-        if(!records.containsKey(asset)) {
-            records.put(asset, new MarketPriceHistory());
+    private void initRecords(final AssetPair assetPair) {
+        if(!records.containsKey(assetPair)) {
+            records.put(assetPair, new MarketPriceHistory());
         }
     }
 
@@ -51,11 +51,11 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
     }
 
     private void updateCurrentPrice(final MarketPriceHistory marketPriceHistory,
-                                    final Asset asset,
+                                    final AssetPair assetPair,
                                     final BigDecimal price) {
 
         marketPriceHistory.setCurrentMarketOffer(MarketPriceHistory.MarketPrice.builder     ()
-                                                                               .asset       (asset)
+                                                                               .assetPair   (assetPair)
                                                                                .price       (price)
                                                                                .date        (LocalDateTime.now())
                                                                                .build       ()

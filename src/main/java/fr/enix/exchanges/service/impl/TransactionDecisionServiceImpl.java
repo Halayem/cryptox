@@ -1,8 +1,8 @@
 package fr.enix.exchanges.service.impl;
 
-import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.repository.Decision;
 import fr.enix.exchanges.model.repository.MarketPriceHistory;
+import fr.enix.exchanges.model.ws.AssetPair;
 import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.TransactionDecisionService;
 import lombok.AllArgsConstructor;
@@ -14,8 +14,8 @@ public class TransactionDecisionServiceImpl implements TransactionDecisionServic
     private final MarketOfferService marketOfferService;
 
     @Override
-    public Mono<Decision> getDecision(final Asset asset) {
-        return marketOfferService.getMarketPriceHistory (asset)
+    public Mono<Decision> getDecision(final AssetPair assetPair) {
+        return marketOfferService.getMarketPriceHistory (assetPair)
                                  .flatMap               (marketPriceHistory -> getDecision(marketPriceHistory));
     }
 
