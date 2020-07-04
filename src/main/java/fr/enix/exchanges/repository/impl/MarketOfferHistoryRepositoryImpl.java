@@ -19,16 +19,20 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
     }
 
     @Override
-    public Mono<Void> saveNewMarketPrice(final Asset asset, final BigDecimal price) {
+    public Mono<MarketPriceHistory.MarketPrice> saveNewMarketOffer(final Asset asset, final BigDecimal price) {
         initRecords         (asset);
         updatePreviousPrice (records.get(asset));
         updateCurrentPrice  (records.get(asset), asset, price);
-        return Mono.empty();
+
+        return Mono.just(
+                records.get(asset)
+                       .getCurrentMarketOffer()
+        );
     }
 
     @Override
-    public Mono<MarketPriceHistory> getMarketPriceHistory(final Asset asset) {
-        return Mono.just(records.get(asset));
+    public Mono<MarketPriceHistory> getMarketOfferHistory(final Asset asset) {
+        return Mono.justOrEmpty(records.get(asset));
     }
 
     private void initRecords(final Asset asset) {
@@ -38,8 +42,8 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
     }
 
     private void updatePreviousPrice(final MarketPriceHistory marketPriceHistory) {
-        if ( marketPriceHistory.getCurrentMarketPrice() != null) {
-            marketPriceHistory.setPreviousMarketPrice(marketPriceHistory.getCurrentMarketPrice()
+        if ( marketPriceHistory.getCurrentMarketOffer() != null) {
+            marketPriceHistory.setPreviousMarketOffer(marketPriceHistory.getCurrentMarketOffer()
                                                                         .toBuilder()
                                                                         .build()
             );
@@ -50,7 +54,7 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
                                     final Asset asset,
                                     final BigDecimal price) {
 
-        marketPriceHistory.setCurrentMarketPrice(MarketPriceHistory.MarketPrice.builder     ()
+        marketPriceHistory.setCurrentMarketOffer(MarketPriceHistory.MarketPrice.builder     ()
                                                                                .asset       (asset)
                                                                                .price       (price)
                                                                                .date        (LocalDateTime.now())

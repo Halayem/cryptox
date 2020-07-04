@@ -20,7 +20,7 @@ public class TransactionDecisionServiceImpl implements TransactionDecisionServic
     }
 
     private Mono<Decision> getDecision(final MarketPriceHistory marketPriceHistory) {
-        if( marketPriceHistory.getCurrentMarketPrice() == null || marketPriceHistory.getCurrentMarketPrice() == null) {
+        if( marketPriceHistory.getCurrentMarketOffer() == null || marketPriceHistory.getCurrentMarketOffer() == null) {
             return Mono.just(Decision.DO_NOTHING);
         }
         return compareCurrentAndPreviousPrice(marketPriceHistory) < 0
@@ -29,8 +29,8 @@ public class TransactionDecisionServiceImpl implements TransactionDecisionServic
     }
 
     private int compareCurrentAndPreviousPrice(final MarketPriceHistory marketPriceHistory) {
-        return marketPriceHistory.getCurrentMarketPrice().getPrice().compareTo(
-                marketPriceHistory.getPreviousMarketPrice().getPrice()
+        return marketPriceHistory.getCurrentMarketOffer().getPrice().compareTo(
+                marketPriceHistory.getPreviousMarketOffer().getPrice()
         );
     }
 

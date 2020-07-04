@@ -8,6 +8,6 @@ import java.math.BigDecimal;
 
 public interface MarketOfferService {
 
-    Mono<Void> saveNewMarketPrice(final Asset asset, final BigDecimal price);
+    Mono<MarketPriceHistory.MarketPrice> saveNewMarketPrice(final Asset asset, final BigDecimal price);
     Mono<MarketPriceHistory> getMarketPriceHistory(final Asset asset);
 }

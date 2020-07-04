@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class MarketPriceHistory {
 
-    private MarketPrice previousMarketPrice;
-    private MarketPrice currentMarketPrice;
+    private MarketPrice previousMarketOffer;
+    private MarketPrice currentMarketOffer;
 
     @Getter
 

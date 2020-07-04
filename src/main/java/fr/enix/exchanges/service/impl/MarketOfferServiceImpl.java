@@ -15,13 +15,13 @@ public class MarketOfferServiceImpl implements MarketOfferService {
     private final MarketOfferHistoryRepository marketOfferHistoryRepository;
 
     @Override
-    public Mono<Void> saveNewMarketPrice(final Asset asset, final BigDecimal price) {
-        return marketOfferHistoryRepository.saveNewMarketPrice(asset, price);
+    public Mono<MarketPriceHistory.MarketPrice> saveNewMarketPrice(final Asset asset, final BigDecimal price) {
+        return marketOfferHistoryRepository.saveNewMarketOffer(asset, price);
     }
 
     @Override
     public Mono<MarketPriceHistory> getMarketPriceHistory(final Asset asset) {
-        return marketOfferHistoryRepository.getMarketPriceHistory(asset);
+        return marketOfferHistoryRepository.getMarketOfferHistory(asset);
     }
 
 
