@@ -39,8 +39,8 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
                     .price          (new BigDecimal(40  ))
                     .volume         (new BigDecimal(1   ))
                     .build()
-        ).subscribe(response -> {
-            log.info( "order placed, kraken response: {}", response );
+        ).subscribe(addOrderOutput -> {
+            log.info( "order placed, kraken response: {}", addOrderOutput );
         });
     }
 
