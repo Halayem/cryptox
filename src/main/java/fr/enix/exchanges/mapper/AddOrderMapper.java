@@ -13,14 +13,20 @@ public class AddOrderMapper {
 
     public AddOrderRequest mapAddOrderBusinessToAddOrderRequest(final AddOrderInput addOrderInput,
                                                                 final String nonce) {
-        return AddOrderRequest.builder  ()
-                              .nonce    (nonce)
-                              .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
-                              .type     (addOrderInput.getAddOrderType().getValue())
-                              .ordertype(addOrderInput.getOrderType().getValue())
-                              .price    (addOrderInput.getPrice())
-                              .volume   (addOrderInput.getVolume())
-                              .build    ();
+        AddOrderRequest.AddOrderRequestBuilder addOrderRequestBuilder =
+                AddOrderRequest.builder  ()
+                               .nonce    (nonce)
+                               .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
+                               .type     (addOrderInput.getAddOrderType().getValue())
+                               .ordertype(addOrderInput.getOrderType().getValue())
+                               .volume   (addOrderInput.getVolume());
+
+        if ( addOrderInput.getPrice() != null ) {
+            addOrderRequestBuilder.price(addOrderInput.getPrice());
+        }
+
+
+        return addOrderRequestBuilder.build();
     }
 
     public AddOrderOutput mapAddOrderResponseToAddOrderOutput(final AddOrderResponse addOrderResponse) {

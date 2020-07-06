@@ -3,12 +3,14 @@ package fr.enix.common.service.impl;
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.common.utils.cryptography.MacCryptographyUtils;
 import fr.enix.common.utils.cryptography.MessageDigestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
 
+@Slf4j
 public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
 
     private final MessageDigestUtils    messageDigestUtilsSha256;
@@ -22,10 +24,16 @@ public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
         this.macCryptographyUtilsHmacSha512 = macCryptographyUtilsHmacSha512;
         nonceHelper = new NonceHelper();
     }
+
+    /**
+     * Support generation of 899 different nonce for the same millisecond precision
+     */
     @Override
     public String getNewNonce() {
-        return  Long.toString(Instant.now().toEpochMilli()) +
-                nonceHelper.getUnique3Digits();
+        final String nonce = Long.toString(Instant.now().toEpochMilli())
+                             + nonceHelper.getUnique3Digits();
+        log.info("generating new nonce: {}", nonce);
+        return nonce;
     }
 
     @Override

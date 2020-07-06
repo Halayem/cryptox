@@ -2,11 +2,13 @@ package fr.enix.exchanges.model.ws.request;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
-@Builder
+@Builder()
 @Getter
+@Slf4j
 public class AddOrderRequest {
 
     private String nonce;
@@ -17,11 +19,17 @@ public class AddOrderRequest {
     private BigDecimal volume;
 
     public String getQueryParametersRepresentation() {
-        return new StringBuilder("nonce"    ).append("=").append(nonce      ).append("&")
-                         .append("pair"     ).append("=").append(pair       ).append("&")
-                         .append("type"     ).append("=").append(type       ).append("&")
-                         .append("ordertype").append("=").append(ordertype  ).append("&")
-                         .append("price"    ).append("=").append(price      ).append("&")
-                         .append("volume"   ).append("=").append(volume     ).toString();
+        StringBuilder stringBuilder = new StringBuilder("nonce"    ).append("=").append(nonce      ).append("&")
+                                                .append("pair"     ).append("=").append(pair       ).append("&")
+                                                .append("type"     ).append("=").append(type       ).append("&")
+                                                .append("ordertype").append("=").append(ordertype  ).append("&")
+                                                .append("volume"   ).append("=").append(volume     );
+
+        if ( price != null ) {
+            stringBuilder.append("&").append("price").append("=").append(price);
+        }
+
+        log.info("built add order request: {}", stringBuilder.toString());
+        return stringBuilder.toString();
     }
 }

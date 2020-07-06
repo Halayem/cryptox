@@ -14,7 +14,7 @@
       }
     },
     "bodyPatterns": [{
-      "matches": "nonce=[0-9]{16,16}&pair=XLTCZEUR&type=sell&ordertype=limit&price=40&volume=1"
+      "matches": "nonce=[0-9]{16,16}&pair=XLTCZEUR&type=sell&ordertype=limit&volume=1&price=40"
     }]
   },
   "response": {

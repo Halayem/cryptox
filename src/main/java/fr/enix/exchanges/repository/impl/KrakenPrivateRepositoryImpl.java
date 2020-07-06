@@ -111,6 +111,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
         if ( errorResponse.getError().size() > 0 ) {
+            log.error("received error message(s) from Kraken: {}, trying to throw the appropriate exception", errorResponse.getError());
             throw KrakenExceptionFactoryProvider.getFactory         (errorResponse.getError().get( 0 ))
                                                 .getKrakenException ();
         }

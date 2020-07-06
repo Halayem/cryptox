@@ -15,6 +15,10 @@ public class AddOrderInput {
     private AssetPair assetPair;
     private AddOrderType addOrderType;
     private OrderType orderType;
-    private BigDecimal price;
     private BigDecimal volume;
+
+    // in case of sell
+    private BigDecimal price;
+    // in case of buy, by default is zero and mean now
+    // private Long startTime;
 }

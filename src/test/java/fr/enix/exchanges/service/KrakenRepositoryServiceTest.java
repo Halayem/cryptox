@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class KrakenRepositoryServiceTest {
@@ -21,12 +22,14 @@ public class KrakenRepositoryServiceTest {
     }
 
     @Test
-    public void testGetNewNonce_run10Times_shouldGet10differentNonce() {
+    public void testGetNewNonce_shouldGenerate899DifferentNonce() {
+
         Set<String> nonces = new HashSet();
-        for( int i = 0 ; i < 10 ; i++ ) {
+        for ( int i = 0 ; i < 899 ; i++ ) {
             nonces.add(krakenRepositoryService.getNewNonce());
         }
 
-        assertEquals(10, nonces.size());
+        assertEquals(899, nonces.size());
     }
+
 }
