@@ -4,6 +4,7 @@ import fr.enix.common.service.KrakenRepositoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.util.UriUtils;
 
 import java.math.BigDecimal;
 
@@ -35,16 +36,19 @@ public class AddOrderRequestTest {
                                                                 )
                                                                 .build      ();
         assertEquals(
-                new StringBuilder("nonce"           ).append("=").append(nonce              ).append("&")
-                          .append("pair"            ).append("=").append("XLTCZEUR"         ).append("&")
-                          .append("type"            ).append("=").append("buy"              ).append("&")
-                          .append("ordertype"       ).append("=").append("limit"            ).append("&")
-                          .append("price"           ).append("=").append(40                 ).append("&")
-                          .append("volume"          ).append("=").append(1                  ).append("&")
-                          .append("leverage"        ).append("=").append("2:1"              ).append("&")
-                          .append("close[ordertype]").append("=").append("stop-loss-profit" ).append("&")
-                          .append("close[price]"    ).append("=").append("#5%"              ).append("&")
-                          .append("close[price2]"   ).append("=").append("#10"              ).toString(),
+                UriUtils.encodePath(
+                    new StringBuilder("nonce"           ).append("=").append(nonce              ).append("&")
+                              .append("pair"            ).append("=").append("XLTCZEUR"         ).append("&")
+                              .append("type"            ).append("=").append("buy"              ).append("&")
+                              .append("ordertype"       ).append("=").append("limit"            ).append("&")
+                              .append("price"           ).append("=").append(40                 ).append("&")
+                              .append("volume"          ).append("=").append(1                  ).append("&")
+                              .append("leverage"        ).append("=").append("2:1"              ).append("&")
+                              .append("close[ordertype]").append("=").append("stop-loss-profit" ).append("&")
+                              .append("close[price]"    ).append("=").append("#5%"              ).append("&")
+                              .append("close[price2]"   ).append("=").append("#10"              ).toString(),
+                            "UTF-8"
+                ),
                 addOrderRequest.getQueryParametersRepresentation()
 
 
