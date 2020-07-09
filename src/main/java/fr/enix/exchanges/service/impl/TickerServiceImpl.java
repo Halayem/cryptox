@@ -76,7 +76,8 @@ public class TickerServiceImpl implements TickerService {
                                                                         .build    ()
                                                  )
                                                  .addOrderType(AddOrderType.BUY)
-                                                 .orderType   (OrderType.MARKET)
+                                                 .orderType   (OrderType.LIMIT)
+                                                 .price       (tickerOutput.getBid().getPrice())
                                                  .volume      ( computeBuyVolume(availableAsset, tickerOutput.getBid().getPrice()))
                                                  .build()
                             )
@@ -118,7 +119,7 @@ public class TickerServiceImpl implements TickerService {
                                                  )
                                                  .addOrderType(AddOrderType.SELL)
                                                  .orderType   (OrderType.LIMIT)
-                                                 .price       (tickerOutput.getBid().getPrice())
+                                                 .price       (tickerOutput.getAsk().getPrice())
                                                  .volume      ( availableAsset.compareTo(LITECOIN_TRADING_VOLUME_UNIT) <= 0
                                                                 ? availableAsset
                                                                 : LITECOIN_TRADING_VOLUME_UNIT

@@ -11,7 +11,10 @@ public class TransactionDecisionServiceImpl implements TransactionDecisionServic
 
     @Override
     public Mono<Decision> getDecision(final MarketPriceHistory marketPriceHistory) {
-        if( marketPriceHistory.getCurrentMarketOffer() == null || marketPriceHistory.getPreviousMarketOffer() == null) {
+        if( marketPriceHistory.getCurrentMarketOffer()          == null ||
+            marketPriceHistory.getPreviousMarketOffer()         == null ||
+            compareCurrentAndPreviousPrice(marketPriceHistory)  == 0 ) {
+
             return Mono.just(Decision.DO_NOTHING);
         }
         return compareCurrentAndPreviousPrice(marketPriceHistory) < 0

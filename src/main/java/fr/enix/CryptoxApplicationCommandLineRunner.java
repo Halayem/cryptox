@@ -26,7 +26,33 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
         log.info("ready to run something on startup!");
     }
 
-    private void runBuyAddOrder() {
+    private void runBuyAddOrderWithStopLossProfit() {
+        exchangeService.addOrder(
+                AddOrderInput
+                        .builder   ()
+                        .assetPair (AssetPair
+                                .builder  ()
+                                .from     (XzAsset.XLTC)
+                                .to       (XzAsset.ZEUR)
+                                .build    ()
+                        )
+                        .addOrderType   (AddOrderType.BUY)
+                        .orderType      (OrderType.LIMIT)
+                        .price          (new BigDecimal("39.38"  ))
+                        .volume         (new BigDecimal(1   ))
+                        .leverage       ("2:1")
+                        .close          (AddOrderInput.Close.builder()
+                                                            .orderType(OrderType.STOP_LOSS_PROFIT_LIMIT)
+                                                            .stopLossPriceRelativePercentageDelta   ( 5  )
+                                                            .takeProfitPriceRelativeDelta           ( 1 )
+                                                            .build())
+                        .build()
+        ).subscribe(addOrderOutput -> {
+            log.info( "order placed, kraken response: {}", addOrderOutput );
+        });
+    }
+
+    private void runBuyAddOrderWithMarketOrderType() {
         exchangeService.addOrder(
                 AddOrderInput.builder        ()
                              .assetPair      (AssetPair.builder  ()

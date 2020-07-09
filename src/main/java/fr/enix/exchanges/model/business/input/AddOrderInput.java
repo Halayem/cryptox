@@ -12,13 +12,20 @@ import java.math.BigDecimal;
 @Getter
 public class AddOrderInput {
 
-    private AssetPair assetPair;
-    private AddOrderType addOrderType;
-    private OrderType orderType;
-    private BigDecimal volume;
+    private AssetPair       assetPair;
+    private AddOrderType    addOrderType;
+    private OrderType       orderType;
+    private BigDecimal      volume;
+    private BigDecimal      price;
+    private String          leverage;
+    private Close           close;
 
-    // in case of sell
-    private BigDecimal price;
-    // in case of buy, by default is zero and mean now
-    // private Long startTime;
+    @Builder
+    @Getter
+    public static class Close {
+        private OrderType   orderType;
+        private Integer     stopLossPriceRelativePercentageDelta;
+        private Integer     takeProfitPriceRelativeDelta;
+    }
+
 }
