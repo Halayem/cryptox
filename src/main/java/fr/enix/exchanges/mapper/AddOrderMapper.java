@@ -13,14 +13,30 @@ public class AddOrderMapper {
 
     public AddOrderRequest mapAddOrderBusinessToAddOrderRequest(final AddOrderInput addOrderInput,
                                                                 final String nonce) {
-        return AddOrderRequest.builder  ()
-                              .nonce    (nonce)
-                              .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
-                              .type     (addOrderInput.getAddOrderType().getValue())
-                              .ordertype(addOrderInput.getOrderType().getValue())
-                              .price    (addOrderInput.getPrice())
-                              .volume   (addOrderInput.getVolume())
-                              .build    ();
+        AddOrderRequest.AddOrderRequestBuilder addOrderRequestBuilder =
+                AddOrderRequest.builder  ()
+                               .nonce    (nonce)
+                               .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
+                               .type     (addOrderInput.getAddOrderType().getValue())
+                               .ordertype(addOrderInput.getOrderType().getValue())
+                               .volume   (addOrderInput.getVolume())
+                               .price    (addOrderInput.getPrice());
+
+        if ( addOrderInput.getLeverage() != null ) {
+            addOrderRequestBuilder.leverage(addOrderInput.getLeverage());
+        }
+
+        if ( addOrderInput.getClose() != null ) {
+            addOrderRequestBuilder.close(
+              AddOrderRequest.Close.builder     ()
+                                   .ordertype   (addOrderInput.getClose().getOrderType().getValue())
+                                   .price       ("#" + addOrderInput.getClose().getStopLossPriceRelativePercentageDelta() + "%")
+                                   .price2      ("#" + addOrderInput.getClose().getTakeProfitPriceRelativeDelta())
+                                   .build       ()
+            );
+        }
+
+        return addOrderRequestBuilder.build();
     }
 
     public AddOrderOutput mapAddOrderResponseToAddOrderOutput(final AddOrderResponse addOrderResponse) {

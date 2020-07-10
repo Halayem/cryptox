@@ -106,8 +106,10 @@ public class TickerMapperTest {
                                                           .b( Arrays.asList( "41.87000", "26",   "126.000" ))
                                                           .l( Arrays.asList( "41.71000", "41.46000" ))
                                                           .h( Arrays.asList( "42.33000", "42.81000" ))
+
                                                           .build()
                              )
+                            .assetPair("LTC/EUR")
                             .build();
     }
 

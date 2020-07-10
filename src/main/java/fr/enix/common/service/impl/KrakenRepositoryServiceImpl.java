@@ -3,29 +3,37 @@ package fr.enix.common.service.impl;
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.common.utils.cryptography.MacCryptographyUtils;
 import fr.enix.common.utils.cryptography.MessageDigestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.Random;
 
+@Slf4j
 public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
 
-    private final MessageDigestUtils messageDigestUtilsSha256;
-    private final MacCryptographyUtils macCryptographyUtilsHmacSha512;
-    private final Random random;
+    private final MessageDigestUtils    messageDigestUtilsSha256;
+    private final MacCryptographyUtils  macCryptographyUtilsHmacSha512;
+    private final NonceHelper           nonceHelper;
 
-    public KrakenRepositoryServiceImpl(final MessageDigestUtils messageDigestUtilsSha256,
-                                       final MacCryptographyUtils macCryptographyUtilsHmacSha512) {
-        this.messageDigestUtilsSha256 = messageDigestUtilsSha256;
+    public KrakenRepositoryServiceImpl(final MessageDigestUtils     messageDigestUtilsSha256,
+                                       final MacCryptographyUtils   macCryptographyUtilsHmacSha512) {
+
+        this.messageDigestUtilsSha256       = messageDigestUtilsSha256;
         this.macCryptographyUtilsHmacSha512 = macCryptographyUtilsHmacSha512;
-        this.random = new Random();
+        nonceHelper = new NonceHelper();
     }
+
+    /**
+     * Support generation of 899 different nonce for the same millisecond precision
+     */
     @Override
     public String getNewNonce() {
-        return  Long.toString(Instant.now().toEpochMilli()) +
-                ( random.nextInt(1000 - 101 ) + 100 );
+        final String nonce = Long.toString(Instant.now().toEpochMilli())
+                             + nonceHelper.getUnique3Digits();
+        log.info("generating new nonce: {}", nonce);
+        return nonce;
     }
 
     @Override
@@ -37,6 +45,16 @@ public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
                     messageDigestUtilsSha256.getDigest(nonce + postData)
                 )
             ));
+    }
+
+    private static class NonceHelper {
+        private static final int MIN = 100;
+        private static final int MAX = 1000;
+        private int i = MIN;
+        private synchronized int getUnique3Digits() {
+            if ( ++i == 1000 ) { i = 100; }
+            return i;
+        }
     }
 
 }

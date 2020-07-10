@@ -1,10 +1,12 @@
 package fr.enix.common.exception;
 
 import fr.enix.common.exception.eapi.*;
+import fr.enix.common.exception.egeneral.KrakenEgeneralInvalidArgumentsException;
 import fr.enix.common.exception.eorder.KrakenEorderPositionsLimitExceededException;
 import fr.enix.common.exception.eorder.KrakenEorderTradingAgreementRequiredException;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KrakenExceptionFactoryProviderTest {
@@ -87,6 +89,14 @@ public class KrakenExceptionFactoryProviderTest {
         } catch (KrakenException e){
             assertTrue(e instanceof KrakenEapiFeatureDisabledException);
         }
+    }
+
+    @Test
+    public void testKrakenEgeneralInvalidArgumentsException() {
+        assertThrows(KrakenEgeneralInvalidArgumentsException.class, () -> {
+            throw KrakenExceptionFactoryProvider.getFactory         ("EGeneral:Invalid arguments:price")
+                                                .getKrakenException ();
+        });
     }
 
     @Test
