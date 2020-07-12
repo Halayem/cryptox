@@ -3,6 +3,7 @@ package fr.enix.exchanges.service;
 import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.repository.Decision;
 import fr.enix.exchanges.model.ws.AssetPair;
+import fr.enix.exchanges.service.impl.TransactionDecisionServiceImpl;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TransactionDecisionServiceTest {
 
-    @Autowired private TransactionDecisionService   transactionDecisionService;
-    @Autowired private MarketOfferService           marketOfferService;
+    @Autowired private MarketOfferService marketOfferService;
 
+    private TransactionDecisionService transactionDecisionService = new TransactionDecisionServiceImpl();
     private final AssetPair assetPair = AssetPair.builder().from(Asset.LTC).to(Asset.EUR).build();
 
     private final BigDecimal firstMarketOfferPrice  = new BigDecimal("44.28");
