@@ -24,6 +24,7 @@ public class MarketOfferServiceImpl implements MarketOfferService {
 
     @Override
     public Mono<MarketPriceHistory> saveNewMarketPrice(final AssetPair assetPair, final BigDecimal price) {
+        log.info("market place, new price will be saved: {} {}", price, assetPair);
         return marketOfferHistoryRepository.saveNewMarketOffer(assetPair, price);
     }
 
