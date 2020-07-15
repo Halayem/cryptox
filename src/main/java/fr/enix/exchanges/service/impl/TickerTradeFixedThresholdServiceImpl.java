@@ -1,5 +1,6 @@
 package fr.enix.exchanges.service.impl;
 
+import fr.enix.exchanges.constant.AssetMinimumOrder;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.business.output.TickerOutput;
@@ -103,8 +104,12 @@ public class TickerTradeFixedThresholdServiceImpl implements TickerService {
     }
 
     private boolean canPlaceSellOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(ZERO) <= 0 ) {
-            log.info( "can not place sell order, available asset: {} {}", availableAsset, Asset.LTC );
+        if ( availableAsset.compareTo(AssetMinimumOrder.LITECOIN) <= 0 ) {
+            log.info
+            (
+                "can not place sell order, available asset: {} {}, minimum order amount is: {} {}",
+                availableAsset, Asset.LTC, AssetMinimumOrder.LITECOIN, Asset.LTC
+            );
             return false;
         }
         log.info("can place sell order, available asset: {} {}", availableAsset, Asset.LTC);
@@ -112,8 +117,12 @@ public class TickerTradeFixedThresholdServiceImpl implements TickerService {
     }
 
     private boolean canPlaceBuyOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(ZERO) <= 0 ) {
-            log.info( "can not place buy order, available asset: {} {}", availableAsset, Asset.EUR );
+        if ( availableAsset.compareTo(AssetMinimumOrder.EURO) <= 0 ) {
+            log.info
+            (
+                "can not place buy order, available asset: {} {}, minimum order amount is: {} {}",
+                availableAsset, Asset.EUR, AssetMinimumOrder.EURO, Asset.EUR
+            );
             return false;
         }
         log.info("can place buy order, available asset: {} {}", availableAsset, Asset.EUR);
