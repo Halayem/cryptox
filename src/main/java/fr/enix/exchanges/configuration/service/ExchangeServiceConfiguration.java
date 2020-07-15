@@ -33,8 +33,8 @@ public class ExchangeServiceConfiguration {
     }
 
     @Bean
-    public TransactionDecisionService transactionDecisionService() {
-        return new TransactionDecisionTradeFixedThresholdServiceImpl();
+    public TransactionDecisionService transactionDecisionService(final FixedThresholdRepository fixedThresholdRepository) {
+        return new TransactionDecisionTradeFixedThresholdServiceImpl(fixedThresholdRepository);
     }
 
     @Bean
