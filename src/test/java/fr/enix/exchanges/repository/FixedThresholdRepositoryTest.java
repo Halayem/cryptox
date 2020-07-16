@@ -1,6 +1,8 @@
 package fr.enix.exchanges.repository;
 
 import fr.enix.exchanges.model.repository.Threshold;
+import fr.enix.exchanges.service.impl.TransactionDecisionTradeFixedThresholdServiceImplTest;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -15,12 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Slf4j
 public class FixedThresholdRepositoryTest {
 
     @Autowired private FixedThresholdRepository fixedThresholdRepository;
 
     @Test
-    @Order(0)
+    @Order(1)
     public void testDefaultThresholdValueDefinedOnApplicationStartup() {
         StepVerifier.create(fixedThresholdRepository.getThresholds())
                     .consumeNextWith(threshold -> {
@@ -31,7 +34,7 @@ public class FixedThresholdRepositoryTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     public void testUpdateThresholds() {
         fixedThresholdRepository.updateThresholds(
                 Threshold.builder()
@@ -45,5 +48,26 @@ public class FixedThresholdRepositoryTest {
                         assertEquals(new BigDecimal("38.68892"), threshold.getThresholdToSell());
                     })
                     .verifyComplete();
+    }
+
+    private static Threshold initialThreshold;
+
+    @Test
+    @Order(0)
+    public void setUp_saveInitialThreshold() {
+        StepVerifier.create(fixedThresholdRepository.getThresholds())
+                .consumeNextWith(threshold -> {
+                    FixedThresholdRepositoryTest.initialThreshold = threshold;
+                    assertNotNull(FixedThresholdRepositoryTest.initialThreshold);
+                })
+                .verifyComplete();
+
+    }
+
+    @Test
+    @Order(999)
+    public void tearDown_restoreInitialThreshold() {
+        fixedThresholdRepository.updateThresholds(initialThreshold);
+        log.info("initial threshold restored: {}", initialThreshold);
     }
 }
