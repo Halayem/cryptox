@@ -2,7 +2,6 @@ package fr.enix.exchanges.service.impl;
 
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.MarketOfferService;
-import fr.enix.exchanges.service.TickerService;
 import fr.enix.exchanges.service.TransactionDecisionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

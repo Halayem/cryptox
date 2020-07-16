@@ -4,6 +4,7 @@
 package fr.enix.exchanges.service.impl;
 
 
+import fr.enix.exchanges.constant.AssetMinimumOrder;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.business.output.TickerOutput;
@@ -32,10 +33,7 @@ public class TickerServiceImpl implements TickerService {
     private final TransactionDecisionService    transactionDecisionService;
 
     private final BigDecimal LITECOIN_TRADING_VOLUME_UNIT   = new BigDecimal("0.5");
-    private final BigDecimal LITECOIN_MIN_ORDER             = new BigDecimal("0.1");
-
-    private final BigDecimal EURO_TRADING_VOLUME_UNIT   = new BigDecimal("20");
-    private final BigDecimal EURO_MIN_ORDER             = new BigDecimal("10");
+    private final BigDecimal EURO_TRADING_VOLUME_UNIT       = new BigDecimal("20");
 
     private final int           DIVIDE_SCALE    = 8;
     private final RoundingMode  ROUNDING_MODE   = RoundingMode.DOWN;
@@ -91,11 +89,11 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private boolean canPlaceBuyOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(EURO_MIN_ORDER) <= 0 ) {
+        if ( availableAsset.compareTo(AssetMinimumOrder.EURO) <= 0 ) {
             log.info
             (
                 "can not place buy order, available asset: {} {}, minimum order amount is: {} {}",
-                 availableAsset, Asset.EUR, EURO_MIN_ORDER, Asset.EUR
+                 availableAsset, Asset.EUR, AssetMinimumOrder.EURO, Asset.EUR
             );
             return false;
         }
@@ -130,10 +128,12 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private boolean canPlaceSellOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(LITECOIN_MIN_ORDER) <= 0 ) {
-            log.info(
+        if ( availableAsset.compareTo(AssetMinimumOrder.LITECOIN) <= 0 ) {
+            log.info
+            (
                 "can not place sell order, available asset: {} {}, minimum order amount is: {} {}",
-                availableAsset, Asset.LTC, LITECOIN_MIN_ORDER, Asset.LTC);
+                availableAsset, Asset.LTC, AssetMinimumOrder.LITECOIN, Asset.LTC
+            );
             return false;
         }
         log.info("can place sell order, available asset: {} {}", availableAsset, Asset.LTC);
