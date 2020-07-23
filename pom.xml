@@ -19,6 +19,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <spring-boot-admin.version>2.2.3</spring-boot-admin.version>
+    <spring-boot-admin-server-ui-login.version>1.5.7</spring-boot-admin-server-ui-login.version>
     <swagger-annotations.version>1.6.2</swagger-annotations.version>
     <commons-lang3.version>3.10</commons-lang3.version>
     <wiremock.version>2.26.3</wiremock.version>
@@ -28,6 +30,25 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-server</artifactId>
+      <version>${spring-boot-admin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-client</artifactId>
+      <version>${spring-boot-admin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-server-ui-login</artifactId>
+      <version>${spring-boot-admin-server-ui-login.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
