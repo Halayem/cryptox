@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @EnableConfigurationProperties( CryptoxControllerProperties.class )
@@ -40,8 +42,10 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
     private final Long zero = 0L;
     private void startLitecoinToEuroTickerWebSocketClient(final Long blockDuration) {
 
+
         if (zero.equals(blockDuration)) {
-            startLitecoinToEuroWebSocketCLientInfinite();
+            log.info("web socket for litecoin update price will be established in 10 seconds !");
+            Executors.newSingleThreadScheduledExecutor().schedule(this::startLitecoinToEuroWebSocketCLientInfinite, 10L, TimeUnit.SECONDS);
         } else {
             startLitecoinToEuroWebSocketCLientWithDuration(blockDuration);
         }

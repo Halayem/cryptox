@@ -1,11 +1,11 @@
 package fr.enix;
 
-import lombok.extern.slf4j.Slf4j;
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Slf4j
 @SpringBootApplication
+@EnableAdminServer
 public class CryptoxApplication {
 
     public static void main( String[] args ) {
