@@ -51,9 +51,16 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
         }
     }
 
+    private final Long oneLoopTimeout = 3600L;
     private void startLitecoinToEuroWebSocketCLientInfinite() {
         log.info("starting ticker litecoin to euro websocket client for infinite...");
-        litecoinToEuroTickerWebSocketClient.block();
+        try {
+            litecoinToEuroTickerWebSocketClient.block(Duration.ofSeconds(oneLoopTimeout));
+        }
+        catch (RuntimeException e) {
+            log.warn( "it seems that blocking one loop timeout of {} seconds was reached", oneLoopTimeout );
+            this.startLitecoinToEuroWebSocketCLientInfinite();
+        }
     }
 
     private void startLitecoinToEuroWebSocketCLientWithDuration(final Long durationInSeconds) {

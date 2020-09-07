@@ -40,9 +40,11 @@ public class AddOrderRequest {
                                                 .append("pair"     ).append("=").append(pair        ).append("&")
                                                 .append("type"     ).append("=").append(type        ).append("&")
                                                 .append("ordertype").append("=").append(ordertype   ).append("&")
-                                                .append("price"    ).append("=").append(price       ).append("&")
                                                 .append("volume"   ).append("=").append(volume      );
 
+        if ( price != null ) {
+            stringBuilder.append("&").append("price").append("=").append(price);
+        }
         if ( leverage != null ) {
             stringBuilder.append("&").append("leverage").append("=").append(leverage);
         }

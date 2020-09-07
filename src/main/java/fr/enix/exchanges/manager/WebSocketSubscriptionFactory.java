@@ -12,7 +12,7 @@ public class WebSocketSubscriptionFactory {
     private final TickerResponseManager tickerResponseManager;
 
     public WebSocketSubscriptionManager getWebSocketSubscriptionManager(final String payload) {
-
+        log.info("string payload, before calling the adequate manager: {}", payload);
         if ( payload.indexOf("connectionID" ) == 2) { return connectionManager; }
         if ( payload.indexOf("channelID"    ) == 2) { return channelManager;    }
 

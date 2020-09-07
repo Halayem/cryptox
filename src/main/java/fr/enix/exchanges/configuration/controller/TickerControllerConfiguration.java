@@ -33,6 +33,7 @@ public class TickerControllerConfiguration {
     public Mono<Void> litecoinToEuroTickerWebSocketClient(final ExchangeProperties  exchangeProperties,
                                                           final String              litecoinToEuroTickerSubscriptionMessage,
                                                           final Consumer<String>    litecoinToEuroTickerConsumer) {
+
         return
             new ReactorNettyWebSocketClient()
                 .execute(

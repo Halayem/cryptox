@@ -25,14 +25,14 @@ public class TickerControllerConfigurationHelper {
     protected WebSocketHandler getNewWebSocketHandler(final String subscriptionMessage,
                                                       final Consumer consumer) {
         return  webSocketSession ->
-                    webSocketSession.send(
-                        Mono.just       ( webSocketSession.textMessage(subscriptionMessage)))
-                            .thenMany   (
-                                webSocketSession.receive  ()
-                                        .map      (WebSocketMessage::getPayloadAsText)
-                                        .filter   ( payload -> payload.contains("heartbeat") == false )
-                                        .doOnNext ( consumer )
-                        )
-                        .then();
+                    webSocketSession.send       (Mono.just( webSocketSession.textMessage(subscriptionMessage) ))
+
+                                    .thenMany   (
+                                        webSocketSession.receive  ()
+                                                .map      (WebSocketMessage::getPayloadAsText)
+                                                .filter   ( payload -> payload.contains("heartbeat") == false )
+                                                .doOnNext ( consumer )
+                                    )
+                                    .then();
     }
 }
