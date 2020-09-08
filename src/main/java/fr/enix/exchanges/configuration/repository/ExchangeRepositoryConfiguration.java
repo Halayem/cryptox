@@ -2,6 +2,8 @@ package fr.enix.exchanges.configuration.repository;
 
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.model.ExchangeProperties;
+import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
+import fr.enix.exchanges.repository.impl.AssetOrderIntervalRepositoryKrakenImpl;
 import fr.enix.exchanges.repository.impl.MarketOfferHistoryRepositoryImpl;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
@@ -39,6 +41,11 @@ public class ExchangeRepositoryConfiguration {
     @Bean
     public MarketOfferHistoryRepository marketOfferHistoryRepository() {
         return new MarketOfferHistoryRepositoryImpl();
+    }
+
+    @Bean
+    public AssetOrderIntervalRepository assetOrderIntervalRepository() {
+        return new AssetOrderIntervalRepositoryKrakenImpl();
     }
 
 }

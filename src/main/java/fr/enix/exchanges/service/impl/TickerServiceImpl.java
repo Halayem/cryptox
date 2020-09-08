@@ -3,8 +3,6 @@
  */
 package fr.enix.exchanges.service.impl;
 
-
-import fr.enix.exchanges.constant.AssetMinimumOrder;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.business.output.TickerOutput;
@@ -13,6 +11,7 @@ import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.parameters.OrderType;
 import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.exchanges.model.websocket.AssetPair;
+import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.TickerService;
@@ -31,6 +30,8 @@ public class TickerServiceImpl implements TickerService {
     private final ExchangeService               exchangeService;
     private final MarketOfferService            marketOfferService;
     private final TransactionDecisionService    transactionDecisionService;
+
+    private final AssetOrderIntervalRepository assetOrderIntervalRepository;
 
     private final BigDecimal LITECOIN_TRADING_VOLUME_UNIT   = new BigDecimal("0.5");
     private final BigDecimal EURO_TRADING_VOLUME_UNIT       = new BigDecimal("20");
@@ -89,11 +90,11 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private boolean canPlaceBuyOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(AssetMinimumOrder.EURO) <= 0 ) {
+        if ( availableAsset.compareTo(assetOrderIntervalRepository.getMinimumEuroOrder()) <= 0 ) {
             log.info
             (
                 "can not place buy order, available asset: {} {}, minimum order amount is: {} {}",
-                 availableAsset, Asset.EUR, AssetMinimumOrder.EURO, Asset.EUR
+                 availableAsset, Asset.EUR, assetOrderIntervalRepository.getMinimumEuroOrder(), Asset.EUR
             );
             return false;
         }
@@ -128,11 +129,11 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private boolean canPlaceSellOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(AssetMinimumOrder.LITECOIN) <= 0 ) {
+        if ( availableAsset.compareTo(assetOrderIntervalRepository.getMinimumLitecoinOrder()) <= 0 ) {
             log.info
             (
                 "can not place sell order, available asset: {} {}, minimum order amount is: {} {}",
-                availableAsset, Asset.LTC, AssetMinimumOrder.LITECOIN, Asset.LTC
+                availableAsset, Asset.LTC, assetOrderIntervalRepository.getMinimumLitecoinOrder(), Asset.LTC
             );
             return false;
         }
