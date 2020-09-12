@@ -5,18 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.exchanges.model.websocket.request.TickerRequest;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class TickerControllerConfigurationHelper {
 
-    protected String getNewTickerSubscriptionMessage(final String assetPair) throws JsonProcessingException {
+    protected String getNewTickerSubscriptionMessage(final Flux<String> assetPairs) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(
                 TickerRequest.builder  ()
                         .event         ("subscribe")
-                        .pair          ( Arrays.asList( assetPair ) )
+                        .pair          ( assetPairs.collectList().block() )
                         .subscription  ( TickerRequest.Subscription.builder().name("ticker").build() )
                         .build         ()
         );

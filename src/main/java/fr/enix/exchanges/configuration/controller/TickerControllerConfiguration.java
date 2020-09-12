@@ -6,6 +6,7 @@ import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.ws.AssetPair;
 import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.mapper.AssetMapper;
+import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClien
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -22,11 +24,14 @@ import java.util.function.Consumer;
 public class TickerControllerConfiguration {
 
     private final TickerControllerConfigurationHelper tickerControllerConfigurationHelper;
+    private final ApplicationTradingConfigurationService applicationTradingConfigurationService;
     private final AssetMapper assetMapper;
 
-    public TickerControllerConfiguration(final AssetMapper assetMapper) {
+    public TickerControllerConfiguration(final AssetMapper assetMapper,
+                                         final ApplicationTradingConfigurationService applicationTradingConfigurationService) {
         this.assetMapper = assetMapper;
         this.tickerControllerConfigurationHelper = new TickerControllerConfigurationHelper();
+        this.applicationTradingConfigurationService = applicationTradingConfigurationService;
     }
 
     @Bean
@@ -61,14 +66,10 @@ public class TickerControllerConfiguration {
     }
 
     @Bean
-    public String litecoinToEuroTickerSubscriptionMessage() throws JsonProcessingException {
+    public String litecoinToEuroTickerSubscriptionMessage(List<String> assetPairs) throws JsonProcessingException {
         return tickerControllerConfigurationHelper.getNewTickerSubscriptionMessage(
-            assetMapper.mapAssetPairForWebSocket(
-                AssetPair.builder   ()
-                         .from      (Asset.LTC)
-                         .to        (Asset.EUR)
-                         .build     ()
-            )
+                applicationTradingConfigurationService
+                .getAssetPairsToSubscribe()
         );
     }
 

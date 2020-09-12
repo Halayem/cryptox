@@ -2,18 +2,17 @@ package fr.enix.exchanges.configuration.service;
 
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.OpenOrdersMapper;
+import fr.enix.exchanges.model.repository.ApplicationTradingConfigurationRepository;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
-import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.exchanges.service.MarketOfferService;
-import fr.enix.exchanges.service.TransactionDecisionService;
-import fr.enix.exchanges.service.impl.ExchangeServiceImpl;
-import fr.enix.exchanges.service.impl.MarketOfferServiceImpl;
-import fr.enix.exchanges.service.impl.TransactionDecisionServiceImpl;
+import fr.enix.exchanges.service.*;
+import fr.enix.exchanges.service.impl.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Slf4j
 public class ExchangeServiceConfiguration {
 
     @Bean
@@ -31,5 +30,19 @@ public class ExchangeServiceConfiguration {
     @Bean
     public TransactionDecisionService transactionDecisionService() {
         return new TransactionDecisionServiceImpl();
+    }
+
+    @Bean
+    public CurrenciesRepresentationService currenciesRepresentationService() {
+        log.info("kraken currencies representation service bean will be created");
+        return new KrakenCurrenciesRepresentationServiceImpl();
+    }
+
+    @Bean
+    public ApplicationTradingConfigurationService applicationTradingConfigurationService(final ApplicationTradingConfigurationRepository applicationTradingConfigurationRepository,
+                                                                                         final CurrenciesRepresentationService currenciesRepresentationService) {
+        log.info("kraken trading configuration service bean will be created");
+        return new KrakenTradingConfigurationServiceImpl(applicationTradingConfigurationRepository,
+                                                         currenciesRepresentationService);
     }
 }

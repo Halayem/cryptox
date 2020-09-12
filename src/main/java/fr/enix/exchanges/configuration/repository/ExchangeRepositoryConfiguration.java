@@ -1,14 +1,14 @@
 package fr.enix.exchanges.configuration.repository;
 
 import fr.enix.common.service.KrakenRepositoryService;
+import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
-import fr.enix.exchanges.repository.impl.AssetOrderIntervalRepositoryKrakenImpl;
-import fr.enix.exchanges.repository.impl.MarketOfferHistoryRepositoryImpl;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
+import fr.enix.exchanges.repository.impl.AssetOrderIntervalRepositoryKrakenImpl;
 import fr.enix.exchanges.repository.impl.KrakenPrivateRepositoryImpl;
-import fr.enix.exchanges.mapper.AddOrderMapper;
+import fr.enix.exchanges.repository.impl.MarketOfferHistoryRepositoryImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

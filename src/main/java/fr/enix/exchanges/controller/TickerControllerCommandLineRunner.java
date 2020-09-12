@@ -1,76 +1,39 @@
 package fr.enix.exchanges.controller;
 
-import fr.enix.exchanges.model.CryptoxControllerProperties;
-import fr.enix.exchanges.model.websocket.AssetPair;
-import fr.enix.exchanges.model.parameters.XzAsset;
 import fr.enix.exchanges.mapper.AssetMapper;
+import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 @Component
-@EnableConfigurationProperties( CryptoxControllerProperties.class )
 @Slf4j
 @AllArgsConstructor
 public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private final Mono<Void> litecoinToEuroTickerWebSocketClient;
-    private final CryptoxControllerProperties cryptoxControllerProperties;
+    private final ApplicationTradingConfigurationService applicationTradingConfigurationService;
     private final AssetMapper assetMapper;
 
     @Override
     public void run(String... args) throws Exception {
-        Mono.just       (cryptoxControllerProperties.getTickerByAssetPair(
-                            assetMapper.mapAssetPairForWebSocket(
-                                AssetPair.builder   ()
-                                         .from      (XzAsset.XLTC)
-                                         .to        (XzAsset.ZEUR)
-                                         .build     ()
-                            )
-                        ))
-            .filter     (ticker -> ticker.isRun())
-            .subscribe  (ticker -> startLitecoinToEuroTickerWebSocketClient(ticker.getBlock()));
+        applicationTradingConfigurationService
+        .getAssetPairsToSubscribe()
+        .subscribe      (assetPair -> startLitecoinToEuroWebSocketCLientInfinite(assetPair));
     }
 
-    private final Long zero = 0L;
-    private void startLitecoinToEuroTickerWebSocketClient(final Long blockDuration) {
-
-
-        if (zero.equals(blockDuration)) {
-            log.info("web socket for litecoin update price will be established in 10 seconds !");
-            Executors.newSingleThreadScheduledExecutor().schedule(this::startLitecoinToEuroWebSocketCLientInfinite, 10L, TimeUnit.SECONDS);
-        } else {
-            startLitecoinToEuroWebSocketCLientWithDuration(blockDuration);
-        }
-    }
-
-    private final Long oneLoopTimeout = 3600L;
-    private void startLitecoinToEuroWebSocketCLientInfinite() {
-        log.info("starting ticker litecoin to euro websocket client for infinite...");
+    private void startLitecoinToEuroWebSocketCLientInfinite(final String assetPair) {
+        log.info("will establishing a new web socket communication to receive real time market place price update for asset pair: {}", assetPair);
+        log.warn("web socket communication is hard coded disabled ");
+        /*
         try {
-            litecoinToEuroTickerWebSocketClient.block(Duration.ofSeconds(oneLoopTimeout));
+            litecoinToEuroTickerWebSocketClient.block();
         }
         catch (RuntimeException e) {
-            log.warn( "it seems that blocking one loop timeout of {} seconds was reached", oneLoopTimeout );
-            this.startLitecoinToEuroWebSocketCLientInfinite();
+            log.error( "web socket was not created or was interrupted for this asset pair: {}, error message: {} ", assetPair, e.getMessage() );
         }
-    }
-
-    private void startLitecoinToEuroWebSocketCLientWithDuration(final Long durationInSeconds) {
-        log.info("starting ticker litecoin to euro websocket client for {} seconds...", durationInSeconds);
-        try {
-            litecoinToEuroTickerWebSocketClient.block(Duration.ofSeconds(durationInSeconds));
-        }
-        catch (RuntimeException e) {
-            log.warn( "it seems that blocking timeout of {} seconds was reached", durationInSeconds );
-        }
-
+        */
     }
 }
