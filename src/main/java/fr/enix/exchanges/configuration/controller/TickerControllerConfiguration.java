@@ -34,6 +34,7 @@ public class TickerControllerConfiguration {
         this.applicationTradingConfigurationService = applicationTradingConfigurationService;
     }
 
+    /*
     @Bean
     public Mono<Void> litecoinToEuroTickerWebSocketClient(final ExchangeProperties  exchangeProperties,
                                                           final String              litecoinToEuroTickerSubscriptionMessage,
@@ -72,5 +73,7 @@ public class TickerControllerConfiguration {
                 .getAssetPairsToSubscribe()
         );
     }
+
+     */
 
 }

@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
-    private final Mono<Void> litecoinToEuroTickerWebSocketClient;
+   // private final Mono<Void> litecoinToEuroTickerWebSocketClient;
     private final ApplicationTradingConfigurationService applicationTradingConfigurationService;
     private final AssetMapper assetMapper;
 

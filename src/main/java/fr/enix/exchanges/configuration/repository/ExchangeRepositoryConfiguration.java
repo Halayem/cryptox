@@ -3,9 +3,12 @@ package fr.enix.exchanges.configuration.repository;
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.ExchangeProperties;
+import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
+import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
+import fr.enix.exchanges.repository.impl.ApplicationCurrencyTradingsParameterRepositoryImpl;
 import fr.enix.exchanges.repository.impl.AssetOrderIntervalRepositoryKrakenImpl;
 import fr.enix.exchanges.repository.impl.KrakenPrivateRepositoryImpl;
 import fr.enix.exchanges.repository.impl.MarketOfferHistoryRepositoryImpl;
@@ -17,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@EnableConfigurationProperties( ExchangeProperties.class )
+@EnableConfigurationProperties( { ExchangeProperties.class, ApplicationCurrencyTradingsParameter.class } )
 public class ExchangeRepositoryConfiguration {
 
     @Bean
@@ -48,4 +51,8 @@ public class ExchangeRepositoryConfiguration {
         return new AssetOrderIntervalRepositoryKrakenImpl();
     }
 
+    @Bean
+    public ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository(final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter) {
+        return new ApplicationCurrencyTradingsParameterRepositoryImpl(applicationCurrencyTradingsParameter);
+    }
 }
