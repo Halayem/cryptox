@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AddOrderRequestTest {
+class AddOrderRequestTest {
 
     @Autowired KrakenRepositoryService krakenRepositoryService;
 
     @Test
-    public void testGetQueryParametersRepresentation_shouldBuildLeverageAndClose() {
+    void testGetQueryParametersRepresentation_shouldBuildLeverageAndClose() {
         final String            nonce           = krakenRepositoryService.getNewNonce();
         final AddOrderRequest   addOrderRequest = AddOrderRequest
                                                                 .builder    ()

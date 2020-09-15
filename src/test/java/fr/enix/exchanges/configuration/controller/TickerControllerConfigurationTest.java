@@ -16,7 +16,7 @@ public class TickerControllerConfigurationTest {
         assertEquals(
         "{" +
                     "\"event\":\"subscribe\","                              +
-                    "\"pair\":[\"XLTC/ZEUR\",\"XXBT/ZEUR\",\"XXRP/ZEUR\"]," +
+                    "\"pair\":[\"LTC/EUR\",\"XBT/EUR\",\"XRP/EUR\"]," +
                     "\"subscription\":{\"name\":\"ticker\"}"                +
                 "}",
                 tickerSubscriptionMessage

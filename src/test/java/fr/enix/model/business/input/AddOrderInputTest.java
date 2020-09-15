@@ -4,11 +4,10 @@ import fr.enix.exchanges.model.business.input.AddOrderInput;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-public class AddOrderInputTest {
+ class AddOrderInputTest {
 
     @Test
-    public void testPriceShouldBeNullWhenNotBuilt() {
+    void testPriceShouldBeNullWhenNotBuilt() {
         assertNull(AddOrderInput.builder().build().getPrice());
     }
 }

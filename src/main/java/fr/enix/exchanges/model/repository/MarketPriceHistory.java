@@ -1,6 +1,5 @@
 package fr.enix.exchanges.model.repository;
 
-import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.ws.AssetPair;
 import lombok.*;
 

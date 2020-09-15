@@ -19,7 +19,7 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        final Long delayedDuration  = 10L;
+        final long delayedDuration  = 10L;
         final TimeUnit timeUnit     = TimeUnit.SECONDS;
 
         log.info("scheduled single thread running, runnable: startTickerWebSocketClient, delayed: {} {}", delayedDuration, timeUnit);
@@ -28,8 +28,8 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private void startTickerWebSocketClient() {
         log.info("will establishing a new web socket communication to receive real time market place price update");
-        //tickerWebSocketClient.block(Duration.ofSeconds(5L));
-        tickerWebSocketClient.block();
+        tickerWebSocketClient.block(Duration.ofSeconds(5L));
+        //tickerWebSocketClient.block();
     }
 
 }

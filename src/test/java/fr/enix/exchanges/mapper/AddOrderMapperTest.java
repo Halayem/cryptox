@@ -16,13 +16,13 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AddOrderMapperTest {
+class AddOrderMapperTest {
 
     @Autowired AddOrderMapper           addOrderMapper;
     @Autowired KrakenRepositoryService  krakenRepositoryService;
 
     @Test
-    public void testAddOrderMapper_leverageAndCloseShouldBeNull() {
+    void testAddOrderMapper_leverageAndCloseShouldBeNull() {
         final String nonce = krakenRepositoryService.getNewNonce();
         assertEquals(
                 AddOrderRequest
@@ -54,7 +54,7 @@ public class AddOrderMapperTest {
     }
 
     @Test
-    public void testAddOrderMapper_leverageAndCloseShouldBeSet() {
+    void testAddOrderMapper_leverageAndCloseShouldBeSet() {
         final String nonce = krakenRepositoryService.getNewNonce();
         assertEquals(
                 AddOrderRequest

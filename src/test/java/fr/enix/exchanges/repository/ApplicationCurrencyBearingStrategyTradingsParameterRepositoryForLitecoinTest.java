@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryForLitecoinTest {
+class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryForLitecoinTest {
 
 
     @Autowired
@@ -17,7 +17,7 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryForLit
     private final String applicationAssetPairToTest = "litecoin-euro";
 
     @Test
-    public void testGetGap() {
+    void testGetGap() {
         StepVerifier
                 .create(applicationBearingStrategyParameterRepository.getGapByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(gap -> {
@@ -27,7 +27,7 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryForLit
     }
 
     @Test
-    public void testGetAmountToSell() {
+    void testGetAmountToSell() {
         StepVerifier
                 .create(applicationBearingStrategyParameterRepository.getAmountToSellByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(amountToSell -> {
@@ -37,7 +37,7 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryForLit
     }
 
     @Test
-    public void testGetAmountToBuy() {
+    void testGetAmountToBuy() {
         StepVerifier
                 .create(applicationBearingStrategyParameterRepository.getAmountToBuyByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(amountToBuy -> {

@@ -10,14 +10,14 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinTest {
+class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinTest {
 
     @Autowired
     private ApplicationThresholdStrategyParameterRepository applicationThresholdStrategyParameterRepository;
     private final String applicationAssetPairToTest = "bitcoin-euro";
 
     @Test
-    public void testGetTriggerPriceToBuy() {
+    void testGetTriggerPriceToBuy() {
         StepVerifier
                 .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToBuyByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(triggerPriceToBuy -> {
@@ -27,7 +27,7 @@ public class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForB
     }
 
     @Test
-    public void testGetTriggerAmountToBuy() {
+    void testGetTriggerAmountToBuy() {
         StepVerifier
                 .create(applicationThresholdStrategyParameterRepository.getAmountToBuyByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(amountToBuy -> {
@@ -37,7 +37,7 @@ public class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForB
     }
 
     @Test
-    public void testGetTriggerPriceToSell() {
+    void testGetTriggerPriceToSell() {
         StepVerifier
                 .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToSellByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(triggerPriceToSell -> {
@@ -47,7 +47,7 @@ public class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForB
     }
 
     @Test
-    public void testGetTriggerAmountToSell() {
+    void testGetTriggerAmountToSell() {
         StepVerifier
                 .create(applicationThresholdStrategyParameterRepository.getAmountToSellByApplicationAssetPair(applicationAssetPairToTest))
                 .consumeNextWith(amountToSell -> {
