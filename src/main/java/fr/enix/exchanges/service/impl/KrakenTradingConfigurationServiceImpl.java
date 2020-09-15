@@ -9,22 +9,15 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 public class KrakenTradingConfigurationServiceImpl implements ApplicationTradingConfigurationService {
 
-    private final ApplicationCurrencyTradingsParameterRepository applicationTradingConfigurationRepository;
     private final CurrenciesRepresentationService currenciesRepresentationService;
+    private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     @Override
-    public Flux<String> getAssetPairsToSubscribe() {
-        return Flux.empty();
-        /*
-        return  Flux.fromIterable(
-                    applicationTradingConfigurationRepository
-                    .getCurrencyTradingParameters()
-                    .keySet ()
-                    .stream ()
-                    .map    (currenciesRepresentationService::getAssetPairCurrencyRepresentationOf)
-                    .collect(Collectors.toList())
+    public Flux<String> getEnabledAssetPairsForTrading() {
+        return applicationCurrencyTradingsParameterRepository
+                .getEnabledCurrenciesForTrading()
+                .map(applicationCurrencyRepresentation ->
+                        currenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair(applicationCurrencyRepresentation)
                 );
-
-         */
     }
 }

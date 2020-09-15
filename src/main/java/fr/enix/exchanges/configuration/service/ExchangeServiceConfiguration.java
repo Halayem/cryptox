@@ -39,10 +39,9 @@ public class ExchangeServiceConfiguration {
     }
 
     @Bean
-    public ApplicationTradingConfigurationService applicationTradingConfigurationService(final ApplicationCurrencyTradingsParameterRepository applicationTradingConfigurationRepository,
-                                                                                         final CurrenciesRepresentationService currenciesRepresentationService) {
+    public ApplicationTradingConfigurationService applicationTradingConfigurationService(final CurrenciesRepresentationService currenciesRepresentationService,
+                                                                                         final ApplicationCurrencyTradingsParameterRepository applicationTradingConfigurationRepository) {
         log.info("kraken trading configuration service bean will be created");
-        return new KrakenTradingConfigurationServiceImpl(applicationTradingConfigurationRepository,
-                                                         currenciesRepresentationService);
+        return new KrakenTradingConfigurationServiceImpl(currenciesRepresentationService, applicationTradingConfigurationRepository);
     }
 }
