@@ -33,7 +33,7 @@ public class TickerControllerConfiguration {
                 TickerRequest.builder  ()
                         .event         ("subscribe")
                         .pair          ( applicationTradingConfigurationService
-                                .getEnabledAssetPairsForTrading()
+                                .getEnabledAssetPairsRepresentationForWebSocketTrading()
                                 .collectList()
                                 .block() )
                         .subscription  ( TickerRequest.Subscription.builder().name("ticker").build() )

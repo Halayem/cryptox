@@ -12,12 +12,23 @@ public class ApplicationTradingConfigurationServiceTest {
     private ApplicationTradingConfigurationService applicationTradingConfigurationService;
 
     @Test
-    public void testGetEnabledAssetPairsForTrading() {
+    public void testGetEnabledAssetPairsRepresentationForWebServiceTrading() {
         StepVerifier
-                .create(applicationTradingConfigurationService.getEnabledAssetPairsForTrading())
+                .create(applicationTradingConfigurationService.getEnabledAssetPairsRepresentationForWebServiceTrading())
                 .expectNext("XLTC/ZEUR")
                 .expectNext("XXBT/ZEUR")
                 .expectNext("XXRP/ZEUR")
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    public void testGetEnabledAssetPairsRepresentationForWebSocketTrading() {
+        StepVerifier
+                .create(applicationTradingConfigurationService.getEnabledAssetPairsRepresentationForWebSocketTrading())
+                .expectNext("LTC/EUR")
+                .expectNext("XBT/EUR")
+                .expectNext("XRP/EUR")
                 .expectComplete()
                 .verify();
     }

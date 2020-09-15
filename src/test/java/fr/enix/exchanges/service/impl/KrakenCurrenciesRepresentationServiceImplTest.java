@@ -9,14 +9,14 @@ public class KrakenCurrenciesRepresentationServiceImplTest {
 
     @Test
     public void testGetAssetPairCurrencyRepresentationOf() {
-        assertEquals("XLTC/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("litecoin-euro"));
-        assertEquals("XXRP/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("ripple-euro"));
-        assertEquals("XXBT/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("bitcoin-euro"));
-        assertEquals("SC/ZEUR",     krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("siacoin-euro"));
+        assertEquals("XLTC/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("litecoin-euro"));
+        assertEquals("XXRP/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("ripple-euro"));
+        assertEquals("XXBT/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("bitcoin-euro"));
+        assertEquals("SC/ZEUR",     krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("siacoin-euro"));
 
-        assertEquals("XLTC/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("litecoin-us_dollar"));
-        assertEquals("XXRP/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("ripple-us_dollar"));
-        assertEquals("XXBT/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("bitcoin-us_dollar"));
-        assertEquals("SC/ZUSD",     krakenCurrenciesRepresentationService.getAssetPairCurrencyRepresentationByApplicationAssetPair("siacoin-us_dollar"));
+        assertEquals("XLTC/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("litecoin-us_dollar"));
+        assertEquals("XXRP/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("ripple-us_dollar"));
+        assertEquals("XXBT/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("bitcoin-us_dollar"));
+        assertEquals("SC/ZUSD",     krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("siacoin-us_dollar"));
     }
 }

@@ -4,5 +4,6 @@ import reactor.core.publisher.Flux;
 
 public interface ApplicationTradingConfigurationService {
 
-    Flux<String> getEnabledAssetPairsForTrading();
+    Flux<String> getEnabledAssetPairsRepresentationForWebServiceTrading();
+    Flux<String> getEnabledAssetPairsRepresentationForWebSocketTrading();
 }

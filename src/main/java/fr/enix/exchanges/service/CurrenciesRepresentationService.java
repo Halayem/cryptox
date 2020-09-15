@@ -2,5 +2,6 @@ package fr.enix.exchanges.service;
 
 public interface CurrenciesRepresentationService {
 
-    String getAssetPairCurrencyRepresentationByApplicationAssetPair(final String applicationAssetPair);
+    String getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(final String applicationAssetPair);
+    String getAssetPairCurrencyWebSocketRepresentationByApplicationAssetPair(final String applicationAssetPair);
 }
