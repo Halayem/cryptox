@@ -17,20 +17,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ExchangeServiceTest {
+class ExchangeServiceTest {
 
     @Autowired
     private ExchangeService exchangeService;
 
     @Test
     @Order(0)
-    public void testGetBalance_success() {
+    void testGetBalance_success() {
         StepVerifier.create         ( exchangeService.getBalance() )
                     .consumeNextWith( balanceResponse -> {
                         assertEquals( new BigDecimal("8.48"),  balanceResponse.getResult().get( XzAsset.XLTC  ));
                         assertEquals( new BigDecimal("40.25"), balanceResponse.getResult().get( XzAsset.ZEUR ));
 
-                        assertTrue( balanceResponse.getError().size() == 0 );
+                        assertEquals(0, balanceResponse.getError().size() );
 
                     })
                     .verifyComplete ();
@@ -39,7 +39,7 @@ public class ExchangeServiceTest {
 
     @Test
     @Order(1)
-    public void testGetBalance_eapiInvalidKey() {
+    void testGetBalance_eapiInvalidKey() {
         StepVerifier.create ( exchangeService.getBalance() )
                 .expectError( KrakenEapiInvalidKeyException.class )
                 .verify     ();
@@ -47,7 +47,7 @@ public class ExchangeServiceTest {
 
     @Test
     @Order(2)
-    public void testGetAvailableAssetForBuyPlacement_success() {
+    void testGetAvailableAssetForBuyPlacement_success() {
         StepVerifier.create         (exchangeService.getAvailableAssetForBuyPlacement(XzAsset.ZEUR, Asset.EUR))
                 .consumeNextWith(availableAssetForBuyPlacement -> {
                     assertEquals(new BigDecimal("8.6600000000"), availableAssetForBuyPlacement);
@@ -57,7 +57,7 @@ public class ExchangeServiceTest {
 
     @Test
     @Order(3)
-    public void testGetAvailableAssetForSellPlacement_success() {
+    void testGetAvailableAssetForSellPlacement_success() {
         StepVerifier.create         (exchangeService.getAvailableAssetForSellPlacement(XzAsset.XLTC, Asset.LTC))
                 .consumeNextWith(availableAssetForSellPlacement -> {
                     assertEquals(new BigDecimal("4.97857000"), availableAssetForSellPlacement);
@@ -66,7 +66,7 @@ public class ExchangeServiceTest {
     }
 
     @Test
-    public void testAddOrder_success() {
+    void testAddOrder_success() {
         StepVerifier.create(exchangeService.addOrder    ( AddOrderInput.builder     ()
                                                                        .assetPair   (AssetPair.builder  ()
                                                                                               .from     (XzAsset.XLTC)
@@ -83,14 +83,14 @@ public class ExchangeServiceTest {
                     .consumeNextWith(addOrderOutput -> {
                         assertEquals("sell 1.00000000 LTCEUR @ limit 40.00", addOrderOutput.getDescription());
                         assertTrue(addOrderOutput.getTransactionIds().contains("OA6DK2-UK35J-NYDBAF"));
-                        assertTrue(addOrderOutput.getTransactionIds().size() == 1 );
-                        assertTrue( addOrderOutput.getErrors().size() == 0 );
+                        assertEquals(1, addOrderOutput.getTransactionIds().size() );
+                        assertEquals(0, addOrderOutput.getErrors().size() );
                     })
                     .verifyComplete();
     }
 
     @Test
-    public void testOpenOrders_success() {
+    void testOpenOrders_success() {
         StepVerifier.create         (exchangeService.getOpenOrders())
                     .consumeNextWith(openOrderOutput -> {
                         assertEquals("O7AHQZ-MAJTT-NIAZWV",    openOrderOutput.getTransactionId()  );
@@ -117,7 +117,7 @@ public class ExchangeServiceTest {
     }
 
     @Test
-    public void testGetTotalBuyPlacements_success() {
+    void testGetTotalBuyPlacements_success() {
         StepVerifier.create         (exchangeService.getTotalBuyPlacements(Asset.EUR)        )
                     .consumeNextWith(totalBuyPlacements -> {
                         assertEquals(new BigDecimal("31.5900000000"), totalBuyPlacements);
@@ -126,7 +126,7 @@ public class ExchangeServiceTest {
     }
 
     @Test
-    public void testGetTotalSellPlacements_success() {
+    void testGetTotalSellPlacements_success() {
         StepVerifier.create         (exchangeService.getTotalSellPlacements(Asset.LTC))
                     .consumeNextWith(totalSellPlacements -> {
                         assertEquals(new BigDecimal("3.50143000"), totalSellPlacements);
@@ -135,7 +135,7 @@ public class ExchangeServiceTest {
     }
 
     @BeforeAll
-    public static void startWiremockServer() throws InterruptedException {
+    static void startWiremockServer() throws InterruptedException {
         new WireMockServer().start();
     }
 }

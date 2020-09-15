@@ -3,9 +3,12 @@ package fr.enix.common.exception;
 import fr.enix.common.exception.eapi.KrakenEapiExceptionFactory;
 import fr.enix.common.exception.egeneral.KrakenEgeneralExceptionFactory;
 import fr.enix.common.exception.eorder.KrakenEorderExceptionFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KrakenExceptionFactoryProvider {
 
     private static final String EORDER_MESSAGE_PREFIX       = "EOrder:";

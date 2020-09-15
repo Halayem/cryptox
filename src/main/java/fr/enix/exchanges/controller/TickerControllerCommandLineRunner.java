@@ -28,8 +28,8 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private void startTickerWebSocketClient() {
         log.info("will establishing a new web socket communication to receive real time market place price update");
-        tickerWebSocketClient.block(Duration.ofSeconds(5L));
-        //tickerWebSocketClient.block();
+        //tickerWebSocketClient.block(Duration.ofSeconds(5L));
+        tickerWebSocketClient.block();
     }
 
 }

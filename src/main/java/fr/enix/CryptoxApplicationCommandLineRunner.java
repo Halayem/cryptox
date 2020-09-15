@@ -47,9 +47,7 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
                                                             .takeProfitPriceRelativeDelta           ( 1 )
                                                             .build())
                         .build()
-        ).subscribe(addOrderOutput -> {
-            log.info( "order placed, kraken response: {}", addOrderOutput );
-        });
+        ).subscribe(addOrderOutput -> log.info( "order placed, kraken response: {}", addOrderOutput ) );
     }
 
     private void runBuyAddOrderWithMarketOrderType() {
@@ -64,9 +62,7 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
                              .orderType      (OrderType.MARKET)
                              .volume         (new BigDecimal("0.1"   ))
                              .build          ()
-        ).subscribe(addOrderOutput -> {
-            log.info( "order placed, kraken response: {}", addOrderOutput );
-        });
+        ).subscribe(addOrderOutput -> log.info( "order placed, kraken response: {}", addOrderOutput ));
     }
 
     private void runSellAddOrder() {
@@ -82,9 +78,7 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
                     .price          (new BigDecimal(40  ))
                     .volume         (new BigDecimal(1   ))
                     .build()
-        ).subscribe(addOrderOutput -> {
-            log.info( "order placed, kraken response: {}", addOrderOutput );
-        });
+        ).subscribe(addOrderOutput -> log.info( "order placed, kraken response: {}", addOrderOutput ));
     }
 
     private void runGetBalance() {
@@ -97,14 +91,10 @@ public class CryptoxApplicationCommandLineRunner implements CommandLineRunner {
     }
 
     private void runGetTradeBalance() {
-        exchangeService.getTradeBalance(AssetClass.CURRENCY).subscribe(response -> {
-            log.info("trade balance: {}", response);
-        });
+        exchangeService.getTradeBalance(AssetClass.CURRENCY).subscribe(response -> log.info("trade balance: {}", response));
     }
 
     private void runGetOpenOrders() {
-        exchangeService.getOpenOrders().subscribe(response -> {
-            log.info("open orders: {}", response);
-        });
+        exchangeService.getOpenOrders().subscribe(response -> log.info("open orders: {}", response));
     }
 }

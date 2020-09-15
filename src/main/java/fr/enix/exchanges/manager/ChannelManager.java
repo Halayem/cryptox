@@ -11,6 +11,7 @@ public class ChannelManager implements WebSocketSubscriptionManager  {
 
     private final ChannelRepository channelRepository;
 
+    @Override
     public void managePayload(final String payload) throws JsonProcessingException {
         channelRepository.insertNewChannel(new ObjectMapper().readValue(payload, ChannelResponse.class));
     }

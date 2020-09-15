@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TransactionDecisionServiceTest {
+class TransactionDecisionServiceTest {
 
     @Autowired private MarketOfferService marketOfferService;
 
@@ -32,13 +32,13 @@ public class TransactionDecisionServiceTest {
 
     @Test
     @Order(0)
-    public void setup() {
+    void setup() {
         marketOfferService.resetAllMarketOfferHistory();
     }
 
     @Test
     @Order(1)
-    public void testGetDecision_shouldReturnDoNothingDecisionWhenHistoricIsNotYetBuilt() {
+    void testGetDecision_shouldReturnDoNothingDecisionWhenHistoricIsNotYetBuilt() {
         StepVerifier.create(marketOfferService.saveNewMarketPrice   (assetPair,firstMarketOfferPrice)
                                               .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
                     )
@@ -51,7 +51,7 @@ public class TransactionDecisionServiceTest {
 
     @Test
     @Order(2)
-    public void testGetDecision_shouldReturnBuyDecisionWhenPriceDrops() {
+    void testGetDecision_shouldReturnBuyDecisionWhenPriceDrops() {
         StepVerifier.create(marketOfferService.saveNewMarketPrice   (assetPair,secondMarketOfferPrice)
                                               .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
                     )
@@ -63,7 +63,7 @@ public class TransactionDecisionServiceTest {
 
     @Test
     @Order(3)
-    public void testGetDecision_shouldReturnBuyDecisionWhenPriceContinuesToDrop() {
+    void testGetDecision_shouldReturnBuyDecisionWhenPriceContinuesToDrop() {
         StepVerifier.create(marketOfferService.saveNewMarketPrice   (assetPair,thirdMarketOfferPrice)
                                               .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
                     )
@@ -75,7 +75,7 @@ public class TransactionDecisionServiceTest {
 
     @Test
     @Order(4)
-    public void testGetDecision_shouldReturnSellDecisionWhenPriceGoesUp() {
+    void testGetDecision_shouldReturnSellDecisionWhenPriceGoesUp() {
         StepVerifier.create(marketOfferService.saveNewMarketPrice   (assetPair,fourthMarketOfferPrice)
                                               .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
                     )
@@ -87,7 +87,7 @@ public class TransactionDecisionServiceTest {
 
     @Test
     @Order(5)
-    public void tearDown() {
+    void tearDown() {
         marketOfferService.resetAllMarketOfferHistory();
     }
 

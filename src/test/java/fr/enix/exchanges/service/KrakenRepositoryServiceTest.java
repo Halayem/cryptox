@@ -11,18 +11,17 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class KrakenRepositoryServiceTest {
+class KrakenRepositoryServiceTest {
 
     @Autowired private KrakenRepositoryService krakenRepositoryService;
 
     @Test
-    public void testGetNewNonce_success() {
+    void testGetNewNonce_success() {
         assertEquals(16, krakenRepositoryService.getNewNonce().length());
     }
 
     @Test
-    public void testGetNewNonce_shouldGenerate899DifferentNonce() {
-
+    void testGetNewNonce_shouldGenerate899DifferentNonce() {
         Set<String> nonces = new HashSet();
         for ( int i = 0 ; i < 899 ; i++ ) {
             nonces.add(krakenRepositoryService.getNewNonce());

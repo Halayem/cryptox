@@ -6,15 +6,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
-public class ApplicationCurrencyTradingsParameterRepositoryTest {
+class ApplicationCurrencyTradingsParameterRepositoryTest {
 
     @Autowired
     private ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     @Test
-    public void testGetEnabledCurrenciesForTrading() {
+    void testGetEnabledApplicationAssetPairForTrading() {
         StepVerifier
-                .create(applicationCurrencyTradingsParameterRepository.getEnabledCurrenciesForTrading())
+                .create(applicationCurrencyTradingsParameterRepository.getEnabledApplicationAssetPairForTrading())
                 .expectNext("litecoin-euro")
                 .expectNext("bitcoin-euro")
                 .expectNext("ripple-euro")
@@ -23,7 +23,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryTest {
     }
 
     @Test
-    public void testGetStrategiesByApplicationAssetPair_litecoinToEuro() {
+    void testGetStrategiesByApplicationAssetPair_litecoinToEuro() {
         StepVerifier
                 .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("litecoin-euro"))
                 .expectNext("bearing")
@@ -32,7 +32,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryTest {
     }
 
     @Test
-    public void testGetStrategiesByApplicationAssetPair_bitcoinToEuro() {
+    void testGetStrategiesByApplicationAssetPair_bitcoinToEuro() {
         StepVerifier
                 .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("bitcoin-euro"))
                 .expectNext("bearing")
@@ -42,13 +42,12 @@ public class ApplicationCurrencyTradingsParameterRepositoryTest {
     }
 
     @Test
-    public void testGetStrategiesByApplicationAssetPair_rippleToEuro() {
+    void testGetStrategiesByApplicationAssetPair_rippleToEuro() {
         StepVerifier
                 .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("ripple-euro"))
                 .expectNext("threshold")
                 .expectComplete()
                 .verify();
     }
-
 
 }

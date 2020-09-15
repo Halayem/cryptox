@@ -3,12 +3,12 @@ package fr.enix.exchanges.service.impl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class KrakenCurrenciesRepresentationServiceImplTest {
+class KrakenCurrenciesRepresentationServiceImplTest {
 
     private final KrakenCurrenciesRepresentationServiceImpl krakenCurrenciesRepresentationService = new KrakenCurrenciesRepresentationServiceImpl();
 
     @Test
-    public void testGetAssetPairCurrencyRepresentationOf() {
+    void testGetAssetPairCurrencyRepresentationOf() {
         assertEquals("XLTC/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("litecoin-euro"));
         assertEquals("XXRP/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("ripple-euro"));
         assertEquals("XXBT/ZEUR",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("bitcoin-euro"));

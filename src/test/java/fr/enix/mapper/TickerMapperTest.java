@@ -14,13 +14,13 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TickerMapperTest {
+class TickerMapperTest {
 
     @Autowired
     private TickerMapper tickerMapper;
 
     @Test
-    public void testMapStringToTickerResponse_success() throws JsonProcessingException {
+    void testMapStringToTickerResponse_success() throws JsonProcessingException {
         final TickerResponse tickerResponse = tickerMapper.mapStringToTickerResponse(
                 "[379," +
 
@@ -80,7 +80,7 @@ public class TickerMapperTest {
     }
 
     @Test
-    public void testMapTickerResponseToTickerOutput_success(){
+    void testMapTickerResponseToTickerOutput_success(){
         final TickerOutput tickerOutput = tickerMapper.mapTickerResponseToTickerOutput(buildTickerResponse());
         assertEquals( new BigDecimal("41.93000"),   tickerOutput.getAsk().getPrice() );
         assertEquals( new BigDecimal("156"),        tickerOutput.getAsk().getWholeLotVolume() );
@@ -99,14 +99,12 @@ public class TickerMapperTest {
     }
 
     private TickerResponse buildTickerResponse() {
-
         return TickerResponse.builder()
                              .ticker(TickerResponse.Ticker.builder()
                                                           .a( Arrays.asList( "41.93000", "156",  "156.000" ))
                                                           .b( Arrays.asList( "41.87000", "26",   "126.000" ))
                                                           .l( Arrays.asList( "41.71000", "41.46000" ))
                                                           .h( Arrays.asList( "42.33000", "42.81000" ))
-
                                                           .build()
                              )
                             .assetPair("LTC/EUR")

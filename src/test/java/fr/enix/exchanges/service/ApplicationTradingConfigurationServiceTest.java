@@ -6,13 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
-public class ApplicationTradingConfigurationServiceTest {
+class ApplicationTradingConfigurationServiceTest {
 
     @Autowired
     private ApplicationTradingConfigurationService applicationTradingConfigurationService;
 
     @Test
-    public void testGetEnabledAssetPairsRepresentationForWebServiceTrading() {
+    void testGetEnabledAssetPairsRepresentationForWebServiceTrading() {
         StepVerifier
                 .create(applicationTradingConfigurationService.getEnabledAssetPairsRepresentationForWebServiceTrading())
                 .expectNext("XLTC/ZEUR")
@@ -23,7 +23,7 @@ public class ApplicationTradingConfigurationServiceTest {
     }
 
     @Test
-    public void testGetEnabledAssetPairsRepresentationForWebSocketTrading() {
+    void testGetEnabledAssetPairsRepresentationForWebSocketTrading() {
         StepVerifier
                 .create(applicationTradingConfigurationService.getEnabledAssetPairsRepresentationForWebSocketTrading())
                 .expectNext("LTC/EUR")

@@ -6,13 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TickerControllerConfigurationTest {
+class TickerControllerConfigurationTest {
 
     @Autowired
     private String tickerSubscriptionMessage;
 
     @Test
-    public void testTickerSubscriptionMessage() {
+    void testTickerSubscriptionMessage() {
         assertEquals(
         "{" +
                     "\"event\":\"subscribe\","                              +

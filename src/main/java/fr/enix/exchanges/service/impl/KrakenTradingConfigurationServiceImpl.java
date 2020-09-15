@@ -15,19 +15,15 @@ public class KrakenTradingConfigurationServiceImpl implements ApplicationTrading
     @Override
     public Flux<String> getEnabledAssetPairsRepresentationForWebServiceTrading() {
         return applicationCurrencyTradingsParameterRepository
-                .getEnabledCurrenciesForTrading()
-                .map(applicationCurrencyRepresentation ->
-                        currenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(applicationCurrencyRepresentation)
-                );
+                .getEnabledApplicationAssetPairForTrading()
+                .map(currenciesRepresentationService::getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair);
     }
 
     @Override
     public Flux<String> getEnabledAssetPairsRepresentationForWebSocketTrading() {
         return applicationCurrencyTradingsParameterRepository
-                .getEnabledCurrenciesForTrading()
-                .map(applicationCurrencyRepresentation ->
-                        currenciesRepresentationService.getAssetPairCurrencyWebSocketRepresentationByApplicationAssetPair(applicationCurrencyRepresentation)
-                );
+                .getEnabledApplicationAssetPairForTrading()
+                .map(currenciesRepresentationService::getAssetPairCurrencyWebSocketRepresentationByApplicationAssetPair);
     }
 
 }

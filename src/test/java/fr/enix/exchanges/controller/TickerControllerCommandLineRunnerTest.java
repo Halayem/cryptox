@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
             "cryptox.controller.tickers[0].assetPair=XLTC/ZEUR",
             "cryptox.controller.tickers[0].block=5"
         })
-public class TickerControllerCommandLineRunnerTest {
+class TickerControllerCommandLineRunnerTest {
 
     @Test
-    public void testRun() {}
+    void testRun() {}
 }

@@ -25,7 +25,7 @@ public class ExchangeServiceImpl implements ExchangeService  {
     private final AddOrderMapper addOrderMapper;
     private final OpenOrdersMapper openOrdersMapper;
 
-    private final BigDecimal ZERO = new BigDecimal(0);
+    private final BigDecimal zero = new BigDecimal(0);
 
     @Override
     public Flux<BalanceResponse> getBalance() {
@@ -40,7 +40,7 @@ public class ExchangeServiceImpl implements ExchangeService  {
     @Override
     public Flux<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
         return krakenPrivateRepository.addOrder (addOrderInput)
-                                      .map      (addOrderResponse -> addOrderMapper.mapAddOrderResponseToAddOrderOutput(addOrderResponse));
+                                      .map      (addOrderMapper::mapAddOrderResponseToAddOrderOutput);
     }
 
     @Override
@@ -89,12 +89,12 @@ public class ExchangeServiceImpl implements ExchangeService  {
                     &&
                     (openOrderOutput.getAssetPair().contains(asset))
                 )
-                .map(openOrderOutput -> {
-                    return  AddOrderType.SELL.equals(addOrderType)
-                            ? openOrderOutput.getVolume()
-                            : openOrderOutput.getPrice().multiply(openOrderOutput.getVolume());
-                })
-                .reduce(ZERO, (blockedFiatCurrencyForBuying1, blockedFiatCurrencyForBuying2) ->
+                .map(openOrderOutput ->
+                        AddOrderType.SELL.equals(addOrderType)
+                        ? openOrderOutput.getVolume()
+                        : openOrderOutput.getPrice().multiply(openOrderOutput.getVolume())
+                )
+                .reduce(zero, (blockedFiatCurrencyForBuying1, blockedFiatCurrencyForBuying2) ->
                         blockedFiatCurrencyForBuying1.add(blockedFiatCurrencyForBuying2)
                 );
     }

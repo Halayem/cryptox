@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TickerServiceImplTest {
+class TickerServiceImplTest {
     @Autowired private ExchangeService exchangeService;
     @Autowired private MarketOfferService marketOfferService;
     @Autowired private TransactionDecisionService transactionDecisionService;
@@ -30,7 +30,7 @@ public class TickerServiceImplTest {
     }
 
     @Test
-    public void testComputeBuyVolume_shouldDivideEuroVolumeTradingUnitByAskPriceWhenAvailableAssetIsGreaterThanTradingUnit() {
+    void testComputeBuyVolume_shouldDivideEuroVolumeTradingUnitByAskPriceWhenAvailableAssetIsGreaterThanTradingUnit() {
         assertEquals
         (
             new BigDecimal("0.57142857"),
@@ -39,7 +39,7 @@ public class TickerServiceImplTest {
     }
 
     @Test
-    public void testComputeBuyVolume_shouldDivideAvailableAssetByAskPriceWhenAvailableAssetIsLessThanTradingUnit() {
+    void testComputeBuyVolume_shouldDivideAvailableAssetByAskPriceWhenAvailableAssetIsLessThanTradingUnit() {
         assertEquals
                 (
                         new BigDecimal("0.51232792"),

@@ -87,9 +87,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                         .post       ()
                         .uri        (uri)
                         .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
-                        .headers    (httpHeaders -> {
-                            httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri ));
-                        })
+                        .headers    (httpHeaders -> httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri )))
                         .retrieve   ()
                         .bodyToFlux (clazz)
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
@@ -101,16 +99,14 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                         .post       ()
                         .uri        (uri)
                         .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
-                        .headers    (httpHeaders -> {
-                            httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri ));
-                        })
+                        .headers    (httpHeaders -> httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri )))
                         .retrieve   ()
                         .bodyToMono (clazz)
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
     }
 
     private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
-        if ( errorResponse.getError().size() > 0 ) {
+        if ( !errorResponse.getError().isEmpty() ) {
             log.error("received error message(s) from Kraken: {}, trying to throw the appropriate exception", errorResponse.getError());
             throw KrakenExceptionFactoryProvider.getFactory         (errorResponse.getError().get( 0 ))
                                                 .getKrakenException ();

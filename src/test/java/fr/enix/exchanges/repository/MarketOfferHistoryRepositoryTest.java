@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class MarketOfferHistoryRepositoryTest {
+class MarketOfferHistoryRepositoryTest {
 
     @Autowired
     private MarketOfferHistoryRepository marketOfferHistoryRepository;
@@ -29,14 +29,14 @@ public class MarketOfferHistoryRepositoryTest {
 
     @Test
     @Order(0)
-    public void testGetMarketPriceHistory_shouldNotSendSignalWhenRecordsAreEmptyYet() {
+    void testGetMarketPriceHistory_shouldNotSendSignalWhenRecordsAreEmptyYet() {
         StepVerifier.create         (marketOfferHistoryRepository.getMarketOfferHistory(firstMarketOfferAssetPair))
                     .verifyComplete ();
     }
 
     @Test
     @Order(1)
-    public void testSaveNewMarketPrice_shouldReturnMarketPriceObjectAsNewestMarketOffer() {
+    void testSaveNewMarketPrice_shouldReturnMarketPriceObjectAsNewestMarketOffer() {
 
         StepVerifier.create(marketOfferHistoryRepository.saveNewMarketOffer(firstMarketOfferAssetPair, firstMarketOfferPrice))
                     .consumeNextWith(marketPriceHistory -> {
@@ -50,7 +50,7 @@ public class MarketOfferHistoryRepositoryTest {
 
     @Test
     @Order(2)
-    public void testGetMarketOfferHistory_previousShouldBeNullAndNewShouldBeFirstMarketOffer() {
+    void testGetMarketOfferHistory_previousShouldBeNullAndNewShouldBeFirstMarketOffer() {
         StepVerifier.create         (marketOfferHistoryRepository.getMarketOfferHistory(firstMarketOfferAssetPair))
                     .consumeNextWith(marketPriceHistory -> {
 
@@ -65,7 +65,7 @@ public class MarketOfferHistoryRepositoryTest {
 
     @Test
     @Order(3)
-    public void testGetMarketOfferHistory_() {
+    void testGetMarketOfferHistory_() {
         StepVerifier.create(marketOfferHistoryRepository
                             .saveNewMarketOffer (secondMarketOfferAssetPair, secondMarketOfferPrice)
                             .flatMap            (marketPrice -> marketOfferHistoryRepository.getMarketOfferHistory(secondMarketOfferAssetPair))

@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -14,16 +15,24 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
 
     private final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter;
 
-    public Flux<String> getEnabledCurrenciesForTrading() {
+    public Flux<String> getEnabledApplicationAssetPairForTrading() {
         return  Flux.fromIterable(
                     applicationCurrencyTradingsParameter
                     .getTradings()
                     .entrySet   ()
                     .stream     ()
-                    .filter     (entry -> entry.getValue().isEnabled())
-                    .map        (entry -> entry.getKey())
+                    .filter     (this::isCurrencyEnabledForTrading)
+                    .map        (this::getApplicationAssetPair)
                     .collect    (Collectors.toList())
         );
+    }
+
+    private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
+        return tradingParameters.getValue().isEnabled();
+    }
+
+    private String getApplicationAssetPair(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
+        return tradingParameters.getKey();
     }
 
     public Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair) {

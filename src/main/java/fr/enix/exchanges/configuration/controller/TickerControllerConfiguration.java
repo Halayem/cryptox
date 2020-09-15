@@ -62,14 +62,12 @@ public class TickerControllerConfiguration {
                                              final Consumer tickerConsumer) {
         return  webSocketSession ->
                 webSocketSession.send       (Mono.just( webSocketSession.textMessage(tickerSubscriptionMessage) ))
-
-                        .thenMany   (
-                                webSocketSession.receive  ()
-                                        .map      (WebSocketMessage::getPayloadAsText)
-                                        .filter   ( payload -> payload.contains("heartbeat") == false )
-                                        .doOnNext ( tickerConsumer )
-                        )
-                        .then();
+                                .thenMany   (
+                                        webSocketSession.receive  ()
+                                                        .map      (WebSocketMessage::getPayloadAsText)
+                                                        .doOnNext ( tickerConsumer )
+                                )
+                                .then();
     }
 
     @Bean

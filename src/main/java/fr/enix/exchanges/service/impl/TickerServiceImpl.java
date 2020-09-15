@@ -43,7 +43,7 @@ public class TickerServiceImpl implements TickerService {
     public void marketOfferUpdateHandler(final TickerOutput tickerOutput) {
 
         marketOfferService.saveNewMarketPrice   (tickerOutput.getAssetPair(), tickerOutput.getAsk().getPrice())
-                          .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
+                          .flatMap              (transactionDecisionService::getDecision)
                           .map                  (decision -> {
                               switch (decision) {
                                   case SELL: return placeSellOrder  (tickerOutput)
@@ -65,7 +65,7 @@ public class TickerServiceImpl implements TickerService {
 
         return
             exchangeService.getAvailableAssetForBuyPlacement(XzAsset.ZEUR, Asset.EUR)
-                    .filter  (availableAsset -> canPlaceBuyOrder(availableAsset))
+                    .filter  (this::canPlaceBuyOrder)
                     .flatMap (availableAsset ->
                             exchangeService.addOrder(
                                     AddOrderInput.builder     ()
@@ -107,7 +107,7 @@ public class TickerServiceImpl implements TickerService {
 
         return
         exchangeService.getAvailableAssetForSellPlacement(XzAsset.XLTC, Asset.LTC)
-                       .filter  (availableAsset -> canPlaceSellOrder(availableAsset))
+                       .filter  (this::canPlaceSellOrder)
                        .flatMap (availableAsset ->
                                 exchangeService.addOrder(
                                     AddOrderInput.builder     ()
