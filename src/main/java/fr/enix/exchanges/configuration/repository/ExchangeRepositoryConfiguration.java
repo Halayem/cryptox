@@ -59,4 +59,9 @@ public class ExchangeRepositoryConfiguration {
     public ApplicationBearingStrategyParameterRepository applicationBearingStrategyParameterRepository(final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter) {
         return new ApplicationCurrencyBearingStrategyTradingsParameterRepositoryImpl(applicationCurrencyTradingsParameter);
     }
+
+    @Bean
+    public HeartbeatRepository heartbeatRepository() {
+        return new HeartbeatRepositoryInMemoryImpl();
+    }
 }

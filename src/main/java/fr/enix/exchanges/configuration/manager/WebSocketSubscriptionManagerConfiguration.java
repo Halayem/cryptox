@@ -1,13 +1,17 @@
 package fr.enix.exchanges.configuration.manager;
 
 import fr.enix.exchanges.manager.*;
+import fr.enix.exchanges.model.parameters.KrakenHeartbeatMonitorParameters;
 import fr.enix.exchanges.repository.ChannelRepository;
+import fr.enix.exchanges.repository.HeartbeatRepository;
 import fr.enix.exchanges.service.TickerService;
 import fr.enix.exchanges.mapper.TickerMapper;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableConfigurationProperties(KrakenHeartbeatMonitorParameters.class)
 public class WebSocketSubscriptionManagerConfiguration {
 
     @Bean
@@ -26,8 +30,9 @@ public class WebSocketSubscriptionManagerConfiguration {
         return new TickerResponseManager(tickerService, tickerMapper);
     }
 
-    @Bean WebSocketSubscriptionManager heartbeatManager() {
-        return new HeartbeatManager();
+    @Bean WebSocketSubscriptionManager heartbeatManager(final HeartbeatRepository heartbeatRepository,
+                                                        final KrakenHeartbeatMonitorParameters krakenHeartbeatMonitorParameters) {
+        return new HeartbeatManager(heartbeatRepository, krakenHeartbeatMonitorParameters);
     }
 
     @Bean
@@ -42,4 +47,6 @@ public class WebSocketSubscriptionManagerConfiguration {
                 heartbeatManager
         );
     }
+
+
 }
