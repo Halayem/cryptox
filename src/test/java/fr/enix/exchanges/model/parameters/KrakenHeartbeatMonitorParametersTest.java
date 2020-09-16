@@ -17,7 +17,7 @@ class KrakenHeartbeatMonitorParametersTest {
     @Test
     void testKrakenHeartbeatMonitorParameters() {
         assertEquals(ChronoUnit.SECONDS, krakenHeartbeatMonitorParameters.getTimeunit());
-        assertEquals(10l, krakenHeartbeatMonitorParameters.getFrequency());
-        assertEquals(2l, krakenHeartbeatMonitorParameters.getMaxAge());
+        assertEquals(7200l, krakenHeartbeatMonitorParameters.getFrequency());
+        assertEquals(1l, krakenHeartbeatMonitorParameters.getMaxAge());
     }
 }

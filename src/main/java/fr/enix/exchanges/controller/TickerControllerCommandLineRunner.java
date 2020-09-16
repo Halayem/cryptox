@@ -1,5 +1,6 @@
 package fr.enix.exchanges.controller;
 
+import fr.enix.exchanges.monitor.HeartbeatMonitor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private final Mono<Void> tickerWebSocketClient;
+    private final HeartbeatMonitor heartbeatMonitor;
 
     @Override
     public void run(String... args) throws Exception {
@@ -24,12 +26,17 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
         log.info("scheduled single thread running, runnable: startTickerWebSocketClient, delayed: {} {}", delayedDuration, timeUnit);
         Executors.newSingleThreadScheduledExecutor().schedule(this::startTickerWebSocketClient, delayedDuration, timeUnit);
+        startMonitoring();
     }
 
     private void startTickerWebSocketClient() {
         log.info("will establishing a new web socket communication to receive real time market place price update");
-        tickerWebSocketClient.block(Duration.ofSeconds(5L));
-        //tickerWebSocketClient.block();
+        //tickerWebSocketClient.block(Duration.ofSeconds(5L));
+        tickerWebSocketClient.block();
+    }
+
+    private void startMonitoring() {
+        heartbeatMonitor.start();
     }
 
 }
