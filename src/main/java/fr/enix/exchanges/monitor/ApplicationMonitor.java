@@ -1,8 +1,8 @@
 package fr.enix.exchanges.monitor;
 
-public interface PongMonitor {
+public interface ApplicationMonitor {
 
     void start();
     void stop();
-    boolean isHeartbeatError();
+    boolean isError();
 }

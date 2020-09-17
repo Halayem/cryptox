@@ -1,13 +1,12 @@
 package fr.enix.exchanges.controller;
 
-import fr.enix.exchanges.monitor.HeartbeatMonitor;
+import fr.enix.exchanges.monitor.ApplicationMonitor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private final Mono<Void> tickerWebSocketClient;
-    private final HeartbeatMonitor heartbeatMonitor;
+    private final ApplicationMonitor heartbeatMonitor;
 
     @Override
     public void run(String... args) throws Exception {

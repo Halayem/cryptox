@@ -23,8 +23,8 @@ class KrakenHeartbeatMonitorImplTest {
 
     @Test
     void testMonitorHeartbeatWhenNoHeartbeatYetSaved_shouldSetHeartbeatFlagErrorToTrue() {
-        krakenHeartbeatMonitor.verifyHeartbeat();
-        assertTrue(krakenHeartbeatMonitor.isHeartbeatError());
+        krakenHeartbeatMonitor.doVerify();
+        assertTrue(krakenHeartbeatMonitor.isError());
     }
 
     @Test
@@ -33,15 +33,15 @@ class KrakenHeartbeatMonitorImplTest {
 
         heartbeatManager.managePayload("{\"event\":\"heartbeat\"}");
         Thread.sleep(getThreadDurationSleepToExceedStoredHeartbeatAge());
-        krakenHeartbeatMonitor.verifyHeartbeat();
-        assertTrue(krakenHeartbeatMonitor.isHeartbeatError());
+        krakenHeartbeatMonitor.doVerify();
+        assertTrue(krakenHeartbeatMonitor.isError());
     }
 
     @Test
     void testMonitorHeartbeatWhenHeartbeatDoesNotExceededMaxAge_shouldSetHeartbeatFlagErrorToFalse() throws JsonProcessingException {
         heartbeatManager.managePayload("{\"event\":\"heartbeat\"}");
-        krakenHeartbeatMonitor.verifyHeartbeat();
-        assertFalse( krakenHeartbeatMonitor.isHeartbeatError() );
+        krakenHeartbeatMonitor.doVerify();
+        assertFalse( krakenHeartbeatMonitor.isError() );
     }
 
     private long getThreadDurationSleepToExceedStoredHeartbeatAge() {

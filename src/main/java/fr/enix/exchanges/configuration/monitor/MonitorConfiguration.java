@@ -1,7 +1,7 @@
 package fr.enix.exchanges.configuration.monitor;
 
 import fr.enix.exchanges.model.parameters.KrakenHeartbeatMonitorParameters;
-import fr.enix.exchanges.monitor.HeartbeatMonitor;
+import fr.enix.exchanges.monitor.ApplicationMonitor;
 import fr.enix.exchanges.monitor.impl.KrakenHeartbeatMonitorImpl;
 import fr.enix.exchanges.repository.HeartbeatRepository;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 public class MonitorConfiguration {
 
     @Bean
-    public HeartbeatMonitor heartbeatMonitor(final HeartbeatRepository heartbeatRepository,
-                                             final KrakenHeartbeatMonitorParameters krakenHeartbeatMonitorParameters) {
+    public ApplicationMonitor heartbeatMonitor(final HeartbeatRepository heartbeatRepository,
+                                               final KrakenHeartbeatMonitorParameters krakenHeartbeatMonitorParameters) {
         return new KrakenHeartbeatMonitorImpl(heartbeatRepository, krakenHeartbeatMonitorParameters);
     }
 }
