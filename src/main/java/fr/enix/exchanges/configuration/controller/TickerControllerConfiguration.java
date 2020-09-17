@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.model.ExchangeProperties;
+import fr.enix.exchanges.model.parameters.KrakenPingProperties;
 import fr.enix.exchanges.model.websocket.request.TickerRequest;
 import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import lombok.AllArgsConstructor;
@@ -14,15 +15,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.function.Consumer;
 
 @Slf4j
 @AllArgsConstructor
 @Configuration
-@EnableConfigurationProperties( ExchangeProperties.class )
+@EnableConfigurationProperties({
+        ExchangeProperties.class,
+        KrakenPingProperties.class
+})
 public class TickerControllerConfiguration {
 
     private final ApplicationTradingConfigurationService applicationTradingConfigurationService;
@@ -58,16 +64,26 @@ public class TickerControllerConfiguration {
     }
 
     @Bean
-    public WebSocketHandler webSocketHandler(final String   tickerSubscriptionMessage,
-                                             final Consumer tickerConsumer) {
+    public WebSocketHandler webSocketHandler(final String               tickerSubscriptionMessage,
+                                             final Consumer             tickerConsumer,
+                                             final KrakenPingProperties krakenPingProperties) {
         return  webSocketSession ->
-                webSocketSession.send       (Mono.just( webSocketSession.textMessage(tickerSubscriptionMessage) ))
-                                .thenMany   (
-                                        webSocketSession.receive  ()
-                                                        .map      (WebSocketMessage::getPayloadAsText)
-                                                        .doOnNext ( tickerConsumer )
-                                )
-                                .then();
+                webSocketSession
+                        .send(
+                                Flux
+                                .interval   (Duration.ofSeconds(krakenPingProperties.getFrequency())        )
+                                .map        (pingPayload -> krakenPingProperties.getPayload()               )
+                                .doOnNext   (pingPayload -> log.info("sending ping request {}", pingPayload))
+                                .map        (webSocketSession::textMessage                                  )
+                        ).mergeWith(
+                                webSocketSession.send(
+                                        Mono.just( webSocketSession.textMessage(tickerSubscriptionMessage) ))
+                        ).mergeWith(
+                                webSocketSession.receive  ()
+                                                .map      (WebSocketMessage::getPayloadAsText)
+                                                .doOnNext ( tickerConsumer ).then()
+                        )
+                        .then();
     }
 
     @Bean

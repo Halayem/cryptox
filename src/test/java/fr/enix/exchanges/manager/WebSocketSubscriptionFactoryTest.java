@@ -21,6 +21,14 @@ class WebSocketSubscriptionFactoryTest {
     }
 
     @Test
+    void testGetWebSocketSubscriptionManager_shouldReturnPongManagerBean() {
+        assertTrue(
+                webSocketSubscriptionFactory.getWebSocketSubscriptionManager("{\"event\":\"pong\"}")
+                instanceof PongManager
+        );
+    }
+
+    @Test
     void testGetWebSocketSubscriptionManager_shouldReturnConnectionManagerBean() {
         assertTrue(
                 webSocketSubscriptionFactory.getWebSocketSubscriptionManager("{\"connectionID\":17816213703238877174,\"event\":\"systemStatus\",\"status\":\"online\",\"version\":\"1.2.0\"}")

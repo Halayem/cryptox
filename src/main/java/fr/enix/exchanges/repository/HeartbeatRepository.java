@@ -6,5 +6,4 @@ public interface HeartbeatRepository {
 
     void  saveHeartbeatDatetime();
     LocalDateTime getLastHeartbeatDatetime();
-
 }

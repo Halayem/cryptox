@@ -8,7 +8,6 @@ public class HeartbeatRepositoryInMemoryImpl implements HeartbeatRepository {
 
     private LocalDateTime heartbeatDatetime;
 
-
     @Override
     public synchronized void saveHeartbeatDatetime() { heartbeatDatetime = LocalDateTime.now(); }
 

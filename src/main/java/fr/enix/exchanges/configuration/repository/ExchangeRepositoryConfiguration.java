@@ -64,4 +64,7 @@ public class ExchangeRepositoryConfiguration {
     public HeartbeatRepository heartbeatRepository() {
         return new HeartbeatRepositoryInMemoryImpl();
     }
+
+    @Bean
+    public PongRepository pongRepository() { return new KrakenPongRepositoryInMemoryImpl(); }
 }
