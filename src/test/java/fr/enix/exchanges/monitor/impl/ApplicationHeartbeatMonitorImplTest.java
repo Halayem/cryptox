@@ -2,9 +2,11 @@ package fr.enix.exchanges.monitor.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.manager.HeartbeatManager;
-import fr.enix.exchanges.model.parameters.KrakenHeartbeatMonitorParameters;
-import lombok.extern.slf4j.Slf4j;
+import fr.enix.exchanges.repository.ApplicationMonitoringParametersRepository;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,20 +16,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@Slf4j
-class KrakenHeartbeatMonitorImplTest {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class ApplicationHeartbeatMonitorImplTest {
 
     @Autowired private HeartbeatManager heartbeatManager;
-    @Autowired private KrakenHeartbeatMonitorImpl krakenHeartbeatMonitor;
-    @Autowired private KrakenHeartbeatMonitorParameters krakenHeartbeatMonitorParameters;
+    @Autowired private ApplicationHeartbeatMonitorImpl krakenHeartbeatMonitor;
+    @Autowired private ApplicationMonitoringParametersRepository applicationMonitoringParametersRepository;
 
     @Test
+    @Order(0)
     void testMonitorHeartbeatWhenNoHeartbeatYetSaved_shouldSetHeartbeatFlagErrorToTrue() {
         krakenHeartbeatMonitor.doVerify();
         assertTrue(krakenHeartbeatMonitor.isError());
     }
 
     @Test
+    @Order(1)
     void testMonitorHeartbeatWhenHeartbeatExceededMaxAge_shouldSetHeartbeatFlagErrorToTrue()
             throws JsonProcessingException, InterruptedException {
 
@@ -38,6 +42,7 @@ class KrakenHeartbeatMonitorImplTest {
     }
 
     @Test
+    @Order(2)
     void testMonitorHeartbeatWhenHeartbeatDoesNotExceededMaxAge_shouldSetHeartbeatFlagErrorToFalse() throws JsonProcessingException {
         heartbeatManager.managePayload("{\"event\":\"heartbeat\"}");
         krakenHeartbeatMonitor.doVerify();
@@ -46,8 +51,8 @@ class KrakenHeartbeatMonitorImplTest {
 
     private long getThreadDurationSleepToExceedStoredHeartbeatAge() {
         return ( 2 * TimeUnit
-                        .of         (krakenHeartbeatMonitorParameters.getTimeunit())
-                        .toMillis   (krakenHeartbeatMonitorParameters.getMaxAge())
+                        .of         (applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat").getTimeunit())
+                        .toMillis   (applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat").getMaxAge())
         );
     }
 }

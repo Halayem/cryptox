@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,7 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private final Mono<Void> tickerWebSocketClient;
     private final ApplicationMonitor heartbeatMonitor;
+    private final ApplicationMonitor pongMonitor;
 
     @Override
     public void run(String... args) throws Exception {
@@ -36,6 +38,7 @@ public class TickerControllerCommandLineRunner implements CommandLineRunner {
 
     private void startMonitoring() {
         heartbeatMonitor.start();
+        pongMonitor.start();
     }
 
 }

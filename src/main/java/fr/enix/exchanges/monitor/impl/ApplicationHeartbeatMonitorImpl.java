@@ -1,28 +1,31 @@
 package fr.enix.exchanges.monitor.impl;
 
-import fr.enix.exchanges.model.parameters.KrakenHeartbeatMonitorParameters;
+import fr.enix.exchanges.model.repository.MonitoringConfiguration;
+import fr.enix.exchanges.repository.ApplicationMonitoringParametersRepository;
 import fr.enix.exchanges.monitor.AbstractApplicationMonitor;
 import fr.enix.exchanges.repository.HeartbeatRepository;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
 @Slf4j
-@RequiredArgsConstructor
-public class KrakenHeartbeatMonitorImpl extends AbstractApplicationMonitor {
+public class ApplicationHeartbeatMonitorImpl extends AbstractApplicationMonitor {
 
-    private final HeartbeatRepository               heartbeatRepository;
-    private final KrakenHeartbeatMonitorParameters  krakenHeartbeatMonitorParameters;
+    private final HeartbeatRepository heartbeatRepository;
+    private final MonitoringConfiguration monitoringConfiguration;
 
-    @Getter private boolean error = false;
+    public ApplicationHeartbeatMonitorImpl(final HeartbeatRepository heartbeatRepository,
+                                           final ApplicationMonitoringParametersRepository applicationMonitoringParametersRepository) {
+        this.heartbeatRepository = heartbeatRepository;
+        this.monitoringConfiguration = applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat");
+    }
 
     @Override
     public void start() {
         startMonitoring(
-                krakenHeartbeatMonitorParameters.getFrequency(),
-                krakenHeartbeatMonitorParameters.getTimeunit()
+                monitoringConfiguration.getFrequency(),
+                monitoringConfiguration.getTimeunit()
         );
         log.info(getHeartbeatConfigurationParametersForLog());
     }
@@ -35,11 +38,13 @@ public class KrakenHeartbeatMonitorImpl extends AbstractApplicationMonitor {
     }
 
     private boolean isHeartbeatExceededMaxAge() {
-        return ( krakenHeartbeatMonitorParameters
+        return ( monitoringConfiguration
                 .getTimeunit()
-                .between(heartbeatRepository.getLastHeartbeatDatetime(), LocalDateTime.now() ) > krakenHeartbeatMonitorParameters.getMaxAge()
+                .between(heartbeatRepository.getLastHeartbeatDatetime(), LocalDateTime.now() ) > monitoringConfiguration.getMaxAge()
         );
     }
+
+    @Getter private boolean error = false;
 
     private void heartbeatNotFoundError() {
         error = true;
@@ -48,7 +53,7 @@ public class KrakenHeartbeatMonitorImpl extends AbstractApplicationMonitor {
 
     private void heartbeatExceededMaxAgeError() {
         error = true;
-        log.error(  String.format( "heartbeat date: %s has exceeded the max age: %d", heartbeatRepository.getLastHeartbeatDatetime(), krakenHeartbeatMonitorParameters.getMaxAge() ) );
+        log.error(  String.format( "heartbeat date: %s has exceeded the max age: %d", heartbeatRepository.getLastHeartbeatDatetime(), monitoringConfiguration.getMaxAge() ) );
     }
 
     private void heartbeatOk() {
@@ -61,10 +66,8 @@ public class KrakenHeartbeatMonitorImpl extends AbstractApplicationMonitor {
                 "heartbeat monitoring configuration:"       +
                 "\n\t - check frequency --- every %d %s"    +
                 "\n\t - max age ----------- %d %s",
-                krakenHeartbeatMonitorParameters.getFrequency(),
-                krakenHeartbeatMonitorParameters.getTimeunit(),
-                krakenHeartbeatMonitorParameters.getMaxAge(),
-                krakenHeartbeatMonitorParameters.getTimeunit()
+                monitoringConfiguration.getFrequency(), monitoringConfiguration.getTimeunit(),
+                monitoringConfiguration.getMaxAge(),    monitoringConfiguration.getTimeunit()
         );
     }
 }
