@@ -1,8 +1,10 @@
 package fr.enix.exchanges.service;
 
-import fr.enix.exchanges.model.websocket.response.ChannelResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import reactor.core.publisher.Mono;
 
 public interface ChannelService {
 
-    void saveNewChannel(final ChannelResponse channelResponse);
+    void saveChannel(final String payload) throws JsonProcessingException;
+    Mono<String> getApplicationAssetPairByChannelId(final Long channelId);
 }

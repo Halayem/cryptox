@@ -2,9 +2,9 @@ package fr.enix.exchanges.configuration.manager;
 
 import fr.enix.exchanges.manager.*;
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.repository.ChannelRepository;
 import fr.enix.exchanges.repository.HeartbeatRepository;
 import fr.enix.exchanges.repository.PongRepository;
+import fr.enix.exchanges.service.ChannelService;
 import fr.enix.exchanges.service.TickerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 public class WebSocketSubscriptionManagerConfiguration {
 
     @Bean
-    public WebSocketSubscriptionManager channelManager(final ChannelRepository channelRepository) {
-        return new ChannelManager(channelRepository);
+    public WebSocketSubscriptionManager channelManager(final ChannelService channelService) {
+        return new ChannelManager(channelService);
     }
 
     @Bean

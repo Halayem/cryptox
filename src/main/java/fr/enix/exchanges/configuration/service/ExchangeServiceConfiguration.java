@@ -3,10 +3,12 @@ package fr.enix.exchanges.configuration.service;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.OpenOrdersMapper;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
+import fr.enix.exchanges.repository.ChannelRepository;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.*;
+import fr.enix.exchanges.service.impl.kraken.KrakenChannelServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,12 @@ public class ExchangeServiceConfiguration {
     public CurrenciesRepresentationService currenciesRepresentationService() {
         log.info("kraken currencies representation service bean will be created");
         return new KrakenCurrenciesRepresentationServiceImpl();
+    }
+
+    @Bean
+    public ChannelService channelService(final ChannelRepository channelRepository,
+                                         final CurrenciesRepresentationService currenciesRepresentationService) {
+        return new KrakenChannelServiceImpl(channelRepository, currenciesRepresentationService);
     }
 
     @Bean

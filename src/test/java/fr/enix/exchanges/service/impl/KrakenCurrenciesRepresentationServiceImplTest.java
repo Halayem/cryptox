@@ -19,4 +19,32 @@ class KrakenCurrenciesRepresentationServiceImplTest {
         assertEquals("XXBT/ZUSD",   krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("bitcoin-us_dollar"));
         assertEquals("SC/ZUSD",     krakenCurrenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair("siacoin-us_dollar"));
     }
+
+    @Test
+    void testGetApplicationAssetPairCurrencyRepresentationByMarketAssetPair() {
+        assertEquals("litecoin-euro",   krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("LTC/EUR"));
+        assertEquals("siacoin-euro",    krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("SC/EUR"));
+        assertEquals("bitcoin-euro",    krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("XBT/EUR"));
+        assertEquals("ripple-euro",     krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("XRP/EUR"));
+    }
+
+    @Test
+    void testGetApplicationAssetPairCurrencyRepresentationByMarketAssetPair_shouldThrowExceptionWhenFirstMarketAssetIsUnknown() {
+        Exception exception = assertThrows(
+                IllegalStateException.class, () ->
+                        krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("XYZ/EUR")
+                );
+
+        assertEquals("unknown kraken market asset: XYZ", exception.getMessage());
+    }
+
+    @Test
+    void testGetApplicationAssetPairCurrencyRepresentationByMarketAssetPair_shouldThrowExceptionWhenSecondMarketAssetIsUnknown() {
+        Exception exception = assertThrows(
+                IllegalStateException.class, () ->
+                        krakenCurrenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair("LTC/ABC")
+        );
+
+        assertEquals("unknown kraken market asset: ABC", exception.getMessage());
+    }
 }

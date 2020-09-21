@@ -1,0 +1,10 @@
+{
+  "channelID":    829,
+  "channelName":  "ticker",
+  "event":        "subscriptionStatus",
+  "pair":         "XRP/EUR",
+  "status":       "subscribed",
+  "subscription":{
+    "name":"ticker"
+  }
+}

@@ -27,8 +27,8 @@ public class WebSocketSubscriptionFactory {
 
     private boolean isHeartbeatPayload  (final String payload) { return payload.contains("heartbeat");          }
     private boolean isPongPayload       (final String payload) { return payload.contains("pong");               }
+    private boolean isTickerPayload     (final String payload) { return payload.matches("^\\[(\\d+).*"); }
     private boolean isConnectionPayload (final String payload) { return payload.indexOf("connectionID" ) == 2;  }
     private boolean isChannelPayload    (final String payload) { return payload.indexOf("channelID") == 2;      }
-    private boolean isTickerPayload     (final String payload) { return payload.matches("^\\[(\\d+).*"); }
 
 }

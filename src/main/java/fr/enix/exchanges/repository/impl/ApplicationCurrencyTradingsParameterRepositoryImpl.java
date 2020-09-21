@@ -15,6 +15,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
 
     private final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter;
 
+    @Override
     public Flux<String> getEnabledApplicationAssetPairForTrading() {
         return  Flux.fromIterable(
                     applicationCurrencyTradingsParameter
@@ -27,20 +28,21 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         );
     }
 
-    private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
-        return tradingParameters.getValue().isEnabled();
-    }
-
-    private String getApplicationAssetPair(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
-        return tradingParameters.getKey();
-    }
-
+    @Override
     public Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair) {
         List<String> strategies = new ArrayList();
         if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { strategies.add("bearing");   }
         if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { strategies.add("threshold"); }
 
         return Flux.fromIterable(strategies);
+    }
+
+    private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
+        return tradingParameters.getValue().isEnabled();
+    }
+
+    private String getApplicationAssetPair(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
+        return tradingParameters.getKey();
     }
 
     private boolean isBearingStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
