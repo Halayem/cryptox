@@ -17,10 +17,10 @@ public class WebSocketSubscriptionFactory {
         log.info("string payload, before calling the adequate manager: {}", payload);
 
         if ( isHeartbeatPayload (payload) ) { return heartbeatManager;      }
-        if ( isPongPayload      (payload) ) { return pongManager;           }
-        if ( isConnectionPayload(payload) ) { return connectionManager;     }
-        if ( isChannelPayload   (payload) ) { return channelManager;        }
         if ( isTickerPayload    (payload) ) { return tickerResponseManager; }
+        if ( isPongPayload      (payload) ) { return pongManager;           }
+        if ( isChannelPayload   (payload) ) { return channelManager;        }
+        if ( isConnectionPayload(payload) ) { return connectionManager;     }
 
         throw new RuntimeException("no manager configured for this payload: " + payload);
     }

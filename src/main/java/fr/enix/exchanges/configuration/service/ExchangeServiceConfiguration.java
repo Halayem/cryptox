@@ -7,7 +7,10 @@ import fr.enix.exchanges.repository.ChannelRepository;
 import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import fr.enix.exchanges.service.*;
-import fr.enix.exchanges.service.impl.*;
+import fr.enix.exchanges.service.impl.ExchangeServiceImpl;
+import fr.enix.exchanges.service.impl.KrakenCurrenciesRepresentationServiceImpl;
+import fr.enix.exchanges.service.impl.KrakenTradingConfigurationServiceImpl;
+import fr.enix.exchanges.service.impl.MarketOfferServiceImpl;
 import fr.enix.exchanges.service.impl.kraken.KrakenChannelServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +31,14 @@ public class ExchangeServiceConfiguration {
     public MarketOfferService marketOfferService(final MarketOfferHistoryRepository marketOfferHistoryRepository) {
         return new MarketOfferServiceImpl(marketOfferHistoryRepository);
     }
+    /*
 
     @Bean
     public TransactionDecisionService transactionDecisionService() {
         return new TransactionDecisionServiceImpl();
     }
+
+     */
 
     @Bean
     public CurrenciesRepresentationService currenciesRepresentationService() {

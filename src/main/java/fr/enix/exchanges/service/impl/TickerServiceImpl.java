@@ -3,45 +3,48 @@
  */
 package fr.enix.exchanges.service.impl;
 
-import fr.enix.exchanges.model.business.input.AddOrderInput;
-import fr.enix.exchanges.model.business.output.AddOrderOutput;
-import fr.enix.exchanges.model.business.output.TickerOutput;
-import fr.enix.exchanges.model.parameters.AddOrderType;
-import fr.enix.exchanges.model.parameters.Asset;
-import fr.enix.exchanges.model.parameters.OrderType;
-import fr.enix.exchanges.model.parameters.XzAsset;
-import fr.enix.exchanges.model.websocket.AssetPair;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
-import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.exchanges.service.MarketOfferService;
-import fr.enix.exchanges.service.TickerService;
-import fr.enix.exchanges.service.TransactionDecisionService;
+import fr.enix.exchanges.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Slf4j
 @AllArgsConstructor
 public class TickerServiceImpl implements TickerService {
 
+    /*
     private final ExchangeService               exchangeService;
-    private final MarketOfferService            marketOfferService;
     private final TransactionDecisionService    transactionDecisionService;
-
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
-
-    private final BigDecimal LITECOIN_TRADING_VOLUME_UNIT   = new BigDecimal("0.5");
-    private final BigDecimal EURO_TRADING_VOLUME_UNIT       = new BigDecimal("20");
-
     private final int           DIVIDE_SCALE    = 8;
     private final RoundingMode  ROUNDING_MODE   = RoundingMode.DOWN;
+    */
+
+    private final MarketOfferService                marketOfferService;
+    private final CurrenciesRepresentationService   currenciesRepresentationService;
+    private final TickerMapper                      tickerMapper;
+
+
 
     @Override
-    public void marketOfferUpdateHandler(final TickerOutput tickerOutput) {
+    public void marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
 
+        tickerMapper.mapTickerResponseToTickerOutput(
+            tickerMapper.mapStringToTickerResponse(payload)
+        ).map( tickerOutput ->
+                marketOfferService.saveNewMarketOffer(
+                    currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
+                        tickerOutput.getAsk().getPrice()
+                )
+        ).then();
+
+        log.warn("ticker service has only saved new market offer information");
+        /*
+        final TickerOutput tickerOutput;
         marketOfferService.saveNewMarketPrice   (tickerOutput.getAssetPair(), tickerOutput.getAsk().getPrice())
                           .flatMap              (transactionDecisionService::getDecision)
                           .map                  (decision -> {
@@ -58,8 +61,11 @@ public class TickerServiceImpl implements TickerService {
                               }
                               return Flux.empty();
                           }).subscribe(o -> {});
+
+         */
     }
 
+    /*
     private Flux<AddOrderOutput> placeBuyOrder(final TickerOutput tickerOutput) {
         log.info( "starting process for placing buy order based on ticker output: {}", tickerOutput );
 
@@ -141,4 +147,6 @@ public class TickerServiceImpl implements TickerService {
         return true;
     }
 
+
+     */
 }

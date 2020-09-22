@@ -3,9 +3,8 @@ package fr.enix.exchanges.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.exchanges.model.business.output.TickerOutput;
-import fr.enix.exchanges.model.parameters.Asset;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
-import fr.enix.exchanges.model.ws.AssetPair;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,36 +20,34 @@ public class TickerMapper {
                              .build();
     }
 
-    public TickerOutput mapTickerResponseToTickerOutput(final TickerResponse tickerResponse) {
+    public Mono<TickerOutput> mapTickerResponseToTickerOutput(final TickerResponse tickerResponse) {
 
-        return TickerOutput.builder ()
-                           .ask(TickerOutput.Offer.builder()
-                                                  .price         (new BigDecimal(tickerResponse.getTicker().getA().get(0)))
-                                                  .wholeLotVolume(new BigDecimal(tickerResponse.getTicker().getA().get(1)))
-                                                  .lotVolume     (new BigDecimal(tickerResponse.getTicker().getA().get(2)))
-                                                  .build()
-                           )
-                           .bid(TickerOutput.Offer.builder()
-                                                  .price         (new BigDecimal(tickerResponse.getTicker().getB().get(0)))
-                                                  .wholeLotVolume(new BigDecimal(tickerResponse.getTicker().getB().get(1)))
-                                                  .lotVolume     (new BigDecimal(tickerResponse.getTicker().getB().get(2)))
-                                                  .build()
-                           )
-                           .lowTrade( TickerOutput.MarketStatus.builder()
-                                                               .today       (new BigDecimal(tickerResponse.getTicker().getL().get(0)))
-                                                               .last24Hours (new BigDecimal(tickerResponse.getTicker().getL().get(1)))
-                                                               .build()
-                           )
-                           .highTrade( TickerOutput.MarketStatus.builder()
-                                                                .today       (new BigDecimal(tickerResponse.getTicker().getH().get(0)))
-                                                                .last24Hours (new BigDecimal(tickerResponse.getTicker().getH().get(1)))
-                                                                .build()
-                           ).assetPair(AssetPair.builder()
-                                                .from   (Asset.find(tickerResponse.getAssetPair().split("/")[0]))
-                                                .to     (Asset.find(tickerResponse.getAssetPair().split("/")[1]))
-                                                .build  ()
-                           )
-                           .build();
+        return Mono.just(
+                TickerOutput.builder ()
+                       .ask(TickerOutput.Offer.builder()
+                                              .price         (new BigDecimal(tickerResponse.getTicker().getA().get(0)))
+                                              .wholeLotVolume(new BigDecimal(tickerResponse.getTicker().getA().get(1)))
+                                              .lotVolume     (new BigDecimal(tickerResponse.getTicker().getA().get(2)))
+                                              .build()
+                       )
+                       .bid(TickerOutput.Offer.builder()
+                                              .price         (new BigDecimal(tickerResponse.getTicker().getB().get(0)))
+                                              .wholeLotVolume(new BigDecimal(tickerResponse.getTicker().getB().get(1)))
+                                              .lotVolume     (new BigDecimal(tickerResponse.getTicker().getB().get(2)))
+                                              .build()
+                       )
+                       .lowTrade( TickerOutput.MarketStatus.builder()
+                                                           .today       (new BigDecimal(tickerResponse.getTicker().getL().get(0)))
+                                                           .last24Hours (new BigDecimal(tickerResponse.getTicker().getL().get(1)))
+                                                           .build()
+                       )
+                       .highTrade( TickerOutput.MarketStatus.builder()
+                                                            .today       (new BigDecimal(tickerResponse.getTicker().getH().get(0)))
+                                                            .last24Hours (new BigDecimal(tickerResponse.getTicker().getH().get(1)))
+                                                            .build()
+                       ).assetPair(tickerResponse.getAssetPair())
+                       .build()
+        );
     }
 
 }

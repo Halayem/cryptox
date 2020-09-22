@@ -23,9 +23,8 @@ public class WebSocketSubscriptionManagerConfiguration {
     }
 
     @Bean
-    public WebSocketSubscriptionManager tickerResponseManager(final TickerService tickerService,
-                                                              final TickerMapper tickerMapper) {
-        return new TickerResponseManager(tickerService, tickerMapper);
+    public WebSocketSubscriptionManager tickerResponseManager(final TickerService tickerService) {
+        return new TickerResponseManager(tickerService);
     }
 
     @Bean

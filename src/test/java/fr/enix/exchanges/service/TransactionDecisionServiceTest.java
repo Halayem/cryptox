@@ -22,6 +22,7 @@ class TransactionDecisionServiceTest {
 
     @Autowired private MarketOfferService marketOfferService;
 
+    /*
     private TransactionDecisionService transactionDecisionService = new TransactionDecisionServiceImpl();
     private final AssetPair assetPair = AssetPair.builder().from(Asset.LTC).to(Asset.EUR).build();
 
@@ -91,4 +92,5 @@ class TransactionDecisionServiceTest {
         marketOfferService.resetAllMarketOfferHistory();
     }
 
+     */
 }

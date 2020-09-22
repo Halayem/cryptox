@@ -1,14 +1,11 @@
 package fr.enix.exchanges.service.impl;
 
-import fr.enix.exchanges.model.repository.Decision;
-import fr.enix.exchanges.model.repository.MarketPriceHistory;
-import fr.enix.exchanges.service.TransactionDecisionService;
 import lombok.AllArgsConstructor;
-import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
-public class TransactionDecisionServiceImpl implements TransactionDecisionService {
+public class TransactionDecisionServiceImpl /*implements TransactionDecisionService*/ {
 
+    /*
     @Override
     public Mono<Decision> getDecision(final MarketPriceHistory marketPriceHistory) {
         if( marketPriceHistory.getCurrentMarketOffer()          == null ||
@@ -27,5 +24,7 @@ public class TransactionDecisionServiceImpl implements TransactionDecisionServic
                 marketPriceHistory.getPreviousMarketOffer().getPrice()
         );
     }
+
+     */
 
 }

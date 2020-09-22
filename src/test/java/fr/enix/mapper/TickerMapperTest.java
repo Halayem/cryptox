@@ -2,11 +2,11 @@ package fr.enix.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.model.business.output.TickerOutput;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -81,21 +81,23 @@ class TickerMapperTest {
 
     @Test
     void testMapTickerResponseToTickerOutput_success(){
-        final TickerOutput tickerOutput = tickerMapper.mapTickerResponseToTickerOutput(buildTickerResponse());
-        assertEquals( new BigDecimal("41.93000"),   tickerOutput.getAsk().getPrice() );
-        assertEquals( new BigDecimal("156"),        tickerOutput.getAsk().getWholeLotVolume() );
-        assertEquals( new BigDecimal("156.000"),    tickerOutput.getAsk().getLotVolume() );
+        StepVerifier
+        .create         (tickerMapper.mapTickerResponseToTickerOutput(buildTickerResponse()))
+        .consumeNextWith(tickerOutput -> {
+            assertEquals( new BigDecimal("41.93000"),   tickerOutput.getAsk().getPrice() );
+            assertEquals( new BigDecimal("156"),        tickerOutput.getAsk().getWholeLotVolume() );
+            assertEquals( new BigDecimal("156.000"),    tickerOutput.getAsk().getLotVolume() );
 
-        assertEquals( new BigDecimal("41.87000"),   tickerOutput.getBid().getPrice() );
-        assertEquals( new BigDecimal("26"),         tickerOutput.getBid().getWholeLotVolume() );
-        assertEquals( new BigDecimal("126.000"),    tickerOutput.getBid().getLotVolume() );
+            assertEquals( new BigDecimal("41.87000"),   tickerOutput.getBid().getPrice() );
+            assertEquals( new BigDecimal("26"),         tickerOutput.getBid().getWholeLotVolume() );
+            assertEquals( new BigDecimal("126.000"),    tickerOutput.getBid().getLotVolume() );
 
-        assertEquals( new BigDecimal("41.71000"),   tickerOutput.getLowTrade().getToday() );
-        assertEquals( new BigDecimal("41.46000"),   tickerOutput.getLowTrade().getLast24Hours() );
+            assertEquals( new BigDecimal("41.71000"),   tickerOutput.getLowTrade().getToday() );
+            assertEquals( new BigDecimal("41.46000"),   tickerOutput.getLowTrade().getLast24Hours() );
 
-        assertEquals( new BigDecimal("42.33000"),   tickerOutput.getHighTrade().getToday() );
-        assertEquals( new BigDecimal("42.81000"),   tickerOutput.getHighTrade().getLast24Hours() );
-
+            assertEquals( new BigDecimal("42.33000"),   tickerOutput.getHighTrade().getToday() );
+            assertEquals( new BigDecimal("42.81000"),   tickerOutput.getHighTrade().getLast24Hours() );
+        }).verifyComplete();
     }
 
     private TickerResponse buildTickerResponse() {

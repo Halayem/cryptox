@@ -14,7 +14,7 @@
                         )
                         .addOrderType   (AddOrderType.BUY)
                         .orderType      (OrderType.LIMIT)
-                        .price          (new BigDecimal("39.38"  ))
+                        .applicationAssetPairMarketTicker          (new BigDecimal("39.38"  ))
                         .volume         (new BigDecimal(1   ))
                         .leverage       ("2:1")
                         .close          (AddOrderInput.Close.builder()
@@ -51,7 +51,7 @@
                                         )
                         .addOrderType   (AddOrderType.SELL)
                         .orderType      (OrderType.LIMIT)
-                        .price          (new BigDecimal(40  ))
+                        .applicationAssetPairMarketTicker          (new BigDecimal(40  ))
                         .volume         (new BigDecimal(1   ))
                         .build()
             ).subscribe(addOrderOutput -> log.info( "order placed, kraken response: {}", addOrderOutput ));
