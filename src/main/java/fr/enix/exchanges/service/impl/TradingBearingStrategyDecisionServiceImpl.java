@@ -48,12 +48,12 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
     private boolean isHighGapReached(final BigDecimal lastPrice,
                                      final BigDecimal priceReference,
                                      final BigDecimal gap) {
-        return lastPrice.compareTo(priceReference.add(gap)) > 0;
+        return lastPrice.compareTo(priceReference.add(gap)) >= 0;
     }
 
     private boolean isLowGapReached(final BigDecimal lastPrice,
                                     final BigDecimal priceReference,
                                     final BigDecimal gap) {
-        return lastPrice.compareTo(priceReference.subtract(gap)) < 0;
+        return lastPrice.compareTo(priceReference.subtract(gap)) <= 0;
     }
 }
