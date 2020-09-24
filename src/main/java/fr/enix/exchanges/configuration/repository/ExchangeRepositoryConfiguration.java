@@ -61,6 +61,9 @@ public class ExchangeRepositoryConfiguration {
     }
 
     @Bean
+    public PriceReferenceRepository priceReferenceRepository() { return new PriceReferenceRepositoryImpl(); }
+
+    @Bean
     public HeartbeatRepository heartbeatRepository() {
         return new HeartbeatRepositoryInMemoryImpl();
     }

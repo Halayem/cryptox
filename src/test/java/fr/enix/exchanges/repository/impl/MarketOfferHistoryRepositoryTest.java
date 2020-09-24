@@ -22,6 +22,14 @@ class MarketOfferHistoryRepositoryTest {
     @Autowired
     private MarketOfferHistoryRepositoryImpl marketOfferHistoryRepository;
 
+    @Test
+    @Order(0)
+    void testGetLastPriceByApplicationAssetPair_shouldReturnMonoEmptyWhenNoPriceWasStoredYet() {
+        StepVerifier
+        .create(marketOfferHistoryRepository.getLastPriceByApplicationAssetPair("litecoin-euro"))
+        .verifyComplete();
+    }
+
     private Flux<ApplicationAssetPairTicker> initRecordsForLitecoinEuroAssetPair() {
         return Flux.concat(
             marketOfferHistoryRepository.saveApplicationAssetPairTicker("litecoin-euro", new BigDecimal("45.5"  )),
@@ -41,7 +49,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(0)
+    @Order(1)
     void testSaveNewMarketOffersForLitecoinEuroApplicationAssetPair() {
         StepVerifier
         .create(initRecordsForLitecoinEuroAssetPair())
@@ -54,7 +62,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void testSavedMarketOffersForLitecoinEuroApplicationAssetPair() {
         StepVerifier
         .create(marketOfferHistoryRepository.records.get("litecoin-euro"))
@@ -67,7 +75,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void testGetLastPriceByApplicationAssetPairForLitecoinEuroApplicationAssetPair() {
         StepVerifier
         .create(marketOfferHistoryRepository.getLastPriceByApplicationAssetPair("litecoin-euro"))
@@ -78,7 +86,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void testSaveNewMarketOffersForRippleEuroApplicationAssetPair() {
         StepVerifier
         .create(initRecordsForRippleEuroAssetPair())
@@ -91,7 +99,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void testSavedMarketOffersForRippleEuroApplicationAssetPair() {
         StepVerifier
         .create(marketOfferHistoryRepository.records.get("ripple-euro"))
@@ -104,7 +112,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void testGetLastPriceByApplicationAssetPairForRippleEuroApplicationAssetPair() {
         StepVerifier
         .create(marketOfferHistoryRepository.getLastPriceByApplicationAssetPair("ripple-euro"))
@@ -115,7 +123,7 @@ class MarketOfferHistoryRepositoryTest {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void testMarketOfferHistoryRepositoryImplRecordsHasOnly2Entries() {
         assertEquals(2, marketOfferHistoryRepository.records.size());
     }

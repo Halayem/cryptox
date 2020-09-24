@@ -18,7 +18,7 @@ public class TickerServiceImpl implements TickerService {
 
     /*
     private final ExchangeService               exchangeService;
-    private final TransactionDecisionService    transactionDecisionService;
+    private final TradingDecisionService    transactionDecisionService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final int           DIVIDE_SCALE    = 8;
     private final RoundingMode  ROUNDING_MODE   = RoundingMode.DOWN;
@@ -36,7 +36,7 @@ public class TickerServiceImpl implements TickerService {
         tickerMapper.mapTickerResponseToTickerOutput(
             tickerMapper.mapStringToTickerResponse(payload)
         ).map( tickerOutput ->
-                marketOfferService.saveNewMarketOffer(
+                marketOfferService.saveApplicationAssetPairTicker(
                     currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
                         tickerOutput.getAsk().getPrice()
                 )

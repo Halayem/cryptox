@@ -30,12 +30,16 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
 
     @Override
     public Mono<BigDecimal> getLastPriceByApplicationAssetPair(final String applicationAssetPair) {
-        return records
-                .get    (applicationAssetPair)
-                .reduce ((applicationAssetPairTicker1, applicationAssetPairTicker2) ->
-                        (applicationAssetPairTicker1.compareTo(applicationAssetPairTicker2) > 0 ) ? applicationAssetPairTicker1 : applicationAssetPairTicker2
-                )
-                .map(applicationAssetPairTicker -> applicationAssetPairTicker.getPrice());
+        return
+            records.containsKey(applicationAssetPair)
+            ? records
+              .get(applicationAssetPair)
+              .reduce((applicationAssetPairTicker1, applicationAssetPairTicker2) ->
+                    (applicationAssetPairTicker1.compareTo(applicationAssetPairTicker2) > 0 ) ? applicationAssetPairTicker1 : applicationAssetPairTicker2
+              )
+              .map(applicationAssetPairTicker -> applicationAssetPairTicker.getPrice())
+            : Mono.empty();
+
     }
 
     private void saveApplicationAssetPairTickerInRecords(final ApplicationAssetPairTicker applicationAssetPairTicker) {

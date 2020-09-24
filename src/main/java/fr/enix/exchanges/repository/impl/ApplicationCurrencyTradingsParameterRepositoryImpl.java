@@ -4,7 +4,9 @@ import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,17 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { strategies.add("threshold"); }
 
         return Flux.fromIterable(strategies);
+    }
+
+    @Override
+    public Mono<BigDecimal> getGapScaleByApplicationAssetPair(String applicationAssetPair) {
+        return Mono.justOrEmpty(
+          applicationCurrencyTradingsParameter
+          .getTradings          ()
+          .get                  (applicationAssetPair)
+          .getBearingStrategy   ()
+          .getGap               ()
+        );
     }
 
     private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
