@@ -1,5 +1,6 @@
 package fr.enix.exchanges.service.impl;
 
+import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import fr.enix.exchanges.service.MarketOfferService;
 import lombok.AllArgsConstructor;
@@ -13,9 +14,8 @@ public class MarketOfferServiceImpl implements MarketOfferService {
     private final MarketOfferHistoryRepository marketOfferHistoryRepository;
 
     @Override
-    public Mono<String> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
-        return marketOfferHistoryRepository.saveApplicationAssetPairTicker(applicationAssetPair, price)
-               .map(applicationAssetPairTicker -> applicationAssetPairTicker.getApplicationAssetPair());
+    public Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
+        return marketOfferHistoryRepository.saveApplicationAssetPairTicker(applicationAssetPair, price);
     }
 
     @Override

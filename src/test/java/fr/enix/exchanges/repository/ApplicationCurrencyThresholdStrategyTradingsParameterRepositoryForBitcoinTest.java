@@ -19,40 +19,40 @@ class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinT
     @Test
     void testGetTriggerPriceToBuy() {
         StepVerifier
-                .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToBuyByApplicationAssetPair(applicationAssetPairToTest))
-                .consumeNextWith(triggerPriceToBuy -> {
-                    assertEquals(new BigDecimal("8612"), triggerPriceToBuy);
-                })
-                .verifyComplete();
+        .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToBuyByApplicationAssetPair(applicationAssetPairToTest))
+        .consumeNextWith(triggerPriceToBuy -> {
+            assertEquals(new BigDecimal("8612"), triggerPriceToBuy);
+        })
+        .verifyComplete();
     }
 
     @Test
     void testGetTriggerAmountToBuy() {
         StepVerifier
-                .create(applicationThresholdStrategyParameterRepository.getAmountToBuyByApplicationAssetPair(applicationAssetPairToTest))
-                .consumeNextWith(amountToBuy -> {
-                    assertEquals(new BigDecimal("0.001"), amountToBuy);
-                })
-                .verifyComplete();
+        .create(applicationThresholdStrategyParameterRepository.getAmountToBuyByApplicationAssetPair(applicationAssetPairToTest))
+        .consumeNextWith(amountToBuy -> {
+            assertEquals(new BigDecimal("0.001"), amountToBuy);
+        })
+        .verifyComplete();
     }
 
     @Test
     void testGetTriggerPriceToSell() {
         StepVerifier
-                .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToSellByApplicationAssetPair(applicationAssetPairToTest))
-                .consumeNextWith(triggerPriceToSell -> {
-                    assertEquals(new BigDecimal("8725"), triggerPriceToSell);
-                })
-                .verifyComplete();
+        .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToSellByApplicationAssetPair(applicationAssetPairToTest))
+        .consumeNextWith(triggerPriceToSell -> {
+            assertEquals(new BigDecimal("8725"), triggerPriceToSell);
+        })
+        .verifyComplete();
     }
 
     @Test
     void testGetTriggerAmountToSell() {
         StepVerifier
-                .create(applicationThresholdStrategyParameterRepository.getAmountToSellByApplicationAssetPair(applicationAssetPairToTest))
-                .consumeNextWith(amountToSell -> {
-                    assertEquals(new BigDecimal("0.001"), amountToSell);
-                })
-                .verifyComplete();
+        .create(applicationThresholdStrategyParameterRepository.getAmountToSellByApplicationAssetPair(applicationAssetPairToTest))
+        .consumeNextWith(amountToSell -> {
+            assertEquals(new BigDecimal("0.001"), amountToSell);
+        })
+        .verifyComplete();
     }
 }

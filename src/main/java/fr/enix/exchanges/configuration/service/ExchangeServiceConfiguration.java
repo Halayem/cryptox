@@ -28,14 +28,12 @@ public class ExchangeServiceConfiguration {
 
     @Bean
     public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final PriceReferenceRepository priceReferenceRepository,
-                                                                            final MarketOfferService marketOfferService,
                                                                             final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
 
-        return new TradingBearingStrategyDecisionServiceImpl(
-                priceReferenceRepository,
-                marketOfferService,
-                applicationCurrencyTradingsParameterRepository
-        );
+        return new  TradingBearingStrategyDecisionServiceImpl(
+                        priceReferenceRepository,
+                        applicationCurrencyTradingsParameterRepository
+                    );
     }
 
     @Bean

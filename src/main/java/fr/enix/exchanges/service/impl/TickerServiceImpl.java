@@ -5,12 +5,15 @@ package fr.enix.exchanges.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
-import fr.enix.exchanges.service.*;
+import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
+import fr.enix.exchanges.model.business.output.AddOrderOutput;
+import fr.enix.exchanges.service.CurrenciesRepresentationService;
+import fr.enix.exchanges.service.MarketOfferService;
+import fr.enix.exchanges.service.TickerService;
+import fr.enix.exchanges.service.TradingDecisionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.math.RoundingMode;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @AllArgsConstructor
@@ -24,25 +27,34 @@ public class TickerServiceImpl implements TickerService {
     private final RoundingMode  ROUNDING_MODE   = RoundingMode.DOWN;
     */
 
+    private final TradingDecisionService            tradingDecisionService;
     private final MarketOfferService                marketOfferService;
     private final CurrenciesRepresentationService   currenciesRepresentationService;
     private final TickerMapper                      tickerMapper;
 
 
 
-    @Override
-    public void marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
+    private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
+        log.info("received trading decision: {}", applicationAssetPairTickerTradingDecision);
+        return Mono.just(AddOrderOutput.builder().build());
+    }
 
-        tickerMapper.mapTickerResponseToTickerOutput(
-            tickerMapper.mapStringToTickerResponse(payload)
-        ).map( tickerOutput ->
+
+    public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
+        log.warn("operation will be stopped in decision");
+
+        return
+            tickerMapper.mapTickerResponseToTickerOutput(tickerMapper.mapStringToTickerResponse(payload))
+            .flatMap( tickerOutput ->
                 marketOfferService.saveApplicationAssetPairTicker(
                     currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
-                        tickerOutput.getAsk().getPrice()
+                    tickerOutput.getAsk().getPrice()
                 )
-        ).then();
+            )
+            .flatMap(tradingDecisionService::getDecision)
+            .flatMap(this::placeOrder);
 
-        log.warn("ticker service has only saved new market offer information");
+
         /*
         final TickerOutput tickerOutput;
         marketOfferService.saveNewMarketPrice   (tickerOutput.getAssetPair(), tickerOutput.getAsk().getPrice())

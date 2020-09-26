@@ -1,9 +1,9 @@
 package fr.enix.exchanges.service.impl;
 
-import fr.enix.exchanges.model.repository.Decision;
+import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
+import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
-import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.TradingDecisionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,38 +11,40 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
+import static fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision.Decision;
+
 @AllArgsConstructor
 @Slf4j
 public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisionService {
 
 
     private final PriceReferenceRepository priceReferenceRepository;
-    private final MarketOfferService marketOfferService;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     @Override
-    public Mono<Decision> getDecision(final String applicationAssetPair) {
+    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+
+        final String applicationAssetPair = applicationAssetPairTicker.getApplicationAssetPair();
+        final BigDecimal currentApplicationAssetPairPrice = applicationAssetPairTicker.getPrice();
+
         return
             Mono.zip(
-                marketOfferService.getLastPriceByApplicationAssetPair(applicationAssetPair),
                 priceReferenceRepository.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(priceReference -> priceReference.getPrice()),
                 applicationCurrencyTradingsParameterRepository.getGapScaleByApplicationAssetPair(applicationAssetPair)
             )
-
             .flatMap(objects -> {
-                final BigDecimal lastPrice      = objects.getT1();
-                final BigDecimal priceReference = objects.getT2();
-                final BigDecimal gap            = objects.getT3();
+                final BigDecimal priceReference = objects.getT1();
+                final BigDecimal gap            = objects.getT2();
 
                 return
                     Mono.just(
-                    isHighGapReached(lastPrice, priceReference, gap)
-                      ? Decision.SELL
-                      : isLowGapReached(lastPrice, priceReference, gap)
-                        ? Decision.BUY
-                        : Decision.DO_NOTHING);
+                    isHighGapReached(currentApplicationAssetPairPrice, priceReference, gap)
+                      ? newApplicationAssetPairTickerTradingDecision(Decision.SELL, applicationAssetPairTicker)
+                      : isLowGapReached(currentApplicationAssetPairPrice, priceReference, gap)
+                        ? newApplicationAssetPairTickerTradingDecision(Decision.BUY, applicationAssetPairTicker)
+                        : newApplicationAssetPairTickerTradingDecision(Decision.DO_NOTHING, applicationAssetPairTicker));
             })
-            .switchIfEmpty(Mono.just(Decision.DO_NOTHING));
+            .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.DO_NOTHING, applicationAssetPairTicker)));
     }
 
     private boolean isHighGapReached(final BigDecimal lastPrice,
@@ -55,5 +57,15 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                                     final BigDecimal priceReference,
                                     final BigDecimal gap) {
         return lastPrice.compareTo(priceReference.subtract(gap)) <= 0;
+    }
+
+    private ApplicationAssetPairTickerTradingDecision newApplicationAssetPairTickerTradingDecision(final Decision decision,
+                                                                                                   final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return
+            ApplicationAssetPairTickerTradingDecision
+            .builder()
+            .decision                   ( decision )
+            .applicationAssetPairTicker ( applicationAssetPairTicker )
+            .build();
     }
 }
