@@ -6,12 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
+@Slf4j
 public class TickerResponseManager implements WebSocketSubscriptionManager {
 
     private final TickerService tickerService;
 
     @Override
     public void managePayload(final String payload) throws JsonProcessingException {
-        tickerService.marketOfferUpdateHandler(payload);
+        tickerService.marketOfferUpdateHandler(payload).subscribe(
+                addOrderOutput -> log.info("addOrder output: {}", addOrderOutput)
+        );
     }
 }

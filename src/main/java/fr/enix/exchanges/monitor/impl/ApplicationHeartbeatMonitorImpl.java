@@ -53,12 +53,19 @@ public class ApplicationHeartbeatMonitorImpl extends AbstractApplicationMonitor 
 
     private void heartbeatExceededMaxAgeError() {
         error = true;
-        log.error(  String.format( "heartbeat date: %s has exceeded the max age: %d", heartbeatRepository.getLastHeartbeatDatetime(), monitoringConfiguration.getMaxAge() ) );
+        log.error(
+            String.format(
+                "heartbeat date: %s has exceeded the max age: %d %s",
+                heartbeatRepository.getLastHeartbeatDatetime(),
+                monitoringConfiguration.getMaxAge(),
+                monitoringConfiguration.getTimeunit()
+            )
+        );
     }
 
     private void heartbeatOk() {
         error = false;
-        log.info("heartbeat monitoring OK");
+        log.debug("heartbeat monitoring OK");
     }
 
     private String getHeartbeatConfigurationParametersForLog() {

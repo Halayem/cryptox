@@ -4,6 +4,7 @@ import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecisio
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
+import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.service.TradingDecisionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import static fr.enix.exchanges.model.business.ApplicationAssetPairTickerTrading
 public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisionService {
 
 
-    private final PriceReferenceRepository priceReferenceRepository;
+    private final PriceReferenceService priceReferenceService;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     @Override
@@ -29,7 +30,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
 
         return
             Mono.zip(
-                priceReferenceRepository.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(priceReference -> priceReference.getPrice()),
+                priceReferenceService.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(priceReference -> priceReference.getPrice()),
                 applicationCurrencyTradingsParameterRepository.getGapScaleByApplicationAssetPair(applicationAssetPair)
             )
             .flatMap(objects -> {
@@ -44,7 +45,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                         ? newApplicationAssetPairTickerTradingDecision(Decision.BUY, applicationAssetPairTicker)
                         : newApplicationAssetPairTickerTradingDecision(Decision.DO_NOTHING, applicationAssetPairTicker));
             })
-            .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.DO_NOTHING, applicationAssetPairTicker)));
+            .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.ERROR, applicationAssetPairTicker)));
     }
 
     private boolean isHighGapReached(final BigDecimal lastPrice,

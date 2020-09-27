@@ -14,6 +14,6 @@ public class ApplicationAssetPairTickerTradingDecision {
     private final ApplicationAssetPairTicker applicationAssetPairTicker;
 
     public enum Decision {
-        BUY, SELL, DO_NOTHING
+        BUY, SELL, DO_NOTHING, ERROR
     }
 }

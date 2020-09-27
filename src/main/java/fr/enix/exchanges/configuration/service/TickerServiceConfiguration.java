@@ -1,10 +1,7 @@
 package fr.enix.exchanges.configuration.service;
 
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.service.CurrenciesRepresentationService;
-import fr.enix.exchanges.service.MarketOfferService;
-import fr.enix.exchanges.service.TickerService;
-import fr.enix.exchanges.service.TradingDecisionService;
+import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.TickerServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +13,15 @@ public class TickerServiceConfiguration {
     public TickerService tickerService(final TradingDecisionService tradingDecisionService,
                                        final MarketOfferService marketOfferService,
                                        final CurrenciesRepresentationService currenciesRepresentationService,
-                                       final TickerMapper tickerMapper) {
-
-        return new TickerServiceImpl(tradingDecisionService,
-                                     marketOfferService,
-                                     currenciesRepresentationService,
-                                     tickerMapper
-       );
+                                       final TickerMapper tickerMapper,
+                                       final PriceReferenceService priceReferenceService) {
+        return
+            new TickerServiceImpl(
+                    tradingDecisionService,
+                    marketOfferService,
+                    currenciesRepresentationService,
+                    tickerMapper,
+                    priceReferenceService
+            );
     }
 }

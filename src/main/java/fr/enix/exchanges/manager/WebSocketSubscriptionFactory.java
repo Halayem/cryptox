@@ -14,7 +14,7 @@ public class WebSocketSubscriptionFactory {
     private final WebSocketSubscriptionManager pongManager;
 
     public WebSocketSubscriptionManager getWebSocketSubscriptionManager(final String payload) {
-        log.info("string payload, before calling the adequate manager: {}", payload);
+        log.debug("string payload, before calling the adequate manager: {}", payload);
 
         if ( isHeartbeatPayload (payload) ) { return heartbeatManager;      }
         if ( isTickerPayload    (payload) ) { return tickerResponseManager; }

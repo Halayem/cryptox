@@ -45,12 +45,19 @@ public class ApplicationPongMonitorImpl extends AbstractApplicationMonitor {
 
     private void pongExceededMaxAgeError() {
         error = true;
-        log.error(  String.format( "pong date: %s has exceeded the max age: %d", pongRepository.getLastPongDatetime(), monitoringConfiguration.getMaxAge() ) );
+        log.error(
+            String.format(
+                "pong date: %s has exceeded the max age: %d %s",
+                pongRepository.getLastPongDatetime(),
+                monitoringConfiguration.getMaxAge(),
+                monitoringConfiguration.getTimeunit()
+            )
+        );
     }
 
     private void pongOk() {
         error = false;
-        log.info("pong monitoring OK");
+        log.debug("pong monitoring OK");
     }
 
     @Override
@@ -64,7 +71,7 @@ public class ApplicationPongMonitorImpl extends AbstractApplicationMonitor {
 
     private String getPongConfigurationParametersForLog() {
         return String.format(
-                "pong monitoring configuration:"       +
+                "pong monitoring configuration:"            +
                 "\n\t - check frequency --- every %d %s"    +
                 "\n\t - max age ----------- %d %s",
                 monitoringConfiguration.getFrequency(), monitoringConfiguration.getTimeunit(),

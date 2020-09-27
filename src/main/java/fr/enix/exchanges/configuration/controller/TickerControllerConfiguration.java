@@ -73,7 +73,7 @@ public class TickerControllerConfiguration {
                                 Flux
                                 .interval   (Duration.ofSeconds(krakenPingProperties.getFrequency())        )
                                 .map        (pingPayload -> krakenPingProperties.getPayload()               )
-                                .doOnNext   (pingPayload -> log.info("sending ping request {}", pingPayload))
+                                .doOnNext   (pingPayload -> log.debug("sending ping request {}", pingPayload))
                                 .map        (webSocketSession::textMessage                                  )
                         ).mergeWith(
                                 webSocketSession.send(

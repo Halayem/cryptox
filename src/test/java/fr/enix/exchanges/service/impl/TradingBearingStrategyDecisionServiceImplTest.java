@@ -43,7 +43,7 @@ class TradingBearingStrategyDecisionServiceImplTest {
             .build())
         )
         .consumeNextWith(applicationAssetPairTickerTradingDecision ->
-            assertEquals(Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getDecision()))
+            assertEquals(Decision.ERROR, applicationAssetPairTickerTradingDecision.getDecision()))
         .verifyComplete();
     }
 

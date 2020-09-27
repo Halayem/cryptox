@@ -5,11 +5,13 @@ import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Builder
 @Getter
+@ToString
 public class AddOrderInput {
 
     private AssetPair       assetPair;

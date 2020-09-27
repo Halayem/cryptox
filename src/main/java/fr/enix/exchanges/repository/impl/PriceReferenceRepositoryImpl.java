@@ -13,10 +13,12 @@ public class PriceReferenceRepositoryImpl implements PriceReferenceRepository  {
 
     protected Map<String, PriceReference> applicationAssetPairPriceReferences = new ConcurrentHashMap();
 
+    @Override
     public Mono<PriceReference> getPriceReferenceForApplicationAssetPair(final String applicationAssetPair) {
         return Mono.justOrEmpty(applicationAssetPairPriceReferences.get(applicationAssetPair));
     }
 
+    @Override
     public Mono<PriceReference> updatePriceReferenceForApplicationAssetPair(final String applicationAssetPair, final BigDecimal newPrice) {
         return
             Mono.just(

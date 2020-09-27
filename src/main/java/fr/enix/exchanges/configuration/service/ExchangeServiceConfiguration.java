@@ -27,11 +27,10 @@ public class ExchangeServiceConfiguration {
     }
 
     @Bean
-    public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final PriceReferenceRepository priceReferenceRepository,
+    public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final PriceReferenceService priceReferenceService,
                                                                             final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
-
         return new  TradingBearingStrategyDecisionServiceImpl(
-                        priceReferenceRepository,
+                priceReferenceService,
                         applicationCurrencyTradingsParameterRepository
                     );
     }
@@ -46,6 +45,11 @@ public class ExchangeServiceConfiguration {
     public ChannelService channelService(final ChannelRepository channelRepository,
                                          final CurrenciesRepresentationService currenciesRepresentationService) {
         return new KrakenChannelServiceImpl(channelRepository, currenciesRepresentationService);
+    }
+
+    @Bean
+    public PriceReferenceService priceReferenceService(final PriceReferenceRepository priceReferenceRepository) {
+        return new PriceReferenceServiceImpl(priceReferenceRepository);
     }
 
     @Bean
