@@ -27,8 +27,8 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
 
     private void startWebSocketClient() {
         Executors
-                .newSingleThreadScheduledExecutor()
-                .schedule(this::startTickerWebSocketClient, 10l, TimeUnit.SECONDS);
+        .newSingleThreadScheduledExecutor()
+        .schedule(this::startTickerWebSocketClient, 10l, TimeUnit.SECONDS);
     }
 
     private void startTickerWebSocketClient() {

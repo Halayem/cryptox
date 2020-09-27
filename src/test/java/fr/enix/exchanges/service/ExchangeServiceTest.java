@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import fr.enix.common.exception.eapi.KrakenEapiInvalidKeyException;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.parameters.*;
-import fr.enix.exchanges.model.websocket.AssetPair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,26 +66,24 @@ class ExchangeServiceTest {
 
     @Test
     void testAddOrder_success() {
-        StepVerifier.create(exchangeService.addOrder    ( AddOrderInput.builder     ()
-                                                                       .assetPair   (AssetPair.builder  ()
-                                                                                              .from     (XzAsset.XLTC)
-                                                                                              .to       (XzAsset.ZEUR)
-                                                                                              .build    ()
-                                                                       )
-                                                                       .addOrderType(AddOrderType.SELL)
-                                                                       .orderType   (OrderType.LIMIT)
-                                                                       .price       (new BigDecimal(40  ))
-                                                                       .volume      (new BigDecimal(1   ))
-                                                                       .build       ()
-                                                        )
-                    )
-                    .consumeNextWith(addOrderOutput -> {
-                        assertEquals("sell 1.00000000 LTCEUR @ limit 40.00", addOrderOutput.getDescription());
-                        assertTrue(addOrderOutput.getTransactionIds().contains("OA6DK2-UK35J-NYDBAF"));
-                        assertEquals(1, addOrderOutput.getTransactionIds().size() );
-                        assertEquals(0, addOrderOutput.getErrors().size() );
-                    })
-                    .verifyComplete();
+        StepVerifier.create(
+            exchangeService.addOrder(
+                AddOrderInput
+                    .builder()
+                    .applicationAssetPair   ("litecoin-euro")
+                    .addOrderType           (AddOrderType.SELL)
+                    .orderType              (OrderType.LIMIT)
+                    .price                  (new BigDecimal(40  ))
+                    .volume                 (new BigDecimal(1   ))
+                    .build                  ()
+            ))
+            .consumeNextWith(addOrderOutput -> {
+                assertEquals("sell 1.00000000 LTCEUR @ limit 40.00", addOrderOutput.getDescription());
+                assertTrue(addOrderOutput.getTransactionIds().contains("OA6DK2-UK35J-NYDBAF"));
+                assertEquals(1, addOrderOutput.getTransactionIds().size() );
+                assertEquals(0, addOrderOutput.getErrors().size() );
+            })
+            .verifyComplete();
     }
 
     @Test

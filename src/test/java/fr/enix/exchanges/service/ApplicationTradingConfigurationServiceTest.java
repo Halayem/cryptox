@@ -15,9 +15,9 @@ class ApplicationTradingConfigurationServiceTest {
     void testGetEnabledAssetPairsRepresentationForWebServiceTrading() {
         StepVerifier
                 .create(applicationTradingConfigurationService.getEnabledAssetPairsRepresentationForWebServiceTrading())
-                .expectNext("XLTC/ZEUR")
-                .expectNext("XXBT/ZEUR")
-                .expectNext("XXRP/ZEUR")
+                .expectNext("XLTCZEUR")
+                .expectNext("XXBTZEUR")
+                .expectNext("XXRPZEUR")
                 .expectComplete()
                 .verify();
     }

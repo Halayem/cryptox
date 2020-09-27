@@ -47,27 +47,6 @@ public class TickerServiceImpl implements TickerService {
                 priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
                 return this.placeOrder(applicationAssetPairTickerTradingDecision);
             });
-
-        /*
-        final TickerOutput tickerOutput;
-        marketOfferService.saveNewMarketPrice   (tickerOutput.getAssetPair(), tickerOutput.getAsk().getPrice())
-                          .flatMap              (transactionDecisionService::getDecision)
-                          .map                  (decision -> {
-                              switch (decision) {
-                                  case SELL: return placeSellOrder  (tickerOutput)
-                                                    .subscribe      (addOrderOutput ->
-                                                        log.info("sell order placed, response: {}", addOrderOutput)
-                                                    );
-                                  case BUY:  return placeBuyOrder   (tickerOutput)
-                                                    .subscribe      (addOrderOutput ->
-                                                        log.info("buy order placed, response: {}", addOrderOutput)
-                                                    );
-                                  case DO_NOTHING: log.info("no sell no buy decision");
-                              }
-                              return Flux.empty();
-                          }).subscribe(o -> {});
-
-         */
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {

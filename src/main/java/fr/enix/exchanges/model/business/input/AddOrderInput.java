@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @ToString
 public class AddOrderInput {
 
-    private AssetPair       assetPair;
+    private String          applicationAssetPair;
     private AddOrderType    addOrderType;
     private OrderType       orderType;
     private BigDecimal      volume;

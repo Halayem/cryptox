@@ -9,7 +9,7 @@ public class KrakenCurrenciesRepresentationServiceImpl implements CurrenciesRepr
 
     @Override
     public String getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(final String applicationAssetPair) {
-        return  CurrenciesRepresentation.valueOf(applicationAssetPair.split("-")[0].toUpperCase()).getKrakenWebServiceRepresentation() + "/" +
+        return  CurrenciesRepresentation.valueOf(applicationAssetPair.split("-")[0].toUpperCase()).getKrakenWebServiceRepresentation()+
                 CurrenciesRepresentation.valueOf(applicationAssetPair.split("-")[1].toUpperCase()).getKrakenWebServiceRepresentation();
     }
 
