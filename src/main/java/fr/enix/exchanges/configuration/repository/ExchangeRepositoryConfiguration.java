@@ -6,6 +6,7 @@ import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
 import fr.enix.exchanges.repository.*;
 import fr.enix.exchanges.repository.impl.*;
+import fr.enix.exchanges.service.CurrenciesRepresentationService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +32,14 @@ public class ExchangeRepositoryConfiguration {
     @Bean
     public KrakenPrivateRepository krakenPrivateRepository(final WebClient krakenPrivateWebClient,
                                                            final KrakenRepositoryService krakenService,
-                                                           final AddOrderMapper addOrderMapper) {
-        return new KrakenPrivateRepositoryImpl(krakenPrivateWebClient, krakenService, addOrderMapper);
+                                                           final AddOrderMapper addOrderMapper,
+                                                           final CurrenciesRepresentationService currenciesRepresentationService) {
+        return new KrakenPrivateRepositoryImpl(
+                        krakenPrivateWebClient,
+                        krakenService,
+                        addOrderMapper,
+                        currenciesRepresentationService
+        );
     }
 
     @Bean

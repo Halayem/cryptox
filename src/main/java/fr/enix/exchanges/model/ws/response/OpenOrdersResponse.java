@@ -14,6 +14,9 @@ public class OpenOrdersResponse extends ErrorResponse {
 
     private Result result;
 
+    /**
+     * key is the transaction id
+     */
     @Getter
     public static class Result {
         private Map<String, Order> open;
@@ -21,16 +24,15 @@ public class OpenOrdersResponse extends ErrorResponse {
 
     @Getter
     public static class Order {
-
         private Description descr;
-        private String status;
-        private BigDecimal vol;
+        private String      status;
+        private BigDecimal  vol;
     }
 
     @Getter
     public static class Description {
-        private String pair;
-        private String type;
-        private BigDecimal price;
+        private String      pair;
+        private String      type;
+        private BigDecimal  price;
     }
 }

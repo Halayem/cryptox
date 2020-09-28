@@ -1,7 +1,6 @@
 package fr.enix.exchanges.configuration.service;
 
 import fr.enix.exchanges.mapper.AddOrderMapper;
-import fr.enix.exchanges.mapper.OpenOrdersMapper;
 import fr.enix.exchanges.repository.*;
 import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.*;
@@ -16,9 +15,8 @@ public class ExchangeServiceConfiguration {
 
     @Bean
     public ExchangeService exchangeService(final KrakenPrivateRepository exchangeRepository,
-                                           final AddOrderMapper addOrderMapper,
-                                           final OpenOrdersMapper openOrdersMapper) {
-        return new ExchangeServiceImpl(exchangeRepository, addOrderMapper, openOrdersMapper);
+                                           final AddOrderMapper addOrderMapper) {
+        return new ExchangeServiceImpl(exchangeRepository, addOrderMapper);
     }
 
     @Bean
@@ -28,11 +26,13 @@ public class ExchangeServiceConfiguration {
 
     @Bean
     public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final PriceReferenceService priceReferenceService,
+                                                                            final ExchangeService exchangeService,
                                                                             final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
-        return new  TradingBearingStrategyDecisionServiceImpl(
-                priceReferenceService,
-                        applicationCurrencyTradingsParameterRepository
-                    );
+        return
+            new TradingBearingStrategyDecisionServiceImpl(priceReferenceService,
+                                                          exchangeService,
+                                                          applicationCurrencyTradingsParameterRepository
+            );
     }
 
     @Bean

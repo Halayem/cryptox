@@ -21,6 +21,7 @@ class ExchangeServiceTest {
     @Autowired
     private ExchangeService exchangeService;
 
+    /*
     @Test
     @Order(0)
     void testGetBalance_success() {
@@ -135,4 +136,6 @@ class ExchangeServiceTest {
     static void startWiremockServer() throws InterruptedException {
         new WireMockServer().start();
     }
+
+     */
 }

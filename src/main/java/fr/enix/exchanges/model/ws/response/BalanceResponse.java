@@ -13,6 +13,9 @@ import java.util.Map;
 @Setter
 public class BalanceResponse extends ErrorResponse {
 
-    private Map<XzAsset, BigDecimal> result;
+    /**
+     * key is kraken application asset pair
+     */
+    private Map<String, BigDecimal> result;
 
 }

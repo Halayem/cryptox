@@ -11,13 +11,14 @@ import lombok.AllArgsConstructor;
 public class AddOrderMapper {
 
     private final CurrenciesRepresentationService currenciesRepresentationService;
+
     public AddOrderRequest mapAddOrderBusinessToAddOrderRequest(final AddOrderInput addOrderInput,
                                                                 final String nonce) {
         AddOrderRequest.AddOrderRequestBuilder addOrderRequestBuilder =
                 AddOrderRequest.builder  ()
                                .nonce    (nonce)
                                .pair     (currenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(addOrderInput.getApplicationAssetPair()))
-                               .type     (addOrderInput.getAddOrderType().getValue())
+                               .type     (addOrderInput.getAddOrderType().getKrakenOrderType())
                                .ordertype(addOrderInput.getOrderType().getValue())
                                .volume   (addOrderInput.getVolume())
                                .price    (addOrderInput.getPrice());

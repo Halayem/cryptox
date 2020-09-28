@@ -4,6 +4,7 @@ import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecisio
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
+import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.service.TradingDecisionService;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
 
 
     private final PriceReferenceService priceReferenceService;
+    private final ExchangeService exchangeService;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     @Override
@@ -48,6 +50,26 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.ERROR, applicationAssetPairTicker)));
     }
 
+    public Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
+        return
+        exchangeService
+            .getAvailableAssetForSellPlacement(applicationAssetPair)
+            .flatMap(availableAssetForSell -> availableAssetIsLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
+            .flatMap(isLess ->
+                        isLess
+                        ? Mono.just(availableAssetForSell)
+                        : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair))
+            );
+    }
+
+    private Mono<Boolean> availableAssetIsLessThanConfiguredAmountToSell(final String applicationAssetPair,
+                                                                         final BigDecimal availableAssetForSell) {
+        return applicationCurrencyTradingsParameterRepository
+                .getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
+                .map(configuredAmountToSell -> configuredAmountToSell.compareTo(availableAssetForSell) > 0 );
+    }
+
+
     private boolean isHighGapReached(final BigDecimal lastPrice,
                                      final BigDecimal priceReference,
                                      final BigDecimal gap) {
@@ -59,6 +81,8 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                                     final BigDecimal gap) {
         return lastPrice.compareTo(priceReference.subtract(gap)) <= 0;
     }
+
+
 
     private ApplicationAssetPairTickerTradingDecision newApplicationAssetPairTickerTradingDecision(final Decision decision,
                                                                                                    final ApplicationAssetPairTicker applicationAssetPairTicker) {

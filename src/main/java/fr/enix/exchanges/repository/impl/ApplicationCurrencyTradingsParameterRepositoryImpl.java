@@ -40,13 +40,35 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
     }
 
     @Override
-    public Mono<BigDecimal> getGapScaleByApplicationAssetPair(String applicationAssetPair) {
+    public Mono<BigDecimal> getGapScaleByApplicationAssetPair(final String applicationAssetPair) {
         return Mono.justOrEmpty(
-          applicationCurrencyTradingsParameter
-          .getTradings          ()
-          .get                  (applicationAssetPair)
-          .getBearingStrategy   ()
-          .getGap               ()
+                    applicationCurrencyTradingsParameter
+                        .getTradings          ()
+                        .get                  (applicationAssetPair)
+                        .getBearingStrategy   ()
+                        .getGap               ()
+                );
+    }
+
+    @Override
+    public Mono<BigDecimal> getAmountToSellForBearingStrategyByApplicationAssetPair(final String applicationAssetPair) {
+        return Mono.justOrEmpty(
+                    applicationCurrencyTradingsParameter
+                        .getTradings          ()
+                        .get                  (applicationAssetPair)
+                        .getBearingStrategy   ()
+                        .getAmountToSell      ()
+                );
+    }
+
+    @Override
+    public Mono<BigDecimal> getAmountToBuyForBearingStrategyByApplicationAssetPair(final String applicationAssetPair) {
+        return Mono.justOrEmpty(
+                applicationCurrencyTradingsParameter
+                        .getTradings          ()
+                        .get                  (applicationAssetPair)
+                        .getBearingStrategy   ()
+                        .getAmountToBuy      ()
         );
     }
 
