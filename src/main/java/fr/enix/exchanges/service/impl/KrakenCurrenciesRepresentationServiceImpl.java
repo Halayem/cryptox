@@ -20,6 +20,12 @@ public class KrakenCurrenciesRepresentationServiceImpl implements CurrenciesRepr
     }
 
     @Override
+    public String getAssetPairCurrencyWithoutPrefixAndWithoutSeparatorRepresentationByApplicationAssetPair(final String applicationAssetPair) {
+        return  CurrenciesRepresentation.valueOf(applicationAssetPair.split("-")[0].toUpperCase()).getKrakenWebSocketRepresentation() +
+                CurrenciesRepresentation.valueOf(applicationAssetPair.split("-")[1].toUpperCase()).getKrakenWebSocketRepresentation();
+    }
+
+    @Override
     public String getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(final String marketAssetPair) {
 
         return getApplicationAssetCurrencyRepresentationByMarketAsset(marketAssetPair.split("/")[0].toUpperCase())

@@ -13,5 +13,4 @@ public enum AddOrderType {
 
     private String krakenOrderType;
 
-
 }

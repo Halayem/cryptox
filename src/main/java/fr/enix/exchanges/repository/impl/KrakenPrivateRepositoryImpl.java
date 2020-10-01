@@ -131,8 +131,8 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                                                                                   final AddOrderType addOrderType) {
 
         final String krakenOrderType                = addOrderType.getKrakenOrderType();
-        final String krakenAssetPairRepresentation  = currenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(applicationAssetPair);
-        final OpenOrderFilter openOrderFilter       = new OpenOrderFilter(krakenOrderType, krakenAssetPairRepresentation);
+        final String krakenAssetPairRepresentation  = currenciesRepresentationService.getAssetPairCurrencyWithoutPrefixAndWithoutSeparatorRepresentationByApplicationAssetPair(applicationAssetPair);
+        final OpenOrderFilter openOrderFilter       = new OpenOrderFilter(krakenAssetPairRepresentation, krakenOrderType);
 
         return
         getOpenOrders()
@@ -141,7 +141,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
             openOrders
             .entrySet   ()
             .stream     ()
-            .filter     (entry -> openOrderFilter.isEntryMatch(entry))
+            .filter     (entry -> openOrderFilter.entryMatch(entry) )
             .map        (entry -> getPlacementOneOrderByOrderType(entry.getValue(), krakenOrderType))
             .reduce     (zero, BigDecimal::add)
         );
@@ -156,7 +156,8 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
         }
     }
 
-    private Mono<OpenOrdersResponse> getOpenOrders() {
+    @Override
+    public Mono<OpenOrdersResponse> getOpenOrders() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
@@ -221,7 +222,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
         private final String marketAssetPair;
         private final String orderType;
 
-        public boolean isEntryMatch(final Map.Entry<String, OpenOrdersResponse.Order> entry) {
+        public boolean entryMatch(final Map.Entry<String, OpenOrdersResponse.Order> entry) {
             return
             (
                 orderType.equals        (entry.getValue().getDescr().getType()) &&

@@ -20,6 +20,7 @@ public interface KrakenPrivateRepository {
     Mono<BigDecimal> getTotalBuyOpenOrders(final String applicationAssetPair);
     Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset);
 
+    Mono<OpenOrdersResponse> getOpenOrders();
     Flux<String> getTradeBalance(final AssetClass assetClass);
     Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput);
 
