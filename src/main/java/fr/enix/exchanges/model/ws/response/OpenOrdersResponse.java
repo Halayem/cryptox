@@ -1,5 +1,7 @@
 package fr.enix.exchanges.model.ws.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenOrdersResponse extends ErrorResponse {
 
     private Result result;
@@ -25,6 +28,7 @@ public class OpenOrdersResponse extends ErrorResponse {
 
     @Getter
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Order {
         private Description descr;
         private String      status;
@@ -33,6 +37,7 @@ public class OpenOrdersResponse extends ErrorResponse {
 
     @Getter
     @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Description {
         private String      pair;
         private String      type;

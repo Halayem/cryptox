@@ -3,10 +3,18 @@ package fr.enix.exchanges.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.common.utils.file.ApplicationFileUtils;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
+import fr.enix.exchanges.repository.impl.KrakenPrivateRepositoryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Matchers.anyString;
+
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,6 +24,7 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,48 +32,90 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(SpringRunner.class)
 class KrakenPrivateRepositoryImplTest {
 
-    @MockBean
+    @Autowired
     private KrakenPrivateRepository krakenPrivateRepository;
 
     @Test
     void testGetTotalSellOpenOrdersWhenApplicationAssetPairIsLitecoin() throws IOException, URISyntaxException {
-        Mockito
-        .when(krakenPrivateRepository.getOpenOrders())
-        .thenReturn(
-            Mono.just(
-                new ObjectMapper().readValue(
-                    ApplicationFileUtils.getStringFileContentFromResources("kraken/orders/open-orders_litecoin-euro.json"),
-                    OpenOrdersResponse.class
-                )
-            )
-        );
-
-        Mockito
-        .when(krakenPrivateRepository.getTotalSellOpenOrders(anyString()))
-        .thenCallRealMethod();
-
         StepVerifier
-        .create(krakenPrivateRepository.getTotalSellOpenOrders("litecoin-euro"))
-        .consumeNextWith(balance ->
+        .create         ( newMockKrakenRepository(MethodToSpy.GET_OPEN_ORDERS).getTotalSellOpenOrders("litecoin-euro") )
+        .consumeNextWith( balance ->
             assertEquals( new BigDecimal("3.50143000"), balance))
         .verifyComplete();
     }
 
-    // @TODO go to integration tests
-    void testGetBalanceWhenApplicationAssetIsLitecoin() {
+    @Test
+    void testGetTotalBuyOpenOrdersWhenApplicationAssetPairIsLitecoin() throws IOException, URISyntaxException {
         StepVerifier
-                .create(krakenPrivateRepository.getBalanceByApplicationAsset("litecoin"))
-                .consumeNextWith(balance ->
-                        assertEquals( new BigDecimal("8.48"), balance))
-                .verifyComplete();
+        .create         ( newMockKrakenRepository(MethodToSpy.GET_OPEN_ORDERS).getTotalBuyOpenOrders("litecoin-euro") )
+        .consumeNextWith( balance ->
+            assertEquals( new BigDecimal("31.5900000000"), balance))
+        .verifyComplete();
     }
 
-    // @TODO go to integration tests
-    void testGetBalanceWhenApplicationAssetIsEuro() {
+    @Test
+    void testGetAvailableAssetForSellPlacementWhenApplicationAssetPairIsLitecoinEuro() throws IOException, URISyntaxException {
         StepVerifier
-                .create(krakenPrivateRepository.getBalanceByApplicationAsset("euro"))
-                .consumeNextWith(balance ->
-                        assertEquals( new BigDecimal("40.25"), balance))
-                .verifyComplete();
+        .create         ( newMockKrakenRepository(MethodToSpy.GET_OPEN_ORDERS, MethodToSpy.GET_BALANCE)
+                          .getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro") )
+        .consumeNextWith( balance ->
+            assertEquals( new BigDecimal("4.97857000"), balance))
+        .verifyComplete();
     }
+
+    @Test
+    void testGetAvailableAssetForBuyPlacementWhenApplicationAssetPairIsLitecoinEuro() throws IOException, URISyntaxException {
+        StepVerifier
+        .create         ( newMockKrakenRepository(MethodToSpy.GET_OPEN_ORDERS, MethodToSpy.GET_BALANCE)
+                          .getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro") )
+        .consumeNextWith( balance ->
+                assertEquals( new BigDecimal("8.6600000000"), balance))
+        .verifyComplete();
+    }
+
+    private KrakenPrivateRepository newMockKrakenRepository(MethodToSpy ...methodsToSpy) throws IOException, URISyntaxException {
+        KrakenPrivateRepository krakenPrivateRepositorySpy = Mockito.spy(krakenPrivateRepository);
+
+        if ( isGetOpenOrdersToSpy   (methodsToSpy) ) { setupKrakenRepositorySpyForGetOpenOrder  (krakenPrivateRepositorySpy); }
+        if ( isGetBalanceToSpy      (methodsToSpy) ) { setupKrakenRepositorySpyForGetBalance    (krakenPrivateRepositorySpy); }
+
+        return krakenPrivateRepositorySpy;
+    }
+
+    private void setupKrakenRepositorySpyForGetOpenOrder(KrakenPrivateRepository krakenRepositorySpy) throws IOException, URISyntaxException {
+        Mockito
+        .when(krakenRepositorySpy.getOpenOrders())
+        .thenReturn(Mono.just(
+            new ObjectMapper().readValue(
+                ApplicationFileUtils.getStringFileContentFromResources("kraken/orders/open-orders_litecoin-euro.json"),
+                OpenOrdersResponse.class
+            )
+        ));
+    }
+
+    private void setupKrakenRepositorySpyForGetBalance(KrakenPrivateRepository krakenRepositorySpy) {
+        Mockito
+        .when       ( krakenRepositorySpy.getBalanceByApplicationAsset("litecoin"))
+        .thenReturn ( Mono.just( new BigDecimal("8.48") ) );
+
+        Mockito
+        .when       ( krakenRepositorySpy.getBalanceByApplicationAsset("euro"))
+        .thenReturn ( Mono.just( new BigDecimal("40.25") ) );
+    }
+
+    private boolean isGetOpenOrdersToSpy(MethodToSpy ...methodsToSpy) {
+        return  Arrays
+                .stream     (methodsToSpy)
+                .anyMatch   (methodToSpy -> methodToSpy.equals(MethodToSpy.GET_OPEN_ORDERS));
+    }
+
+    private boolean isGetBalanceToSpy(MethodToSpy ...methodsToSpy) {
+        return  Arrays
+                .stream     (methodsToSpy)
+                .anyMatch   (methodToSpy -> methodToSpy.equals(MethodToSpy.GET_BALANCE));
+    }
+    private enum MethodToSpy {
+        GET_OPEN_ORDERS, GET_BALANCE
+    }
+
 }
