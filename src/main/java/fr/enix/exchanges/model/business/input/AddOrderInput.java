@@ -1,6 +1,5 @@
 package fr.enix.exchanges.model.business.input;
 
-import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
 import lombok.Builder;

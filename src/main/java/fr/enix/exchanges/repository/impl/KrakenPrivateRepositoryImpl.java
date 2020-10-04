@@ -67,36 +67,48 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
     }
 
     @Override
-    public Mono<BigDecimal> getTotalSellOpenOrders(final String applicationAssetPair) {
+    public Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
+        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
+                                                        addOrderInput,
+                                                        krakenRepositoryService.getNewNonce()
+                                                );
+        return
+            executeWebClientMono(
+                "/0/private/AddOrder",
+                addOrderRequest.getQueryParametersRepresentation(),
+                addOrderRequest.getNonce(),
+                AddOrderResponse.class
+            )
+            .map(addOrderMapper::mapAddOrderResponseToAddOrderOutput);
+    }
+
+    protected Mono<BigDecimal> getTotalSellOpenOrders(final String applicationAssetPair) {
         return this.getTotalPlacementsForApplicationAssetPairByOrderType(applicationAssetPair, AddOrderType.SELL);
     }
 
-    @Override
-    public Mono<BigDecimal> getTotalBuyOpenOrders(final String applicationAssetPair) {
+    protected Mono<BigDecimal> getTotalBuyOpenOrders(final String applicationAssetPair) {
         return this.getTotalPlacementsForApplicationAssetPairByOrderType(applicationAssetPair, AddOrderType.BUY);
     }
 
-    @Override
-    public Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset) {
+    protected Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset) {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
         return
-                executeWebClientMono(
-                    "/0/private/Balance",
-                    nonceRequest.getQueryParametersRepresentation(),
-                    nonceRequest.getNonce(),
-                    BalanceResponse.class
-                )
-                .map(balanceResponse ->
-                        balanceResponse
-                        .getResult()
-                        .get(CurrenciesRepresentation.valueOf(applicationAsset.toUpperCase()).getKrakenWebServiceRepresentation())
-                );
+            executeWebClientMono(
+                "/0/private/Balance",
+                nonceRequest.getQueryParametersRepresentation(),
+                nonceRequest.getNonce(),
+                BalanceResponse.class
+            )
+            .map(balanceResponse ->
+                balanceResponse
+                .getResult()
+                .get(CurrenciesRepresentation.valueOf(applicationAsset.toUpperCase()).getKrakenWebServiceRepresentation())
+            );
     }
 
-    @Override
-    public Flux<String> getTradeBalance(final AssetClass assetClass) {
+    protected Flux<String> getTradeBalance(final AssetClass assetClass) {
         final TradeBalanceRequest tradeBalanceRequest = TradeBalanceRequest.builder ()
                 .nonce   (krakenRepositoryService.getNewNonce())
                 .aclass  (assetClass.getValue())
@@ -109,23 +121,6 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                     String.class
                 );
     }
-
-    @Override
-    public Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
-        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
-                                                    addOrderInput,
-                                                    krakenRepositoryService.getNewNonce()
-                                                );
-        return
-            executeWebClientMono(
-            "/0/private/AddOrder",
-                addOrderRequest.getQueryParametersRepresentation(),
-                addOrderRequest.getNonce(),
-                AddOrderResponse.class
-            )
-            .map(addOrderMapper::mapAddOrderResponseToAddOrderOutput);
-    }
-
 
     private Mono<BigDecimal> getTotalPlacementsForApplicationAssetPairByOrderType(final String applicationAssetPair,
                                                                                   final AddOrderType addOrderType) {
@@ -156,8 +151,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
         }
     }
 
-    @Override
-    public Mono<OpenOrdersResponse> getOpenOrders() {
+    protected Mono<OpenOrdersResponse> getOpenOrders() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
                                                       .nonce      (krakenRepositoryService.getNewNonce())
                                                       .build      ();
@@ -167,7 +161,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
                     nonceRequest.getQueryParametersRepresentation(),
                     nonceRequest.getNonce(),
                     OpenOrdersResponse.class
-        );
+                );
     }
 
     private <T> Flux<T> executeWebClient(String uri, String query, String nonce, Class<T> clazz) {

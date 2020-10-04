@@ -1,22 +1,14 @@
-package fr.enix.exchanges.repository;
+package fr.enix.exchanges.repository.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.common.utils.file.ApplicationFileUtils;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
-import fr.enix.exchanges.repository.impl.KrakenPrivateRepositoryImpl;
+import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Matchers.anyString;
-
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -33,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class KrakenPrivateRepositoryImplTest {
 
     @Autowired
-    private KrakenPrivateRepository krakenPrivateRepository;
+    private KrakenPrivateRepositoryImpl krakenPrivateRepository;
 
     @Test
     void testGetTotalSellOpenOrdersWhenApplicationAssetPairIsLitecoin() throws IOException, URISyntaxException {
@@ -73,8 +65,8 @@ class KrakenPrivateRepositoryImplTest {
         .verifyComplete();
     }
 
-    private KrakenPrivateRepository newMockKrakenRepository(MethodToSpy ...methodsToSpy) throws IOException, URISyntaxException {
-        KrakenPrivateRepository krakenPrivateRepositorySpy = Mockito.spy(krakenPrivateRepository);
+    private KrakenPrivateRepositoryImpl newMockKrakenRepository(MethodToSpy ...methodsToSpy) throws IOException, URISyntaxException {
+        KrakenPrivateRepositoryImpl krakenPrivateRepositorySpy = Mockito.spy(krakenPrivateRepository);
 
         if ( isGetOpenOrdersToSpy   (methodsToSpy) ) { setupKrakenRepositorySpyForGetOpenOrder  (krakenPrivateRepositorySpy); }
         if ( isGetBalanceToSpy      (methodsToSpy) ) { setupKrakenRepositorySpyForGetBalance    (krakenPrivateRepositorySpy); }
@@ -82,7 +74,7 @@ class KrakenPrivateRepositoryImplTest {
         return krakenPrivateRepositorySpy;
     }
 
-    private void setupKrakenRepositorySpyForGetOpenOrder(KrakenPrivateRepository krakenRepositorySpy) throws IOException, URISyntaxException {
+    private void setupKrakenRepositorySpyForGetOpenOrder(KrakenPrivateRepositoryImpl krakenRepositorySpy) throws IOException, URISyntaxException {
         Mockito
         .when(krakenRepositorySpy.getOpenOrders())
         .thenReturn(Mono.just(
@@ -93,7 +85,7 @@ class KrakenPrivateRepositoryImplTest {
         ));
     }
 
-    private void setupKrakenRepositorySpyForGetBalance(KrakenPrivateRepository krakenRepositorySpy) {
+    private void setupKrakenRepositorySpyForGetBalance(KrakenPrivateRepositoryImpl krakenRepositorySpy) {
         Mockito
         .when       ( krakenRepositorySpy.getBalanceByApplicationAsset("litecoin"))
         .thenReturn ( Mono.just( new BigDecimal("8.48") ) );

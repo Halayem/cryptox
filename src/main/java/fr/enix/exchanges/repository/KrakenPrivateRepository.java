@@ -16,12 +16,5 @@ public interface KrakenPrivateRepository {
 
     Mono<BigDecimal> getAvailableAssetForSellPlacementByApplicationAssetPair(final String applicationAssetPair);
     Mono<BigDecimal> getAvailableAssetForBuyPlacementByApplicationAssetPair(final String applicationAssetPair);
-    Mono<BigDecimal> getTotalSellOpenOrders(final String applicationAssetPair);
-    Mono<BigDecimal> getTotalBuyOpenOrders(final String applicationAssetPair);
-    Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset);
-
-    Mono<OpenOrdersResponse> getOpenOrders();
-    Flux<String> getTradeBalance(final AssetClass assetClass);
     Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput);
-
 }

@@ -14,9 +14,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 
 public interface ExchangeService {
-   Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset);
-   Flux<String> getTradeBalance(final AssetClass assetClass);
    Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput);
-   Mono<BigDecimal> getAvailableAssetForBuyPlacement(final String applicationAssetPair);
-   Mono<BigDecimal> getAvailableAssetForSellPlacement(final String applicationAssetPair);
+   Mono<BigDecimal> getAvailableAssetForBuyPlacementByApplicationAssetPair(final String applicationAssetPair);
+   Mono<BigDecimal> getAvailableAssetForSellPlacementByApplicationAssetPair(final String applicationAssetPair);
 }

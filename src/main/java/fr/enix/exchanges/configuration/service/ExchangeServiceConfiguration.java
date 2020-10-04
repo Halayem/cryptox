@@ -1,6 +1,5 @@
 package fr.enix.exchanges.configuration.service;
 
-import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.repository.*;
 import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.*;
@@ -14,9 +13,8 @@ import org.springframework.context.annotation.Configuration;
 public class ExchangeServiceConfiguration {
 
     @Bean
-    public ExchangeService exchangeService(final KrakenPrivateRepository exchangeRepository,
-                                           final AddOrderMapper addOrderMapper) {
-        return new ExchangeServiceImpl(exchangeRepository, addOrderMapper);
+    public ExchangeService exchangeService(final KrakenPrivateRepository krakenPrivateRepository) {
+        return new ExchangeServiceImpl(krakenPrivateRepository);
     }
 
     @Bean

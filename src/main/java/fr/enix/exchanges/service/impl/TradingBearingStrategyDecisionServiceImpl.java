@@ -1,9 +1,9 @@
 package fr.enix.exchanges.service.impl;
 
+import fr.enix.common.utils.math.ApplicationMathUtils;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
-import fr.enix.exchanges.repository.PriceReferenceRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.service.TradingDecisionService;
@@ -50,19 +50,44 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.ERROR, applicationAssetPairTicker)));
     }
 
+    @Override
     public Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
-        return
-        exchangeService
-            .getAvailableAssetForSellPlacement(applicationAssetPair)
-            .flatMap(availableAssetForSell -> availableAssetIsLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
-            .flatMap(isLess ->
+        return  exchangeService
+                .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
+                .flatMap(availableAssetForSell ->
+                    isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
+                    .flatMap(isLess ->
                         isLess
                         ? Mono.just(availableAssetForSell)
-                        : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair))
-            );
+                        : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
+                    )
+                );
     }
 
-    private Mono<Boolean> availableAssetIsLessThanConfiguredAmountToSell(final String applicationAssetPair,
+    @Override
+    public Mono<BigDecimal> getAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return  exchangeService
+                .getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+                .flatMap(availableAssetForBuy ->
+                    isAvailableAssetLessThanConfiguredAmountToBuy(applicationAssetPairTicker, availableAssetForBuy)
+                    .flatMap(isLess ->
+                        isLess
+                        ? Mono.just(ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) )
+                        : applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+                    )
+                );
+    }
+
+    private Mono<Boolean> isAvailableAssetLessThanConfiguredAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker,
+                                                                        final BigDecimal availableAssetForBuy ) {
+        return  applicationCurrencyTradingsParameterRepository
+                .getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+                .map( configuredAmountToBuy ->
+                    ( configuredAmountToBuy.multiply(applicationAssetPairTicker.getPrice()) ).compareTo(availableAssetForBuy) > 0
+                );
+    }
+
+    private Mono<Boolean> isAvailableAssetLessThanConfiguredAmountToSell(final String applicationAssetPair,
                                                                          final BigDecimal availableAssetForSell) {
         return applicationCurrencyTradingsParameterRepository
                 .getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
