@@ -2,22 +2,28 @@ package fr.enix.exchanges.mapper;
 
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
+import fr.enix.exchanges.model.parameters.AddOrderType;
+import fr.enix.exchanges.model.parameters.OrderType;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
+import fr.enix.exchanges.service.CurrenciesRepresentationService;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 public class AddOrderMapper {
 
-    private final AssetMapper assetMapper;
+    private final CurrenciesRepresentationService currenciesRepresentationService;
 
     public AddOrderRequest mapAddOrderBusinessToAddOrderRequest(final AddOrderInput addOrderInput,
                                                                 final String nonce) {
         AddOrderRequest.AddOrderRequestBuilder addOrderRequestBuilder =
                 AddOrderRequest.builder  ()
                                .nonce    (nonce)
-                               .pair     (assetMapper.mapAssetPairForWebService(addOrderInput.getAssetPair()))
-                               .type     (addOrderInput.getAddOrderType().getValue())
+                               .pair     (currenciesRepresentationService.getAssetPairCurrencyWebServiceRepresentationByApplicationAssetPair(addOrderInput.getApplicationAssetPair()))
+                               .type     (addOrderInput.getAddOrderType().getKrakenOrderType())
                                .ordertype(addOrderInput.getOrderType().getValue())
                                .volume   (addOrderInput.getVolume())
                                .price    (addOrderInput.getPrice());
@@ -45,5 +51,35 @@ public class AddOrderMapper {
                               .description      (addOrderResponse.getResult().getDescr().getOrder())
                               .transactionIds   (addOrderResponse.getResult().getTxid())
                               .build            ();
+    }
+
+    public Mono<AddOrderInput> newAddOrderInputForBuyPlacement(final String     applicationAssetPair,
+                                                               final BigDecimal amountToBuy,
+                                                               final BigDecimal priceToBuy) {
+        return Mono.just(
+                AddOrderInput
+                        .builder                ()
+                        .applicationAssetPair   (applicationAssetPair   )
+                        .addOrderType           (AddOrderType.BUY       )
+                        .orderType              (OrderType.LIMIT        )
+                        .price                  (priceToBuy             )
+                        .volume                 (amountToBuy            )
+                        .build()
+        );
+    }
+
+    public Mono<AddOrderInput> newAddOrderInputForSellPlacement(final String        applicationAssetPair,
+                                                                final BigDecimal    amountToSell,
+                                                                final BigDecimal    priceToSell) {
+        return Mono.just(
+                AddOrderInput
+                        .builder                ()
+                        .applicationAssetPair   (applicationAssetPair   )
+                        .addOrderType           (AddOrderType.SELL      )
+                        .orderType              (OrderType.LIMIT        )
+                        .price                  (priceToSell            )
+                        .volume                 (amountToSell           )
+                        .build()
+        );
     }
 }

@@ -1,6 +1,5 @@
 package fr.enix.exchanges.model.business.output;
 
-import fr.enix.exchanges.model.ws.AssetPair;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,7 +15,7 @@ public class TickerOutput {
     private Offer bid;
     private MarketStatus lowTrade;
     private MarketStatus highTrade;
-    private AssetPair    assetPair;
+    private String assetPair;
 
     @Builder
     @Getter

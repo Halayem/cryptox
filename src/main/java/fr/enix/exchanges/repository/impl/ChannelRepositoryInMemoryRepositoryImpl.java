@@ -2,28 +2,24 @@ package fr.enix.exchanges.repository.impl;
 
 import fr.enix.exchanges.model.websocket.response.ChannelResponse;
 import fr.enix.exchanges.repository.ChannelRepository;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NoArgsConstructor;
+import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Slf4j
+@NoArgsConstructor
 public class ChannelRepositoryInMemoryRepositoryImpl implements ChannelRepository {
 
-    private final Map<Long, ChannelResponse> activeChannels;
+    private final Map<Long, ChannelResponse> channels = new ConcurrentHashMap<>();
 
-    public ChannelRepositoryInMemoryRepositoryImpl() {
-        activeChannels = new HashMap<>();
-        log.info( "channel repository in memory was setup" );
+    @Override
+    public void saveChannel(final ChannelResponse channelResponse) {
+        channels.put( channelResponse.getChannelID(), channelResponse );
     }
 
     @Override
-    public void insertNewChannel(final ChannelResponse channelResponse) {
-        activeChannels.put( channelResponse.getChannelID(), channelResponse );
-    }
-
-    @Override
-    public ChannelResponse getActiveChannelById(final Long channelId) {
-        return activeChannels.get(channelId);
+    public Mono<String> getMarketAssetPairByChannelId(final Long channelId) {
+        return Mono.justOrEmpty(channels.get(channelId).getPair());
     }
 }

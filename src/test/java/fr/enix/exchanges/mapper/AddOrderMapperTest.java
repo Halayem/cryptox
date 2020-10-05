@@ -4,8 +4,6 @@ import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
-import fr.enix.exchanges.model.parameters.XzAsset;
-import fr.enix.exchanges.model.websocket.AssetPair;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,84 +14,79 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AddOrderMapperTest {
+class AddOrderMapperTest {
 
     @Autowired AddOrderMapper           addOrderMapper;
     @Autowired KrakenRepositoryService  krakenRepositoryService;
 
     @Test
-    public void testAddOrderMapper_leverageAndCloseShouldBeNull() {
+    void testAddOrderMapper_leverageAndCloseShouldBeNull() {
         final String nonce = krakenRepositoryService.getNewNonce();
         assertEquals(
                 AddOrderRequest
-                            .builder    ()
-                            .nonce      (nonce)
-                            .pair       ("XLTCZEUR")
-                            .type       ("sell")
-                            .ordertype  ("limit")
-                            .price      (new BigDecimal("40"))
-                            .volume     (new BigDecimal("1"))
-                            .build      (),
+                    .builder    ()
+                    .nonce      (nonce)
+                    .pair       ("XLTCZEUR")
+                    .type       ("sell")
+                    .ordertype  ("limit")
+                    .price      (new BigDecimal("40"))
+                    .volume     (new BigDecimal("1"))
+                    .build      (),
                 addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
                     AddOrderInput
-                                .builder   ()
-                                .assetPair (AssetPair
-                                                    .builder  ()
-                                                    .from     (XzAsset.XLTC)
-                                                    .to       (XzAsset.ZEUR)
-                                                    .build    ()
-                                )
-                                .addOrderType   (AddOrderType.SELL)
-                                .orderType      (OrderType.LIMIT)
-                                .price          (new BigDecimal(40  ))
-                                .volume         (new BigDecimal(1   ))
-                                .build(),
+                        .builder                ()
+                        .applicationAssetPair   ("litecoin-euro")
+                        .addOrderType           (AddOrderType.SELL)
+                        .orderType              (OrderType.LIMIT)
+                        .price                  (new BigDecimal(40  ))
+                        .volume                 (new BigDecimal(1   ))
+                        .build                  (),
                     nonce
                 )
         );
     }
 
     @Test
-    public void testAddOrderMapper_leverageAndCloseShouldBeSet() {
+    void testAddOrderMapper_leverageAndCloseShouldBeSet() {
         final String nonce = krakenRepositoryService.getNewNonce();
         assertEquals(
                 AddOrderRequest
+                    .builder    ()
+                    .nonce      (nonce)
+                    .pair       ("XLTCZEUR")
+                    .type       ("buy")
+                    .ordertype  ("limit")
+                    .price      (new BigDecimal("40"))
+                    .volume     (new BigDecimal("1"))
+                    .leverage   ("2:1")
+                    .close      (
+                        AddOrderRequest
+                        .Close
                         .builder    ()
-                        .nonce      (nonce)
-                        .pair       ("XLTCZEUR")
-                        .type       ("buy")
-                        .ordertype  ("limit")
-                        .price      (new BigDecimal("40"))
-                        .volume     (new BigDecimal("1"))
-                        .leverage   ("2:1")
-                        .close      (AddOrderRequest.Close
-                                                    .builder    ()
-                                                    .ordertype  ("stop-loss-profit")
-                                                    .price      ("#5%")
-                                                    .price2     ("#10")
-                                                    .build      ()
-                        )
-                        .build      (),
+                        .ordertype  ("stop-loss-profit")
+                        .price      ("#5%")
+                        .price2     ("#10")
+                        .build      ()
+                    )
+                    .build      (),
                 addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
                         AddOrderInput
-                                .builder   ()
-                                .assetPair (AssetPair
-                                        .builder  ()
-                                        .from     (XzAsset.XLTC)
-                                        .to       (XzAsset.ZEUR)
-                                        .build    ()
-                                )
-                                .addOrderType   (AddOrderType.BUY)
-                                .orderType      (OrderType.LIMIT)
-                                .price          (new BigDecimal(40  ))
-                                .volume         (new BigDecimal(1   ))
-                                .leverage       ("2:1")
-                                .close          (AddOrderInput.Close.builder()
-                                                                    .orderType(OrderType.STOP_LOSS_PROFIT)
-                                                                    .stopLossPriceRelativePercentageDelta   ( 5  )
-                                                                    .takeProfitPriceRelativeDelta           ( 10 )
-                                                                    .build())
-                                .build(),
+                            .builder   ()
+                            .applicationAssetPair ("litecoin-euro")
+                            .addOrderType   (AddOrderType.BUY)
+                            .orderType      (OrderType.LIMIT)
+                            .price          (new BigDecimal(40  ))
+                            .volume         (new BigDecimal(1   ))
+                            .leverage       ("2:1")
+                            .close          (
+                                AddOrderInput
+                                    .Close
+                                    .builder()
+                                    .orderType(OrderType.STOP_LOSS_PROFIT)
+                                    .stopLossPriceRelativePercentageDelta   ( 5  )
+                                    .takeProfitPriceRelativeDelta           ( 10 )
+                                    .build())
+                            .build(),
                         nonce
                 )
         );

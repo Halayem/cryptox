@@ -1,8 +1,9 @@
 package fr.enix.exchanges.repository;
 
 import fr.enix.exchanges.model.websocket.response.ChannelResponse;
+import reactor.core.publisher.Mono;
 
 public interface ChannelRepository {
-    void insertNewChannel(final ChannelResponse channelResponse);
-    ChannelResponse getActiveChannelById(final Long channelId);
+    void saveChannel(final ChannelResponse channelResponse);
+    Mono<String> getMarketAssetPairByChannelId(final Long channelId);
 }

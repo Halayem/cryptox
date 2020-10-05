@@ -1,7 +1,4 @@
 {
-  "scenarioName": "GET_BALANCE",
-  "requiredScenarioState": "Started",
-  "newScenarioState": "GET_BALANCE_EAPI_INVALID_KEY",
   "request": {
     "urlPath": "/0/private/Balance",
     "method": "POST",

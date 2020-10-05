@@ -1,66 +1,66 @@
 package fr.enix.exchanges.repository.impl;
 
-import fr.enix.exchanges.model.repository.MarketPriceHistory;
-import fr.enix.exchanges.model.ws.AssetPair;
+import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
+import lombok.NoArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+@NoArgsConstructor
 public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepository {
 
-    private Map<AssetPair, MarketPriceHistory> records;
+    /**
+     * Key is the application asset pair
+     */
+    protected Map<String, Flux<ApplicationAssetPairTicker>> records = new ConcurrentHashMap();
 
-    public MarketOfferHistoryRepositoryImpl() {
-        records = new HashMap<>();
+    @Override
+    public Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
+        return  buildApplicationAssetPairTicker( applicationAssetPair, price )
+                .map( applicationAssetPairTicker -> {
+                    saveApplicationAssetPairTickerInRecords(applicationAssetPairTicker);
+                    return applicationAssetPairTicker;
+                });
     }
 
     @Override
-    public void resetAllMarketOfferHistory() {
-        records = new HashMap<>();
+    public Mono<BigDecimal> getLastPriceByApplicationAssetPair(final String applicationAssetPair) {
+        return
+            records.containsKey(applicationAssetPair)
+            ? records
+              .get(applicationAssetPair)
+              .reduce((applicationAssetPairTicker1, applicationAssetPairTicker2) ->
+                    (applicationAssetPairTicker1.compareTo(applicationAssetPairTicker2) > 0 ) ? applicationAssetPairTicker1 : applicationAssetPairTicker2
+              )
+              .map(applicationAssetPairTicker -> applicationAssetPairTicker.getPrice())
+            : Mono.empty();
+
     }
 
-    @Override
-    public Mono<MarketPriceHistory> saveNewMarketOffer(final AssetPair assetPair, final BigDecimal price) {
-        initRecords         (assetPair);
-        updatePreviousPrice (records.get(assetPair));
-        updateCurrentPrice  (records.get(assetPair), assetPair, price);
-
-        return Mono.just(records.get(assetPair));
-    }
-
-    @Override
-    public Mono<MarketPriceHistory> getMarketOfferHistory(final AssetPair assetPair) {
-        return Mono.justOrEmpty(records.get(assetPair));
-    }
-
-    private void initRecords(final AssetPair assetPair) {
-        if(!records.containsKey(assetPair)) {
-            records.put(assetPair, new MarketPriceHistory());
-        }
-    }
-
-    private void updatePreviousPrice(final MarketPriceHistory marketPriceHistory) {
-        if ( marketPriceHistory.getCurrentMarketOffer() != null) {
-            marketPriceHistory.setPreviousMarketOffer(marketPriceHistory.getCurrentMarketOffer()
-                                                                        .toBuilder()
-                                                                        .build()
-            );
-        }
-    }
-
-    private void updateCurrentPrice(final MarketPriceHistory marketPriceHistory,
-                                    final AssetPair assetPair,
-                                    final BigDecimal price) {
-
-        marketPriceHistory.setCurrentMarketOffer(MarketPriceHistory.MarketPrice.builder     ()
-                                                                               .assetPair   (assetPair)
-                                                                               .price       (price)
-                                                                               .date        (LocalDateTime.now())
-                                                                               .build       ()
+    private void saveApplicationAssetPairTickerInRecords(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        records.put(
+            applicationAssetPairTicker.getApplicationAssetPair(),
+            records.get(applicationAssetPairTicker.getApplicationAssetPair()) == null
+                ? Flux.just(applicationAssetPairTicker)
+                : Flux.concat(records.get(applicationAssetPairTicker.getApplicationAssetPair()), Flux.just(applicationAssetPairTicker))
         );
     }
+
+    private Mono<ApplicationAssetPairTicker> buildApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
+        return
+            Mono.just(
+                ApplicationAssetPairTicker
+                .builder                ()
+                .price                  (price                  )
+                .applicationAssetPair   (applicationAssetPair   )
+                .dateTime               (LocalDateTime.now()    )
+                .build                  ()
+            );
+    }
+
 }

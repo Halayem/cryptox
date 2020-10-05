@@ -6,7 +6,7 @@ import fr.enix.common.utils.cryptography.MessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 
@@ -41,7 +41,7 @@ public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
         return
             Base64.getEncoder().encodeToString( macCryptographyUtilsHmacSha512.encrypt(
                 ArrayUtils.addAll(
-                    uri.getBytes(Charset.forName("UTF-8")),
+                    uri.getBytes(StandardCharsets.UTF_8),
                     messageDigestUtilsSha256.getDigest(nonce + postData)
                 )
             ));
@@ -49,7 +49,6 @@ public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
 
     private static class NonceHelper {
         private static final int MIN = 100;
-        private static final int MAX = 1000;
         private int i = MIN;
         private synchronized int getUnique3Digits() {
             if ( ++i == 1000 ) { i = 100; }

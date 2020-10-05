@@ -1,0 +1,10 @@
+{
+  "channelID":    379,
+  "channelName":  "ticker",
+  "event":        "subscriptionStatus",
+  "pair":         "LTC/EUR",
+  "status":       "subscribed",
+  "subscription":{
+    "name":"ticker"
+  }
+}

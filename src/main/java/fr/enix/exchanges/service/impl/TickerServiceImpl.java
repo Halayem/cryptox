@@ -3,141 +3,105 @@
  */
 package fr.enix.exchanges.service.impl;
 
-
-import fr.enix.exchanges.constant.AssetMinimumOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.enix.exchanges.mapper.AddOrderMapper;
+import fr.enix.exchanges.mapper.TickerMapper;
+import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
-import fr.enix.exchanges.model.business.output.TickerOutput;
-import fr.enix.exchanges.model.parameters.AddOrderType;
-import fr.enix.exchanges.model.parameters.Asset;
-import fr.enix.exchanges.model.parameters.OrderType;
-import fr.enix.exchanges.model.parameters.XzAsset;
-import fr.enix.exchanges.model.websocket.AssetPair;
-import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.exchanges.service.MarketOfferService;
-import fr.enix.exchanges.service.TickerService;
-import fr.enix.exchanges.service.TransactionDecisionService;
+import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
+import fr.enix.exchanges.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Slf4j
 @AllArgsConstructor
 public class TickerServiceImpl implements TickerService {
 
-    private final ExchangeService               exchangeService;
-    private final MarketOfferService            marketOfferService;
-    private final TransactionDecisionService    transactionDecisionService;
-
-    private final BigDecimal LITECOIN_TRADING_VOLUME_UNIT   = new BigDecimal("0.5");
-    private final BigDecimal EURO_TRADING_VOLUME_UNIT       = new BigDecimal("20");
-
-    private final int           DIVIDE_SCALE    = 8;
-    private final RoundingMode  ROUNDING_MODE   = RoundingMode.DOWN;
+    private final ExchangeService                   exchangeService;
+    private final TradingDecisionService            tradingDecisionService;
+    private final MarketOfferService                marketOfferService;
+    private final CurrenciesRepresentationService   currenciesRepresentationService;
+    private final TickerMapper                      tickerMapper;
+    private final PriceReferenceService             priceReferenceService;
+    private final AddOrderMapper                    addOrderMapper;
 
     @Override
-    public void marketOfferUpdateHandler(final TickerOutput tickerOutput) {
-
-        marketOfferService.saveNewMarketPrice   (tickerOutput.getAssetPair(), tickerOutput.getAsk().getPrice())
-                          .flatMap              (marketPriceHistory -> transactionDecisionService.getDecision(marketPriceHistory))
-                          .map                  (decision -> {
-                              switch (decision) {
-                                  case SELL: return placeSellOrder  (tickerOutput)
-                                                    .subscribe      (addOrderOutput ->
-                                                        log.info("sell order placed, response: {}", addOrderOutput)
-                                                    );
-                                  case BUY:  return placeBuyOrder   (tickerOutput)
-                                                    .subscribe      (addOrderOutput ->
-                                                        log.info("buy order placed, response: {}", addOrderOutput)
-                                                    );
-                                  case DO_NOTHING: log.info("no sell no buy decision");
-                              }
-                              return Flux.empty();
-                          }).subscribe(o -> {});
+    public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
+        return
+            tickerMapper.mapTickerResponseToTickerOutput(tickerMapper.mapStringToTickerResponse(payload))
+            .flatMap( tickerOutput ->
+                marketOfferService.saveApplicationAssetPairTicker(
+                    currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
+                    tickerOutput.getAsk().getPrice()
+                )
+            )
+            .flatMap(tradingDecisionService::getDecision)
+            .flatMap(applicationAssetPairTickerTradingDecision -> {
+                priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
+                return this.placeOrder(applicationAssetPairTickerTradingDecision);
+            });
     }
 
-    private Flux<AddOrderOutput> placeBuyOrder(final TickerOutput tickerOutput) {
-        log.info( "starting process for placing buy order based on ticker output: {}", tickerOutput );
+    private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
 
         return
-            exchangeService.getAvailableAssetForBuyPlacement(XzAsset.ZEUR, Asset.EUR)
-                    .filter  (availableAsset -> canPlaceBuyOrder(availableAsset))
-                    .flatMap (availableAsset ->
-                            exchangeService.addOrder(
-                                    AddOrderInput.builder     ()
-                                                 .assetPair   (AssetPair.builder  ()
-                                                                        .from     (XzAsset.XLTC)
-                                                                        .to       (XzAsset.ZEUR)
-                                                                        .build    ()
-                                                 )
-                                                 .addOrderType(AddOrderType.BUY)
-                                                 .orderType   (OrderType.LIMIT)
-                                                 .price       (tickerOutput.getBid().getPrice())
-                                                 .volume      ( computeBuyVolume(availableAsset, tickerOutput.getBid().getPrice()))
-                                                 .build()
-                            )
-                    );
+            Mono
+            .just   ( applicationAssetPairTickerTradingDecision.getDecision() )
+            .filter ( this::isSellOrBuyDecision )
+            .flatMap    ( decision -> {
+                switch (decision) {
+                    case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker() );
+                    case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker() );
+                }
+                return Mono.empty();
+            });
     }
 
-    protected BigDecimal computeBuyVolume(final BigDecimal availableAsset, final BigDecimal askPrice) {
-        return availableAsset.compareTo(EURO_TRADING_VOLUME_UNIT) < 0
-               ? availableAsset.divide          (askPrice, DIVIDE_SCALE, ROUNDING_MODE)
-               : EURO_TRADING_VOLUME_UNIT.divide(askPrice, DIVIDE_SCALE, ROUNDING_MODE);
+    private boolean isSellOrBuyDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision) {
+        return  ApplicationAssetPairTickerTradingDecision.Decision.SELL.equals  (decision) ||
+                ApplicationAssetPairTickerTradingDecision.Decision.BUY.equals   (decision);
     }
 
-    private boolean canPlaceBuyOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(AssetMinimumOrder.EURO) <= 0 ) {
-            log.info
-            (
-                "can not place buy order, available asset: {} {}, minimum order amount is: {} {}",
-                 availableAsset, Asset.EUR, AssetMinimumOrder.EURO, Asset.EUR
-            );
-            return false;
-        }
-        log.info("can place buy order, available asset: {} {}", availableAsset, Asset.EUR);
-        return true;
-    }
 
-    private Flux<AddOrderOutput> placeSellOrder(final TickerOutput tickerOutput) {
-        log.info( "starting process for placing sell order based on ticker output: {}", tickerOutput );
-
+    protected Mono<AddOrderOutput> placeSellOrder( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
         return
-        exchangeService.getAvailableAssetForSellPlacement(XzAsset.XLTC, Asset.LTC)
-                       .filter  (availableAsset -> canPlaceSellOrder(availableAsset))
-                       .flatMap (availableAsset ->
-                                exchangeService.addOrder(
-                                    AddOrderInput.builder     ()
-                                                 .assetPair   (AssetPair.builder  ()
-                                                                        .from     (XzAsset.XLTC)
-                                                                        .to       (XzAsset.ZEUR)
-                                                                        .build    ()
-                                                 )
-                                                 .addOrderType(AddOrderType.SELL)
-                                                 .orderType   (OrderType.LIMIT)
-                                                 .price       (tickerOutput.getAsk().getPrice())
-                                                 .volume      ( availableAsset.compareTo(LITECOIN_TRADING_VOLUME_UNIT) <= 0
-                                                                ? availableAsset
-                                                                : LITECOIN_TRADING_VOLUME_UNIT
-                                                 )
-                                                 .build()
-                                )
-                       );
+            newAddOrderInputForSellPlacement(applicationAssetPairTicker)
+            .flatMap( addOrderInputForSellPlacement -> exchangeService.addOrder(addOrderInputForSellPlacement));
     }
 
-    private boolean canPlaceSellOrder (final BigDecimal availableAsset){
-        if ( availableAsset.compareTo(AssetMinimumOrder.LITECOIN) <= 0 ) {
-            log.info
-            (
-                "can not place sell order, available asset: {} {}, minimum order amount is: {} {}",
-                availableAsset, Asset.LTC, AssetMinimumOrder.LITECOIN, Asset.LTC
+    protected Mono<AddOrderOutput> placeBuyOrder( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
+        return
+            newAddOrderInputForBuyPlacement(applicationAssetPairTicker)
+            .flatMap( addOrderInputForBuyPlacement -> exchangeService.addOrder(addOrderInputForBuyPlacement));
+    }
+
+    protected Mono<AddOrderInput> newAddOrderInputForBuyPlacement(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return
+            tradingDecisionService.getAmountToBuy(applicationAssetPairTicker)
+            .filter ( amountToBuy -> BigDecimal.ZERO.compareTo(amountToBuy) < 0)
+            .flatMap(amountToBuy ->
+                addOrderMapper.newAddOrderInputForBuyPlacement(
+                    applicationAssetPairTicker.getApplicationAssetPair(),
+                    amountToBuy,
+                    applicationAssetPairTicker.getPrice()
+                )
             );
-            return false;
-        }
-        log.info("can place sell order, available asset: {} {}", availableAsset, Asset.LTC);
-        return true;
     }
 
+    protected Mono<AddOrderInput> newAddOrderInputForSellPlacement(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return
+            tradingDecisionService.getAmountToSell( applicationAssetPairTicker.getApplicationAssetPair() )
+            .filter ( amountToSell -> BigDecimal.ZERO.compareTo(amountToSell) < 0 )
+            .flatMap( amountToSell ->
+                addOrderMapper.newAddOrderInputForSellPlacement(
+                    applicationAssetPairTicker.getApplicationAssetPair(),
+                    amountToSell,
+                    applicationAssetPairTicker.getPrice()
+                )
+            );
+    }
 }

@@ -2,11 +2,11 @@ package fr.enix.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.model.business.output.TickerOutput;
 import fr.enix.exchanges.model.websocket.response.TickerResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -14,13 +14,13 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class TickerMapperTest {
+class TickerMapperTest {
 
     @Autowired
     private TickerMapper tickerMapper;
 
     @Test
-    public void testMapStringToTickerResponse_success() throws JsonProcessingException {
+    void testMapStringToTickerResponse_success() throws JsonProcessingException {
         final TickerResponse tickerResponse = tickerMapper.mapStringToTickerResponse(
                 "[379," +
 
@@ -80,33 +80,33 @@ public class TickerMapperTest {
     }
 
     @Test
-    public void testMapTickerResponseToTickerOutput_success(){
-        final TickerOutput tickerOutput = tickerMapper.mapTickerResponseToTickerOutput(buildTickerResponse());
-        assertEquals( new BigDecimal("41.93000"),   tickerOutput.getAsk().getPrice() );
-        assertEquals( new BigDecimal("156"),        tickerOutput.getAsk().getWholeLotVolume() );
-        assertEquals( new BigDecimal("156.000"),    tickerOutput.getAsk().getLotVolume() );
+    void testMapTickerResponseToTickerOutput_success(){
+        StepVerifier
+        .create         (tickerMapper.mapTickerResponseToTickerOutput(buildTickerResponse()))
+        .consumeNextWith(tickerOutput -> {
+            assertEquals( new BigDecimal("41.93000"),   tickerOutput.getAsk().getPrice() );
+            assertEquals( new BigDecimal("156"),        tickerOutput.getAsk().getWholeLotVolume() );
+            assertEquals( new BigDecimal("156.000"),    tickerOutput.getAsk().getLotVolume() );
 
-        assertEquals( new BigDecimal("41.87000"),   tickerOutput.getBid().getPrice() );
-        assertEquals( new BigDecimal("26"),         tickerOutput.getBid().getWholeLotVolume() );
-        assertEquals( new BigDecimal("126.000"),    tickerOutput.getBid().getLotVolume() );
+            assertEquals( new BigDecimal("41.87000"),   tickerOutput.getBid().getPrice() );
+            assertEquals( new BigDecimal("26"),         tickerOutput.getBid().getWholeLotVolume() );
+            assertEquals( new BigDecimal("126.000"),    tickerOutput.getBid().getLotVolume() );
 
-        assertEquals( new BigDecimal("41.71000"),   tickerOutput.getLowTrade().getToday() );
-        assertEquals( new BigDecimal("41.46000"),   tickerOutput.getLowTrade().getLast24Hours() );
+            assertEquals( new BigDecimal("41.71000"),   tickerOutput.getLowTrade().getToday() );
+            assertEquals( new BigDecimal("41.46000"),   tickerOutput.getLowTrade().getLast24Hours() );
 
-        assertEquals( new BigDecimal("42.33000"),   tickerOutput.getHighTrade().getToday() );
-        assertEquals( new BigDecimal("42.81000"),   tickerOutput.getHighTrade().getLast24Hours() );
-
+            assertEquals( new BigDecimal("42.33000"),   tickerOutput.getHighTrade().getToday() );
+            assertEquals( new BigDecimal("42.81000"),   tickerOutput.getHighTrade().getLast24Hours() );
+        }).verifyComplete();
     }
 
     private TickerResponse buildTickerResponse() {
-
         return TickerResponse.builder()
                              .ticker(TickerResponse.Ticker.builder()
                                                           .a( Arrays.asList( "41.93000", "156",  "156.000" ))
                                                           .b( Arrays.asList( "41.87000", "26",   "126.000" ))
                                                           .l( Arrays.asList( "41.71000", "41.46000" ))
                                                           .h( Arrays.asList( "42.33000", "42.81000" ))
-
                                                           .build()
                              )
                             .assetPair("LTC/EUR")

@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class KrakenExceptionFactoryProviderTest {
+class KrakenExceptionFactoryProviderTest {
 
     @Test
-    public void testKrakenEorderPositionsLimitExceededException() {
+    void testKrakenEorderPositionsLimitExceededException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EOrder:Positions limit exceeded")
                                                 .getKrakenException ();
@@ -22,7 +22,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEorderTradingAgreementRequiredException() {
+    void testKrakenEorderTradingAgreementRequiredException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EOrder:Trading agreement required")
                                                 .getKrakenException ();
@@ -32,7 +32,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenUnknownException_forEOrder() {
+    void testKrakenUnknownException_forEOrder() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EOrder:Cryptox test for unknown error")
                                                 .getKrakenException ();
@@ -42,7 +42,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEapiRateLimitExceededException() {
+    void testKrakenEapiRateLimitExceededException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Rate limit exceeded")
                                                 .getKrakenException ();
@@ -52,7 +52,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEapiInvalidKeyException() {
+    void testKrakenEapiInvalidKeyException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Invalid key")
                                                 .getKrakenException ();
@@ -62,7 +62,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEapiInvalidSignatureException() {
+    void testKrakenEapiInvalidSignatureException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Invalid signature")
                                                 .getKrakenException ();
@@ -72,7 +72,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEapiInvalidNonceException() {
+    void testKrakenEapiInvalidNonceException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Invalid nonce")
                                                 .getKrakenException ();
@@ -82,7 +82,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEapiFeatureDisabledException() {
+    void testKrakenEapiFeatureDisabledException() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Feature disabled")
                                                 .getKrakenException ();
@@ -92,7 +92,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenEgeneralInvalidArgumentsException() {
+    void testKrakenEgeneralInvalidArgumentsException() {
         assertThrows(KrakenEgeneralInvalidArgumentsException.class, () -> {
             throw KrakenExceptionFactoryProvider.getFactory         ("EGeneral:Invalid arguments:price")
                                                 .getKrakenException ();
@@ -100,7 +100,7 @@ public class KrakenExceptionFactoryProviderTest {
     }
 
     @Test
-    public void testKrakenUnknownException_forEAPI() {
+    void testKrakenUnknownException_forEAPI() {
         try {
             throw KrakenExceptionFactoryProvider.getFactory         ("EAPI:Cryptox test for unknown error")
                                                 .getKrakenException ();

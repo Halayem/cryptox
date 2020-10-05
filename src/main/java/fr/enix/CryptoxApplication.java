@@ -11,5 +11,4 @@ public class CryptoxApplication {
     public static void main( String[] args ) {
         SpringApplication.run( CryptoxApplication.class, args );
     }
-
 }

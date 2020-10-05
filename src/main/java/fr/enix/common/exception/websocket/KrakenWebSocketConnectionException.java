@@ -5,6 +5,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class KrakenWebSocketConnectionException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
 }

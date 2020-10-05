@@ -7,16 +7,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebSocketSubscriptionFactory {
 
-    private final ChannelManager channelManager;
-    private final ConnectionManager connectionManager;
-    private final TickerResponseManager tickerResponseManager;
+    private final WebSocketSubscriptionManager channelManager;
+    private final WebSocketSubscriptionManager connectionManager;
+    private final WebSocketSubscriptionManager tickerResponseManager;
+    private final WebSocketSubscriptionManager heartbeatManager;
+    private final WebSocketSubscriptionManager pongManager;
 
     public WebSocketSubscriptionManager getWebSocketSubscriptionManager(final String payload) {
+        log.debug("string payload, before calling the adequate manager: {}", payload);
 
-        if ( payload.indexOf("connectionID" ) == 2) { return connectionManager; }
-        if ( payload.indexOf("channelID"    ) == 2) { return channelManager;    }
+        if ( isHeartbeatPayload (payload) ) { return heartbeatManager;      }
+        if ( isTickerPayload    (payload) ) { return tickerResponseManager; }
+        if ( isPongPayload      (payload) ) { return pongManager;           }
+        if ( isChannelPayload   (payload) ) { return channelManager;        }
+        if ( isConnectionPayload(payload) ) { return connectionManager;     }
 
-        return tickerResponseManager;
+        throw new RuntimeException("no manager configured for this payload: " + payload);
     }
+
+    private boolean isHeartbeatPayload  (final String payload) { return payload.contains("heartbeat");          }
+    private boolean isPongPayload       (final String payload) { return payload.contains("pong");               }
+    private boolean isTickerPayload     (final String payload) { return payload.matches("^\\[(\\d+).*"); }
+    private boolean isConnectionPayload (final String payload) { return payload.indexOf("connectionID" ) == 2;  }
+    private boolean isChannelPayload    (final String payload) { return payload.indexOf("channelID") == 2;      }
 
 }

@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AddOrderRequestTest {
+class AddOrderRequestTest {
 
     @Autowired KrakenRepositoryService krakenRepositoryService;
 
     @Test
-    public void testGetQueryParametersRepresentation_shouldBuildLeverageAndClose() {
+    void testGetQueryParametersRepresentation_shouldBuildLeverageAndClose() {
         final String            nonce           = krakenRepositoryService.getNewNonce();
         final AddOrderRequest   addOrderRequest = AddOrderRequest
                                                                 .builder    ()
@@ -41,8 +41,8 @@ public class AddOrderRequestTest {
                               .append("pair"            ).append("=").append("XLTCZEUR"         ).append("&")
                               .append("type"            ).append("=").append("buy"              ).append("&")
                               .append("ordertype"       ).append("=").append("limit"            ).append("&")
-                              .append("price"           ).append("=").append(40                 ).append("&")
                               .append("volume"          ).append("=").append(1                  ).append("&")
+                              .append("price"           ).append("=").append(40                 ).append("&")
                               .append("leverage"        ).append("=").append("2:1"              ).append("&")
                               .append("close[ordertype]").append("=").append("stop-loss-profit" ).append("&")
                               .append("close[price]"    ).append("=").append("#5%"              ).append("&")

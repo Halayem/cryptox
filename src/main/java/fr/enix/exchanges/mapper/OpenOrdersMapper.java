@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public class OpenOrdersMapper {
 
     public List<OpenOrderOutput> mapFromOpenOrdersResponseToOpenOrderOutput(final OpenOrdersResponse openOrdersResponse ) {
+        return null;
+        /*
         return
             openOrdersResponse.getResult()
                               .getOpen  ()
@@ -28,5 +30,8 @@ public class OpenOrdersMapper {
                               )
                               .collect(Collectors.toList())
             ;
+
+         */
     }
+
 }
