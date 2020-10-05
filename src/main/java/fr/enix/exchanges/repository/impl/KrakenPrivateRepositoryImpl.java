@@ -68,10 +68,8 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     @Override
     public Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
-        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest(
-                                                        addOrderInput,
-                                                        krakenRepositoryService.getNewNonce()
-                                                );
+        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest( addOrderInput, krakenRepositoryService.getNewNonce() );
+
         return
             executeWebClientMono(
                 "/0/private/AddOrder",

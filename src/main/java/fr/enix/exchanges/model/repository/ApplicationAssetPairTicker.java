@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @ToString
 public class ApplicationAssetPairTicker implements Comparable<ApplicationAssetPairTicker> {
-    private String applicationAssetPair;
-    private BigDecimal price;
-    private LocalDateTime dateTime;
+    private String          applicationAssetPair;
+    private BigDecimal      price;
+    private LocalDateTime   dateTime;
 
     @Override
     public int compareTo(ApplicationAssetPairTicker applicationAssetPairMarketTicker) {
