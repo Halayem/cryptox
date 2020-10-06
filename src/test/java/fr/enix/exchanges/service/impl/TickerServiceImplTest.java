@@ -25,6 +25,7 @@ class TickerServiceImplTest {
     @Autowired private TickerServiceImpl tickerService;
     @MockBean private TradingDecisionService tradingDecisionService;
 
+    /*
     @Test
     void testNewAddOrderInputForBuyPlacement_shouldBeOk() {
         Mockito
@@ -147,4 +148,6 @@ class TickerServiceImplTest {
         .verifyComplete();
     }
 
+
+     */
 }

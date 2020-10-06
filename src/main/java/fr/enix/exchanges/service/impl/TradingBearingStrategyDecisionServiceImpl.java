@@ -4,6 +4,7 @@ import fr.enix.common.utils.math.ApplicationMathUtils;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
+import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.service.TradingDecisionService;
@@ -20,15 +21,16 @@ import static fr.enix.exchanges.model.business.ApplicationAssetPairTickerTrading
 public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisionService {
 
 
-    private final PriceReferenceService priceReferenceService;
-    private final ExchangeService exchangeService;
-    private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
+    private final PriceReferenceService                             priceReferenceService;
+    private final ExchangeService                                   exchangeService;
+    private final ApplicationCurrencyTradingsParameterRepository    applicationCurrencyTradingsParameterRepository;
+    private final AssetOrderIntervalRepository                      assetOrderIntervalRepository;
 
     @Override
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
 
-        final String applicationAssetPair = applicationAssetPairTicker.getApplicationAssetPair();
-        final BigDecimal currentApplicationAssetPairPrice = applicationAssetPairTicker.getPrice();
+        final String applicationAssetPair                   = applicationAssetPairTicker.getApplicationAssetPair();
+        final BigDecimal currentApplicationAssetPairPrice   = applicationAssetPairTicker.getPrice();
 
         return
             Mono.zip(
@@ -39,43 +41,166 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                 final BigDecimal priceReference = objects.getT1();
                 final BigDecimal gap            = objects.getT2();
 
-                return
-                    Mono.just(
-                    isHighGapReached(currentApplicationAssetPairPrice, priceReference, gap)
-                      ? newApplicationAssetPairTickerTradingDecision(Decision.SELL, applicationAssetPairTicker)
-                      : isLowGapReached(currentApplicationAssetPairPrice, priceReference, gap)
-                        ? newApplicationAssetPairTickerTradingDecision(Decision.BUY, applicationAssetPairTicker)
-                        : newApplicationAssetPairTickerTradingDecision(Decision.DO_NOTHING, applicationAssetPairTicker));
+                if ( isHighGapReached( currentApplicationAssetPairPrice, priceReference, gap ) ) {
+                    return manageDecisionWhenHighGapReached( applicationAssetPairTicker );
+                }
+
+                if ( isLowGapReached( currentApplicationAssetPairPrice, priceReference, gap ) ) {
+                    return manageDecisionWhenLowGapReached( applicationAssetPairTicker );
+                }
+
+                return newTradingDecisionWhenDoNothing(
+                          String.format(
+                              "gap: <%f> is not reached yet based on price reference: <%f>",
+                              gap,
+                              priceReference
+                          )
+                );
             })
-            .switchIfEmpty(Mono.just(newApplicationAssetPairTickerTradingDecision(Decision.ERROR, applicationAssetPairTicker)));
+            .switchIfEmpty(
+                newTradingDecisionError(
+                    String.format(
+                        "price reference was not set for this application asset pair: <%s>",
+                        applicationAssetPair
+                    )
+                )
+            );
     }
 
-    @Override
+    protected Mono<ApplicationAssetPairTickerTradingDecision> manageDecisionWhenHighGapReached(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return
+            getAmountToSell(applicationAssetPairTicker.getApplicationAssetPair())
+            .flatMap(amountToSell -> {
+                if ( amountToSell.compareTo(assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(applicationAssetPairTicker.getApplicationAssetPair())) < 0 ) {
+                    return
+                        newTradingDecisionNoSellWhenAmountIsLessThanMinimum(
+                            amountToSell,
+                            assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(
+                                applicationAssetPairTicker.getApplicationAssetPair()
+                            )
+                        );
+                }
+
+                return
+                    Mono.just(
+                        ApplicationAssetPairTickerTradingDecision
+                        .builder    ()
+                        .amount     (amountToSell)
+                        .price      (applicationAssetPairTicker.getPrice())
+                        .operation  (
+                                ApplicationAssetPairTickerTradingDecision
+                                .Operation
+                                .builder    ()
+                                .decision   (Decision.SELL)
+                                .build      ()
+                        ).build());
+            });
+    }
+
+    protected Mono<ApplicationAssetPairTickerTradingDecision> manageDecisionWhenLowGapReached(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return
+            getAmountToBuy(applicationAssetPairTicker)
+            .flatMap(amountToBuy -> {
+                if ( amountToBuy.compareTo(assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(applicationAssetPairTicker.getApplicationAssetPair())) < 0 ) {
+                    return
+                        newTradingDecisionNoBuyWhenAmountIsLessThanMinimum(
+                            amountToBuy,
+                            assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(
+                                applicationAssetPairTicker.getApplicationAssetPair()
+                            )
+                        );
+                }
+
+                return
+                    Mono.just(
+                        ApplicationAssetPairTickerTradingDecision
+                        .builder    ()
+                        .amount     (amountToBuy)
+                        .price      (applicationAssetPairTicker.getPrice())
+                        .operation  (
+                                ApplicationAssetPairTickerTradingDecision
+                                .Operation
+                                .builder    ()
+                                .decision   (Decision.BUY)
+                                .build      ()
+                        ).build());
+            });
+    }
+
     public Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
         return  exchangeService
                 .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
                 .flatMap(availableAssetForSell ->
-                    isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
-                    .flatMap(isLess ->
-                        isLess
-                        ? Mono.just(availableAssetForSell)
-                        : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
-                    )
+                        isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
+                                .flatMap(isLess ->
+                                        isLess
+                                                ? Mono.just(availableAssetForSell)
+                                                : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
+                                )
                 );
     }
 
-    @Override
-    public Mono<BigDecimal> getAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    protected Mono<BigDecimal> getAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         return  exchangeService
                 .getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
                 .flatMap(availableAssetForBuy ->
-                    isAvailableAssetLessThanConfiguredAmountToBuy(applicationAssetPairTicker, availableAssetForBuy)
-                    .flatMap(isLess ->
-                        isLess
-                        ? Mono.just(ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) )
-                        : applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
-                    )
+                        isAvailableAssetLessThanConfiguredAmountToBuy(applicationAssetPairTicker, availableAssetForBuy)
+                                .flatMap(isLess ->
+                                        isLess
+                                                ? Mono.just(ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) )
+                                                : applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+                                )
                 );
+    }
+
+    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionNoSellWhenAmountIsLessThanMinimum(final BigDecimal amountToSell,
+                                                                                                                final BigDecimal minimumOrder) {
+        return newTradingDecisionWhenDoNothing(
+                String.format(
+                    "the computed amount to sell: <%f>, is less than the minimum order: <%f>",
+                    amountToSell,
+                    minimumOrder
+                ));
+    }
+
+    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionNoBuyWhenAmountIsLessThanMinimum(final BigDecimal amountToBuy,
+                                                                                                               final BigDecimal minimumOrder) {
+        return newTradingDecisionWhenDoNothing(
+                String.format(
+                    "the computed amount to buy: <%f>, is less than the minimum order: <%f>",
+                    amountToBuy,
+                    minimumOrder
+                ));
+    }
+
+    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionWhenDoNothing(final String message) {
+        return Mono.just(
+                ApplicationAssetPairTickerTradingDecision
+                .builder    ()
+                .operation  (
+                    ApplicationAssetPairTickerTradingDecision
+                    .Operation.builder  ()
+                        .decision (Decision.DO_NOTHING)
+                        .message  (message)
+                        .build    ()
+                )
+                .build()
+        );
+    }
+
+    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionError(final String message) {
+        return Mono.just(
+                ApplicationAssetPairTickerTradingDecision
+                        .builder    ()
+                        .operation  (
+                                ApplicationAssetPairTickerTradingDecision
+                                        .Operation.builder  ()
+                                        .decision (Decision.ERROR)
+                                        .message  (message)
+                                        .build    ()
+                        )
+                        .build()
+        );
     }
 
     private Mono<Boolean> isAvailableAssetLessThanConfiguredAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker,
@@ -105,17 +230,5 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                                     final BigDecimal priceReference,
                                     final BigDecimal gap) {
         return lastPrice.compareTo(priceReference.subtract(gap)) <= 0;
-    }
-
-
-
-    private ApplicationAssetPairTickerTradingDecision newApplicationAssetPairTickerTradingDecision(final Decision decision,
-                                                                                                   final ApplicationAssetPairTicker applicationAssetPairTicker) {
-        return
-            ApplicationAssetPairTickerTradingDecision
-            .builder()
-            .decision                   ( decision )
-            .applicationAssetPairTicker ( applicationAssetPairTicker )
-            .build();
     }
 }
