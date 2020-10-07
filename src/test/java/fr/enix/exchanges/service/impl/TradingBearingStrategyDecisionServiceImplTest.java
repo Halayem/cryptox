@@ -48,6 +48,8 @@ class TradingBearingStrategyDecisionServiceImplTest {
             assertEquals(   "price reference was not set for this application asset pair: <litecoin-euro>",
                             applicationAssetPairTickerTradingDecision.getOperation().getMessage()
             );
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
+            assertEquals(new BigDecimal("45.65"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
             assertNull(applicationAssetPairTickerTradingDecision.getAmount());
             assertNull(applicationAssetPairTickerTradingDecision.getPrice());
         })
@@ -67,9 +69,12 @@ class TradingBearingStrategyDecisionServiceImplTest {
         StepVerifier
         .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("46.45") )))
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
+
             assertEquals( Decision.SELL, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
-            assertEquals( new BigDecimal("0.5" ), applicationAssetPairTickerTradingDecision.getAmount() );
+            assertEquals( new BigDecimal("0.5" ),  applicationAssetPairTickerTradingDecision.getAmount() );
             assertEquals( new BigDecimal("46.45"), applicationAssetPairTickerTradingDecision.getPrice() );
+            assertEquals( new BigDecimal("46.45"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
         })
         .verifyComplete ();
     }
@@ -94,6 +99,8 @@ class TradingBearingStrategyDecisionServiceImplTest {
 
             assertNull( applicationAssetPairTickerTradingDecision.getAmount()   );
             assertNull( applicationAssetPairTickerTradingDecision.getPrice()    );
+            assertEquals( new BigDecimal("46.45"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
         })
         .verifyComplete ();
     }
@@ -109,11 +116,13 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
 
         StepVerifier
-        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.850000") )))
+        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.85") )))
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals( Decision.BUY, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
             assertEquals( new BigDecimal("0.5" ), applicationAssetPairTickerTradingDecision.getAmount() );
-            assertEquals( new BigDecimal("44.850000"), applicationAssetPairTickerTradingDecision.getPrice() );
+            assertEquals( new BigDecimal("44.85"), applicationAssetPairTickerTradingDecision.getPrice() );
+            assertEquals( new BigDecimal("44.85"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
         })
         .verifyComplete ();
     }
@@ -121,13 +130,14 @@ class TradingBearingStrategyDecisionServiceImplTest {
     @Test
     void testGetDecisionWhenLastPriceReachLowGapButAvailableAssetIsLessThanTheMinimumOrder_shouldReturnDoNothingDecision() {
         setupPriceReferenceRepositoryMockForLitecoinEuro();
+
         final TradingBearingStrategyDecisionServiceImpl tradingDecisionServiceSpy = Mockito.spy(tradingDecisionService);
         Mockito
         .doReturn   ( Mono.just( new BigDecimal("0.099999" ) ) )
         .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
 
         StepVerifier
-        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.850000") )))
+        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.85") )))
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals( Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
             assertEquals(
@@ -136,6 +146,9 @@ class TradingBearingStrategyDecisionServiceImplTest {
             );
             assertNull( applicationAssetPairTickerTradingDecision.getAmount() );
             assertNull( applicationAssetPairTickerTradingDecision.getPrice() );
+
+            assertEquals( new BigDecimal("44.85"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
         })
         .verifyComplete ();
     }
@@ -154,6 +167,9 @@ class TradingBearingStrategyDecisionServiceImplTest {
             );
             assertNull( applicationAssetPairTickerTradingDecision.getAmount() );
             assertNull( applicationAssetPairTickerTradingDecision.getPrice() );
+
+            assertEquals( new BigDecimal("45.62"), applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice());
+            assertEquals("litecoin-euro", applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair());
         })
         .verifyComplete ();
     }

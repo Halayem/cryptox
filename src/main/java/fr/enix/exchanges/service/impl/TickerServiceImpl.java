@@ -36,19 +36,24 @@ public class TickerServiceImpl implements TickerService {
                     tickerOutput.getAsk().getPrice()
                 )
             )
-            .flatMap(tradingDecisionService::getDecision)
-            .flatMap(applicationAssetPairTickerTradingDecision -> {
+            .flatMap( tradingDecisionService::getDecision)
+            .flatMap( applicationAssetPairTickerTradingDecision -> {
+
+                log.info(
+                    "trading decision service has acted as follow: {}",
+                    applicationAssetPairTickerTradingDecision.getFormattedLogMessage()
+                );
+
                 priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
-                return this.placeOrder(applicationAssetPairTickerTradingDecision);
+                return placeOrder( applicationAssetPairTickerTradingDecision );
             });
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-
         return
             Mono
-            .just   ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
-            .filter ( this::isSellOrBuyDecision )
+            .just       ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
+            .filter     ( this::isSellOrBuyDecision )
             .flatMap    ( decision -> {
                 switch (decision) {
                     case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision );

@@ -3,13 +3,11 @@ package fr.enix.exchanges.model.business;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Getter
 @Builder
-@ToString
 public class ApplicationAssetPairTickerTradingDecision {
 
     // used as a reference for taking decision
@@ -27,5 +25,22 @@ public class ApplicationAssetPairTickerTradingDecision {
 
     public enum Decision {
         BUY, SELL, DO_NOTHING, ERROR
+    }
+
+    public String getFormattedLogMessage() {
+        return
+            String.format(
+                "\n\t - application asset pair -- <%s>" +
+                "\n\t - current price ----------- <%f>" +
+                "\n\t - decision ---------------- <%s>" +
+                "\n\t - message ----------------- <%s>" +
+                "\n\t - transaction amount ------ <%f>" +
+                "\n\t - transaction price ------- <%f>",
+                applicationAssetPairTickerReference.getApplicationAssetPair(),
+                applicationAssetPairTickerReference.getPrice(),
+                operation.getDecision(),
+                operation.getMessage(),
+                amount,
+                price );
     }
 }
