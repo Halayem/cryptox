@@ -65,14 +65,8 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .when       ( tradingDecisionServiceSpy ).getAmountToSell( "litecoin-euro" );
 
         StepVerifier
-        .create(tradingDecisionServiceSpy.getDecision(
-                    ApplicationAssetPairTicker
-                    .builder()
-                    .applicationAssetPair ( "litecoin-euro" )
-                    .price                ( new BigDecimal("46.45") )
-                    .build()
-                )
-        ).consumeNextWith(applicationAssetPairTickerTradingDecision -> {
+        .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("46.45") )))
+        .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals( Decision.SELL, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
             assertEquals( new BigDecimal("0.5" ), applicationAssetPairTickerTradingDecision.getAmount() );
             assertEquals( new BigDecimal("46.45"), applicationAssetPairTickerTradingDecision.getPrice() );
@@ -90,7 +84,7 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .when       ( tradingDecisionServiceSpy ).getAmountToSell( "litecoin-euro" );
 
         StepVerifier
-        .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro() ) )
+        .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("46.45") ) ) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals( Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
             assertEquals(
@@ -115,18 +109,100 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
 
         StepVerifier
-        .create(tradingDecisionServiceSpy.getDecision(
-                    ApplicationAssetPairTicker
-                        .builder()
-                        .applicationAssetPair ( "litecoin-euro" )
-                        .price                ( new BigDecimal("44.850000") )
-                        .build()
-                    )
-        ).consumeNextWith(applicationAssetPairTickerTradingDecision -> {
+        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.850000") )))
+        .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals( Decision.BUY, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
             assertEquals( new BigDecimal("0.5" ), applicationAssetPairTickerTradingDecision.getAmount() );
             assertEquals( new BigDecimal("44.850000"), applicationAssetPairTickerTradingDecision.getPrice() );
         })
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGetDecisionWhenLastPriceReachLowGapButAvailableAssetIsLessThanTheMinimumOrder_shouldReturnDoNothingDecision() {
+        setupPriceReferenceRepositoryMockForLitecoinEuro();
+        final TradingBearingStrategyDecisionServiceImpl tradingDecisionServiceSpy = Mockito.spy(tradingDecisionService);
+        Mockito
+        .doReturn   ( Mono.just( new BigDecimal("0.099999" ) ) )
+        .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
+
+        StepVerifier
+        .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.850000") )))
+        .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
+            assertEquals( Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
+            assertEquals(
+        "the computed amount to buy: <0,099999>, is less than the minimum order: <0,100000>",
+                applicationAssetPairTickerTradingDecision.getOperation().getMessage()
+            );
+            assertNull( applicationAssetPairTickerTradingDecision.getAmount() );
+            assertNull( applicationAssetPairTickerTradingDecision.getPrice() );
+        })
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGetDecisionWhenLastPriceIsBetweenLowAndHighGap_shouldReturnDoNothingDecision() {
+        setupPriceReferenceRepositoryMockForLitecoinEuro();
+
+        StepVerifier
+        .create         ( tradingDecisionService.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("45.62") )))
+        .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
+            assertEquals( Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getOperation().getDecision() );
+            assertEquals(
+                    "gap: <0,800000> is not reached yet, price reference: <45,650000>, current price: <45,620000>",
+                    applicationAssetPairTickerTradingDecision.getOperation().getMessage()
+            );
+            assertNull( applicationAssetPairTickerTradingDecision.getAmount() );
+            assertNull( applicationAssetPairTickerTradingDecision.getPrice() );
+        })
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGeAmountToSellWhenAvailableAssetIsGreaterThanConfiguredAmountToSell_shouldReturnConfiguredAmountToSell() {
+        Mockito
+        .when       ( exchangeService.getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro") )
+        .thenReturn ( Mono.just(new BigDecimal("1")) );
+
+        StepVerifier
+        .create         ( tradingDecisionService.getAmountToSell("litecoin-euro") )
+        .consumeNextWith( amountToSell -> assertEquals( new BigDecimal("0.5"), amountToSell ) )
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGeAmountToSellWhenAvailableAssetIsLessThanConfiguredAmountToSell_shouldReturnAvailableAsset() {
+        Mockito
+        .when       ( exchangeService.getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro") )
+        .thenReturn ( Mono.just(new BigDecimal("0.25")) );
+
+        StepVerifier
+        .create         ( tradingDecisionService.getAmountToSell("litecoin-euro") )
+        .consumeNextWith( amountToSell -> assertEquals( new BigDecimal("0.25"), amountToSell ) )
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGeAmountToBuyWhenAvailableAssetIsGreaterThanConfiguredAmountToBuy_shouldReturnConfiguredAmountToBuy() {
+        Mockito
+        .when       ( exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro") )
+        .thenReturn ( Mono.just(new BigDecimal("22.640")) );
+
+        StepVerifier
+        .create         ( tradingDecisionService.getAmountToBuy(newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("45.25"))) )
+        .consumeNextWith( amountToBuy -> assertEquals( new BigDecimal("0.5"), amountToBuy ) )
+        .verifyComplete ();
+    }
+
+    @Test
+    void testGeAmountToBuyWhenAvailableAssetIsLessThanConfiguredAmountToBuy_shouldReturnAvailableAsset() {
+        Mockito
+        .when       ( exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro") )
+        .thenReturn ( Mono.just(new BigDecimal("15.255")) );
+
+        StepVerifier
+        .create         ( tradingDecisionService.getAmountToBuy(newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("45.25"))) )
+        .consumeNextWith( amountToBuy -> assertEquals( new BigDecimal("0.33712707"), amountToBuy ) )
         .verifyComplete ();
     }
 
@@ -144,139 +220,11 @@ class TradingBearingStrategyDecisionServiceImplTest {
         );
     }
 
-    private ApplicationAssetPairTicker newApplicationAssetPairTickerForLitecoinEuro() {
+    private ApplicationAssetPairTicker newApplicationAssetPairTickerForLitecoinEuro(final BigDecimal price) {
         return  ApplicationAssetPairTicker
                 .builder()
                 .applicationAssetPair ( "litecoin-euro" )
-                .price                ( new BigDecimal("46.45") )
+                .price                ( price )
                 .build();
     }
-
-    /*
-    @Test
-    void testGetDecisionWhenLastPriceReachLowGap_shouldReturnBuyDecision() {
-        // gap of 0.8 is set in application properties
-        Mockito
-        .when       (priceReferenceRepository.getPriceReferenceForApplicationAssetPair("litecoin-euro") )
-        .thenReturn (
-            Mono.just(
-                PriceReference
-                .builder()
-                .price  (new BigDecimal("45.65"))
-                .build  ()
-            )
-        );
-
-        StepVerifier
-        .create(tradingBearingStrategyDecisionService.getDecision(
-            ApplicationAssetPairTicker
-            .builder()
-            .applicationAssetPair ( "litecoin-euro" )
-            .price                ( new BigDecimal("44.85") )
-            .build())
-        ).consumeNextWith(applicationAssetPairTickerTradingDecision ->
-            assertEquals(Decision.BUY, applicationAssetPairTickerTradingDecision.getDecision()))
-        .verifyComplete ();
-    }
-
-    @Test
-    void testGetDecisionWhenLastPriceIsBetweenLowAndHighGap_shouldReturnDoNothingDecision() {
-        // gap of 0.8 is set in application properties
-        Mockito
-        .when       (priceReferenceRepository.getPriceReferenceForApplicationAssetPair("litecoin-euro") )
-        .thenReturn (
-            Mono.just(
-                PriceReference
-                .builder()
-                .price  (new BigDecimal("45.65"))
-                .build  ()
-            )
-        );
-
-        StepVerifier
-        .create(tradingBearingStrategyDecisionService.getDecision(
-            ApplicationAssetPairTicker
-            .builder()
-            .applicationAssetPair ( "litecoin-euro" )
-            .price                ( new BigDecimal("44.95") )
-            .build())
-        ).consumeNextWith(applicationAssetPairTickerTradingDecision ->
-            assertEquals(Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getDecision()))
-        .verifyComplete ();
-    }
-
-    @Test
-    void testGetAmountToSell_shouldReturnTheConfiguredValueWhenAvailableAssetIsGreaterThanTheConfiguredValue() {
-        Mockito
-        .when       (exchangeService.getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro") )
-        .thenReturn ( Mono.just(new BigDecimal("0.8") ) );
-
-        StepVerifier
-        .create         (tradingBearingStrategyDecisionService.getAmountToSell("litecoin-euro"))
-        .consumeNextWith(amountToSell ->
-            assertEquals( new BigDecimal("0.5"), amountToSell )
-        )
-        .verifyComplete();
-    }
-
-    @Test
-    void testGetAmountToSell_shouldReturnTheAvailableAssetWhenAvailableAssetIsLessThanTheConfiguredValue() {
-        Mockito
-        .when       (exchangeService.getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro") )
-        .thenReturn ( Mono.just(new BigDecimal("0.2") ) );
-
-        StepVerifier
-        .create         (tradingBearingStrategyDecisionService.getAmountToSell("litecoin-euro"))
-        .consumeNextWith(amountToSell ->
-            assertEquals( new BigDecimal("0.2"), amountToSell )
-        )
-        .verifyComplete();
-    }
-
-    @Test
-    void testGetAmountToBuy_shouldReturnTheConfiguredValueWhenConfiguredValueMultipliedByMarketPriceIsLessThanAvailableAsset() {
-        // amount to buy in litecoin is 0.5 in application properties
-        Mockito
-        .when       (exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro") )
-        .thenReturn ( Mono.just(new BigDecimal("40") ) );
-
-        StepVerifier
-        .create( tradingBearingStrategyDecisionService.getAmountToBuy(
-                        ApplicationAssetPairTicker
-                        .builder()
-                        .applicationAssetPair("litecoin-euro")
-                        .price(new BigDecimal("45.245"))
-                        .build()
-                    )
-        )
-        .consumeNextWith(amountToBuy ->
-            assertEquals( new BigDecimal("0.5"), amountToBuy )
-        )
-        .verifyComplete();
-    }
-
-    @Test
-    void testGetAmountToBuy_shouldReturnTheDividedAvailableAssetForBuyByMarketPriceWhenAvailableAssetCanNotBuyTheConfiguredAmountToBuy() {
-        // amount to buy in litecoin is 0.5 in application properties
-        Mockito
-        .when       (exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro") )
-        .thenReturn ( Mono.just(new BigDecimal("17.25") ) );
-
-        StepVerifier
-        .create( tradingBearingStrategyDecisionService.getAmountToBuy(
-                    ApplicationAssetPairTicker
-                        .builder()
-                        .applicationAssetPair("litecoin-euro")
-                        .price(new BigDecimal("45.245"))
-                        .build()
-                )
-        )
-        .consumeNextWith(amountToBuy ->
-            assertEquals( new BigDecimal("0.38125759"), amountToBuy )
-        )
-        .verifyComplete();
-    }
-
-     */
-
 }

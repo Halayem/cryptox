@@ -3,7 +3,6 @@ package fr.enix.exchanges.repository.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.common.utils.file.ApplicationFileUtils;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
-import fr.enix.exchanges.repository.KrakenPrivateRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

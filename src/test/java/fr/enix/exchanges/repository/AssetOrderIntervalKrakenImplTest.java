@@ -18,13 +18,13 @@ class AssetOrderIntervalKrakenImplTest {
 
     @Test
     void testGetMinimumOrderForLitecoinApplicationAsset() {
-        assertEquals(new BigDecimal("0.1"), assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("litecoin"));
+        assertEquals(new BigDecimal("0.1"), assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("litecoin-euro"));
     }
 
     @Test
     void testGetMinimumOrderForUnknownApplicationAsset_shouldThrowRuntimeException() {
         Exception e = assertThrows( RuntimeException.class,
-                                    () -> assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("unknownAsset"));
-        assertEquals( "application asset: unknownAsset is not configured", e.getMessage() );
+                                    () -> assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("unknown-application-asset-pair"));
+        assertEquals( "application asset: unknown-application-asset-pair is not configured", e.getMessage() );
     }
 }
