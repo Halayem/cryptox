@@ -9,13 +9,10 @@ import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
-import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
 
 @Slf4j
 @AllArgsConstructor
@@ -39,23 +36,28 @@ public class TickerServiceImpl implements TickerService {
                     tickerOutput.getAsk().getPrice()
                 )
             )
-            .flatMap(tradingDecisionService::getDecision)
-            .flatMap(applicationAssetPairTickerTradingDecision -> {
+            .flatMap( tradingDecisionService::getDecision)
+            .flatMap( applicationAssetPairTickerTradingDecision -> {
+
+                log.info(
+                    "trading decision service has acted as follow: {}",
+                    applicationAssetPairTickerTradingDecision.getFormattedLogMessage()
+                );
+
                 priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
-                return this.placeOrder(applicationAssetPairTickerTradingDecision);
+                return placeOrder( applicationAssetPairTickerTradingDecision );
             });
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-
         return
             Mono
-            .just   ( applicationAssetPairTickerTradingDecision.getDecision() )
-            .filter ( this::isSellOrBuyDecision )
+            .just       ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
+            .filter     ( this::isSellOrBuyDecision )
             .flatMap    ( decision -> {
                 switch (decision) {
-                    case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker() );
-                    case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker() );
+                    case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision );
+                    case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision );
                 }
                 return Mono.empty();
             });
@@ -67,40 +69,38 @@ public class TickerServiceImpl implements TickerService {
     }
 
 
-    protected Mono<AddOrderOutput> placeSellOrder( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
+    protected Mono<AddOrderOutput> placeSellOrder( final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision ) {
         return
-            newAddOrderInputForSellPlacement(applicationAssetPairTicker)
-            .flatMap( addOrderInputForSellPlacement -> exchangeService.addOrder(addOrderInputForSellPlacement));
+            newAddOrderInputForSellPlacement( applicationAssetPairTickerTradingDecision )
+            .flatMap( exchangeService::addOrder);
     }
 
-    protected Mono<AddOrderOutput> placeBuyOrder( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
+    protected Mono<AddOrderOutput> placeBuyOrder( final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision ) {
         return
-            newAddOrderInputForBuyPlacement(applicationAssetPairTicker)
-            .flatMap( addOrderInputForBuyPlacement -> exchangeService.addOrder(addOrderInputForBuyPlacement));
+            newAddOrderInputForBuyPlacement(applicationAssetPairTickerTradingDecision)
+            .flatMap( exchangeService::addOrder );
     }
 
-    protected Mono<AddOrderInput> newAddOrderInputForBuyPlacement(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    protected Mono<AddOrderInput> newAddOrderInputForBuyPlacement(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
         return
-            tradingDecisionService.getAmountToBuy(applicationAssetPairTicker)
-            .filter ( amountToBuy -> BigDecimal.ZERO.compareTo(amountToBuy) < 0)
-            .flatMap(amountToBuy ->
+            Mono.just   ( applicationAssetPairTickerTradingDecision.getAmount() )
+            .flatMap    ( amountToBuy ->
                 addOrderMapper.newAddOrderInputForBuyPlacement(
-                    applicationAssetPairTicker.getApplicationAssetPair(),
+                    applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
                     amountToBuy,
-                    applicationAssetPairTicker.getPrice()
+                    applicationAssetPairTickerTradingDecision.getPrice()
                 )
             );
     }
 
-    protected Mono<AddOrderInput> newAddOrderInputForSellPlacement(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    protected Mono<AddOrderInput> newAddOrderInputForSellPlacement(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
         return
-            tradingDecisionService.getAmountToSell( applicationAssetPairTicker.getApplicationAssetPair() )
-            .filter ( amountToSell -> BigDecimal.ZERO.compareTo(amountToSell) < 0 )
-            .flatMap( amountToSell ->
+            Mono.just   ( applicationAssetPairTickerTradingDecision.getAmount() )
+            .flatMap    ( amountToSell ->
                 addOrderMapper.newAddOrderInputForSellPlacement(
-                    applicationAssetPairTicker.getApplicationAssetPair(),
+                    applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
                     amountToSell,
-                    applicationAssetPairTicker.getPrice()
+                    applicationAssetPairTickerTradingDecision.getPrice()
                 )
             );
     }

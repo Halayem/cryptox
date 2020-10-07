@@ -4,6 +4,5 @@ import java.math.BigDecimal;
 
 public interface AssetOrderIntervalRepository {
 
-    BigDecimal getMinimumLitecoinOrder();
-    BigDecimal getMinimumEuroOrder();
+    BigDecimal getMinimumOrderForApplicationAsset(final String applicationAssetPair);
 }

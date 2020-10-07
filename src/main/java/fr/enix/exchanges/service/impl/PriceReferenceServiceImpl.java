@@ -16,7 +16,7 @@ public class PriceReferenceServiceImpl implements PriceReferenceService {
 
     @Override
     public void checkAndUpdatePriceReference(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        switch (applicationAssetPairTickerTradingDecision.getDecision()) {
+        switch (applicationAssetPairTickerTradingDecision.getOperation().getDecision()) {
             case BUY    :
             case SELL   :
             case ERROR  : setPriceReferenceAsCurrentPrice(applicationAssetPairTickerTradingDecision); break;
@@ -31,8 +31,8 @@ public class PriceReferenceServiceImpl implements PriceReferenceService {
     private void setPriceReferenceAsCurrentPrice(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
         log.info("updating price reference based on this decision:{}", applicationAssetPairTickerTradingDecision);
         priceReferenceRepository.updatePriceReferenceForApplicationAssetPair(
-            applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker().getApplicationAssetPair(),
-            applicationAssetPairTickerTradingDecision.getApplicationAssetPairTicker().getPrice()
+            applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
+            applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice()
         ).subscribe(priceReference ->
             log.info("new price: {} reference is now stored by service", priceReference)
         );

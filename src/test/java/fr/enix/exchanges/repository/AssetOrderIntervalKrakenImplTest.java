@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class AssetOrderIntervalKrakenImplTest {
@@ -16,12 +17,14 @@ class AssetOrderIntervalKrakenImplTest {
     private AssetOrderIntervalRepositoryKrakenImpl assetOrderIntervalRepositoryKraken;
 
     @Test
-    void testGetMinimumLitecoinOrder_shouldBeZeroDotOne() {
-        assertEquals(new BigDecimal("0.1"), assetOrderIntervalRepositoryKraken.getMinimumLitecoinOrder());
+    void testGetMinimumOrderForLitecoinApplicationAsset() {
+        assertEquals(new BigDecimal("0.1"), assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("litecoin-euro"));
     }
 
     @Test
-    void testGetMinimumEuroOrder_shouldBeTen() {
-        assertEquals(new BigDecimal("10"), assetOrderIntervalRepositoryKraken.getMinimumEuroOrder());
+    void testGetMinimumOrderForUnknownApplicationAsset_shouldThrowRuntimeException() {
+        Exception e = assertThrows( RuntimeException.class,
+                                    () -> assetOrderIntervalRepositoryKraken.getMinimumOrderForApplicationAsset("unknown-application-asset-pair"));
+        assertEquals( "application asset: unknown-application-asset-pair is not configured", e.getMessage() );
     }
 }
