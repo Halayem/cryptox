@@ -27,6 +27,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.authorizeRequests()
                         .antMatchers(this.adminServerProperties.getContextPath() + "/assets/**").permitAll()
                         .antMatchers(this.adminServerProperties.getContextPath() + "/login").permitAll()
+                        .antMatchers(this.adminServerProperties.getContextPath() + "/actuator/health").permitAll()
                         .anyRequest()
                         .authenticated()
                     .and()
