@@ -1,9 +1,11 @@
 package fr.enix;
 
+import fr.enix.exchanges.event.WebSocketClientConnectionTerminatedEvent;
 import fr.enix.exchanges.monitor.ApplicationMonitor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -25,14 +27,21 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
         startMonitoring();
     }
 
+    @EventListener(WebSocketClientConnectionTerminatedEvent.class)
+    public void onWebSocketClientConnectionTerminatedEvent(WebSocketClientConnectionTerminatedEvent webSocketClientConnectionTerminatedEvent) {
+        startTickerWebSocketClient();
+        log.info("received event: {}, message: {}, trying to reconnect...", webSocketClientConnectionTerminatedEvent.getClass().getName(), webSocketClientConnectionTerminatedEvent.getMessage() );
+    }
+
+    private final long startTickerWebSocketClientDelayInSeconds = 10l;
+
     private void startWebSocketClient() {
-        Executors
-        .newSingleThreadScheduledExecutor()
-        .schedule(this::startTickerWebSocketClient, 10l, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().schedule( this::startTickerWebSocketClient, startTickerWebSocketClientDelayInSeconds, TimeUnit.SECONDS );
+        log.info("starting web socket client in: {} {} ...", startTickerWebSocketClientDelayInSeconds, TimeUnit.SECONDS.toString() );
     }
 
     private void startTickerWebSocketClient() {
-        tickerWebSocketClient.block();
+        tickerWebSocketClient.subscribe();
     }
 
     private void startMonitoring() {
