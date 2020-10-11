@@ -2,6 +2,7 @@ package fr.enix.exchanges.configuration.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.enix.exchanges.event.WebSocketClientConnectionTerminatedEvent;
 import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
 import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.parameters.KrakenPingProperties;
@@ -10,8 +11,10 @@ import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
@@ -31,7 +34,8 @@ import java.util.function.Consumer;
 })
 public class TickerControllerConfiguration {
 
-    private final ApplicationTradingConfigurationService applicationTradingConfigurationService;
+    private final ApplicationTradingConfigurationService    applicationTradingConfigurationService;
+    private final ApplicationEventPublisher                 applicationEventPublisher;
 
     @Bean
     public String tickerSubscriptionMessage() throws JsonProcessingException {
@@ -63,27 +67,36 @@ public class TickerControllerConfiguration {
         };
     }
 
+    private final long webSocketSessionReceiveTimeoutInSeconds = 5l;
+
     @Bean
     public WebSocketHandler webSocketHandler(final String               tickerSubscriptionMessage,
                                              final Consumer             tickerConsumer,
                                              final KrakenPingProperties krakenPingProperties) {
+
         return  webSocketSession ->
                 webSocketSession
-                        .send(
-                                Flux
-                                .interval   (Duration.ofSeconds(krakenPingProperties.getFrequency())        )
-                                .map        (pingPayload -> krakenPingProperties.getPayload()               )
-                                .doOnNext   (pingPayload -> log.debug("sending ping request {}", pingPayload))
-                                .map        (webSocketSession::textMessage                                  )
-                        ).mergeWith(
-                                webSocketSession.send(
-                                        Mono.just( webSocketSession.textMessage(tickerSubscriptionMessage) ))
-                        ).mergeWith(
-                                webSocketSession.receive  ()
-                                                .map      (WebSocketMessage::getPayloadAsText)
-                                                .doOnNext ( tickerConsumer ).then()
-                        )
-                        .then();
+                    .send(
+                        Flux
+                        .interval   (Duration.ofSeconds(krakenPingProperties.getFrequency())        )
+                        .map        (pingPayload -> krakenPingProperties.getPayload()               )
+                        .doOnNext   (pingPayload -> log.debug("sending ping request {}", pingPayload))
+                        .map        (webSocketSession::textMessage                                  )
+                    ).mergeWith(
+                        webSocketSession.send( Mono.just( webSocketSession.textMessage(tickerSubscriptionMessage) ) )
+                    ).mergeWith(
+                        webSocketSession
+                            .receive    ()
+                            .timeout    (Duration.ofSeconds(webSocketSessionReceiveTimeoutInSeconds))
+                            .map        (WebSocketMessage::getPayloadAsText)
+                            .doOnNext   (tickerConsumer)
+                            .doOnTerminate(() -> {
+                                applicationEventPublisher.publishEvent(
+                                    new WebSocketClientConnectionTerminatedEvent(webSocketClientTimeoutMessage()));
+                            })
+                            .then       ()
+                    )
+                    .then();
     }
 
     @Bean
@@ -97,4 +110,10 @@ public class TickerControllerConfiguration {
                 );
     }
 
+    private String webSocketClientTimeoutMessage() {
+        return String.format(
+                "web socket session client is now terminated, timeout of <%d> seconds without receiving input maybe reached",
+                webSocketSessionReceiveTimeoutInSeconds
+        );
+    }
 }
