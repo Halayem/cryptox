@@ -29,12 +29,12 @@ public class PriceReferenceServiceImpl implements PriceReferenceService {
     }
 
     private void setPriceReferenceAsCurrentPrice(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        log.info("updating price reference based on this decision:{}", applicationAssetPairTickerTradingDecision);
+        log.debug("updating price reference based on this decision:{}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
+
         priceReferenceRepository.updatePriceReferenceForApplicationAssetPair(
             applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
             applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getPrice()
-        ).subscribe(priceReference ->
-            log.info("new price: {} reference is now stored by service", priceReference)
-        );
+        )
+        .subscribe( priceReference -> log.debug("price reference updated: {}", priceReference) );
     }
 }

@@ -38,18 +38,14 @@ public class TickerServiceImpl implements TickerService {
             )
             .flatMap( tradingDecisionService::getDecision)
             .flatMap( applicationAssetPairTickerTradingDecision -> {
-
-                log.info(
-                    "trading decision service has acted as follow: {}",
-                    applicationAssetPairTickerTradingDecision.getFormattedLogMessage()
-                );
-
+                log.debug( "trading decision service has acted as follow: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage() );
                 priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
                 return placeOrder( applicationAssetPairTickerTradingDecision );
             });
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
+        log.info("order will be placed based on this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
         return
             Mono
             .just       ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
