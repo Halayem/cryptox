@@ -2,8 +2,8 @@ package fr.enix.exchanges.configuration.repository;
 
 import fr.enix.common.service.KrakenRepositoryService;
 import fr.enix.exchanges.mapper.AddOrderMapper;
-import fr.enix.exchanges.model.ExchangeProperties;
 import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
+import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import fr.enix.exchanges.repository.*;
 import fr.enix.exchanges.repository.impl.*;
 import fr.enix.exchanges.service.CurrenciesRepresentationService;
@@ -15,30 +15,35 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@EnableConfigurationProperties( { ExchangeProperties.class, ApplicationCurrencyTradingsParameter.class } )
+@EnableConfigurationProperties( { ApplicationRepositoryProperties.class, ApplicationCurrencyTradingsParameter.class } )
 public class ExchangeRepositoryConfiguration {
 
     @Bean
-    public WebClient krakenPrivateWebClient(final ExchangeProperties exchangeProperties) {
-        return WebClient.builder        ()
-                        .baseUrl        (exchangeProperties.getUrl().get("webservice"))
-                        .defaultHeaders (httpHeaders -> {
-                            httpHeaders.set(HttpHeaders.CONTENT_TYPE,   MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-                            httpHeaders.set("API-Key",                  exchangeProperties.getApiKey());
-                        })
-                        .build          ();
+    public WebClient krakenPrivateWebClient(final ApplicationRepositoryProperties applicationRepositoryProperties) {
+        return
+            WebClient
+            .builder        ()
+            .baseUrl        (applicationRepositoryProperties.getWebservice().getUrl())
+            .defaultHeaders (httpHeaders -> {
+
+                httpHeaders.set(HttpHeaders.CONTENT_TYPE,   MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+                httpHeaders.set("API-Key",                  applicationRepositoryProperties.getWebservice().getApiKey());
+            })
+            .build          ();
     }
 
     @Bean
     public KrakenPrivateRepository krakenPrivateRepository(final WebClient krakenPrivateWebClient,
                                                            final KrakenRepositoryService krakenService,
                                                            final AddOrderMapper addOrderMapper,
-                                                           final CurrenciesRepresentationService currenciesRepresentationService) {
+                                                           final CurrenciesRepresentationService currenciesRepresentationService,
+                                                           final ApplicationRepositoryProperties applicationRepositoryProperties) {
         return new KrakenPrivateRepositoryImpl(
                         krakenPrivateWebClient,
                         krakenService,
                         addOrderMapper,
-                        currenciesRepresentationService
+                        currenciesRepresentationService,
+                        applicationRepositoryProperties
         );
     }
 

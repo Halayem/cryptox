@@ -2,7 +2,7 @@ package fr.enix.common.configuration;
 
 import fr.enix.common.utils.cryptography.MacCryptographyUtils;
 import fr.enix.common.utils.cryptography.MessageDigestUtils;
-import fr.enix.exchanges.model.ExchangeProperties;
+import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,15 +12,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 @Configuration
-@EnableConfigurationProperties( ExchangeProperties.class )
+@EnableConfigurationProperties( ApplicationRepositoryProperties.class )
 public class CryptographyConfiguration {
 
     @Bean
-    public MacCryptographyUtils macCryptographyUtilsHmacSha512(final ExchangeProperties exchangeProperties)
+    public MacCryptographyUtils macCryptographyUtilsHmacSha512(final ApplicationRepositoryProperties applicationRepositoryProperties)
             throws InvalidKeyException, NoSuchAlgorithmException {
 
         return new MacCryptographyUtils(
-                Base64.getDecoder().decode(exchangeProperties.getPrivateKey()),
+                Base64.getDecoder().decode(applicationRepositoryProperties.getWebservice().getPrivateKey()),
                 "HmacSHA512"
         );
     }

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.exchanges.event.WebSocketClientConnectionTerminatedEvent;
 import fr.enix.exchanges.manager.WebSocketSubscriptionFactory;
-import fr.enix.exchanges.model.ExchangeProperties;
-import fr.enix.exchanges.model.parameters.KrakenPingProperties;
+import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import fr.enix.exchanges.model.websocket.request.TickerRequest;
 import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import lombok.AllArgsConstructor;
@@ -27,10 +26,7 @@ import java.util.function.Consumer;
 @Slf4j
 @AllArgsConstructor
 @Configuration
-@EnableConfigurationProperties({
-        ExchangeProperties.class,
-        KrakenPingProperties.class
-})
+@EnableConfigurationProperties(ApplicationRepositoryProperties.class)
 public class TickerControllerConfiguration {
 
     private final ApplicationTradingConfigurationService    applicationTradingConfigurationService;
@@ -69,16 +65,16 @@ public class TickerControllerConfiguration {
     private final long webSocketSessionReceiveTimeoutInSeconds = 5l;
 
     @Bean
-    public WebSocketHandler webSocketHandler(final String               tickerSubscriptionMessage,
-                                             final Consumer             tickerConsumer,
-                                             final KrakenPingProperties krakenPingProperties) {
+    public WebSocketHandler webSocketHandler(final String tickerSubscriptionMessage,
+                                             final Consumer tickerConsumer,
+                                             final ApplicationRepositoryProperties applicationRepositoryProperties) {
 
         return  webSocketSession ->
                 webSocketSession
                     .send(
                         Flux
-                        .interval   (Duration.ofSeconds(krakenPingProperties.getFrequency())        )
-                        .map        (pingPayload -> krakenPingProperties.getPayload()               )
+                        .interval   (Duration.ofSeconds(applicationRepositoryProperties.getWebSocket().getPing().getFrequency())        )
+                        .map        (pingPayload -> applicationRepositoryProperties.getWebSocket().getPing().getPayload()               )
                         .doOnNext   (pingPayload -> log.debug("sending ping request {}", pingPayload))
                         .map        (webSocketSession::textMessage                                  )
                     ).mergeWith(
@@ -99,12 +95,12 @@ public class TickerControllerConfiguration {
     }
 
     @Bean
-    public Mono<Void> tickerWebSocketClient(final ExchangeProperties    exchangeProperties,
-                                            final WebSocketHandler      webSocketHandler) {
+    public Mono<Void> tickerWebSocketClient(final ApplicationRepositoryProperties applicationRepositoryProperties,
+                                            final WebSocketHandler webSocketHandler) {
         return
             new ReactorNettyWebSocketClient()
                 .execute(
-                    URI.create(exchangeProperties.getUrl().get("websocket")),
+                    URI.create(applicationRepositoryProperties.getWebSocket().getUrl()),
                     webSocketHandler
                 );
     }
