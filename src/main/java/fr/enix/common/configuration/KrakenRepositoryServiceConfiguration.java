@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KrakenServiceConfiguration {
+public class KrakenRepositoryServiceConfiguration {
 
     @Bean
     public KrakenRepositoryService krakenService(final MessageDigestUtils messageDigestUtilsSha256,

@@ -29,7 +29,7 @@ public class TickerServiceImpl implements TickerService {
     @Override
     public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
         return
-            tickerMapper.mapTickerResponseToTickerOutput(tickerMapper.mapStringToTickerResponse(payload))
+            tickerMapper.mapStringToTickerOutput(payload)
             .flatMap( tickerOutput ->
                 marketOfferService.saveApplicationAssetPairTicker(
                     currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),

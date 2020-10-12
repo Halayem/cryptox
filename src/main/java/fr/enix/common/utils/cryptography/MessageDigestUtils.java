@@ -17,6 +17,6 @@ public class MessageDigestUtils {
     }
 
     public byte[] getDigest(String message) {
-        return messageDigest.digest(message.getBytes(Charset.forName("UTF-8")));
+        return messageDigest.digest( message.getBytes(Charset.forName("UTF-8")) );
     }
 }

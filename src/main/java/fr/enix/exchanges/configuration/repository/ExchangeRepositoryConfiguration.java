@@ -77,4 +77,9 @@ public class ExchangeRepositoryConfiguration {
 
     @Bean
     public PongRepository pongRepository() { return new KrakenPongRepositoryInMemoryImpl(); }
+
+    @Bean
+    public ChannelRepository channelRepository() {
+        return new ChannelRepositoryInMemoryRepositoryImpl();
+    }
 }
