@@ -43,22 +43,20 @@ public class ApplicationServiceConfiguration {
     }
 
     @Bean
-    public TickerService tickerService(final ExchangeService                    exchangeService,
-                                       final TradingDecisionService             tradingDecisionService,
-                                       final MarketOfferService                 marketOfferService,
-                                       final CurrenciesRepresentationService    currenciesRepresentationService,
+    public TickerService tickerService(final ExchangeService exchangeService,
+                                       final TradingDecisionService tradingDecisionService,
+                                       final MarketOfferService marketOfferService,
+                                       final CurrenciesRepresentationService currenciesRepresentationService,
                                        final TickerMapper tickerMapper,
-                                       final PriceReferenceService              priceReferenceService,
                                        final AddOrderMapper addOrderMapper) {
         return
-                new TickerServiceImpl(
-                        exchangeService,
-                        tradingDecisionService,
-                        marketOfferService,
-                        currenciesRepresentationService,
-                        tickerMapper,
-                        priceReferenceService,
-                        addOrderMapper
-                );
+            new TickerServiceImpl(
+                    exchangeService,
+                    tradingDecisionService,
+                    marketOfferService,
+                    currenciesRepresentationService,
+                    tickerMapper,
+                    addOrderMapper
+            );
     }
 }

@@ -4,6 +4,7 @@ import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.model.repository.PriceReference;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
 import fr.enix.exchanges.service.ExchangeService;
+import fr.enix.exchanges.service.PriceReferenceService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest
 class TradingBearingStrategyDecisionServiceImplTest {
 
-    @MockBean private PriceReferenceRepository  priceReferenceRepository;
-    @MockBean private ExchangeService           exchangeService;
+    @MockBean private PriceReferenceRepository priceReferenceRepository;
+    @MockBean private ExchangeService exchangeService;
 
     @Autowired private TradingBearingStrategyDecisionServiceImpl tradingDecisionService;
 
@@ -63,6 +64,10 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .doReturn   ( Mono.just( new BigDecimal("0.5" ) ) )
         .when       ( tradingDecisionServiceSpy ).getAmountToSell( "litecoin-euro" );
 
+        Mockito
+        .doReturn   ( Mono.empty() )
+        .when       ( priceReferenceRepository ).updatePriceReferenceForApplicationAssetPair( Mockito.anyString(), Mockito.any( BigDecimal.class) );
+
         StepVerifier
         .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("46.45") )))
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
@@ -84,6 +89,10 @@ class TradingBearingStrategyDecisionServiceImplTest {
         Mockito
         .doReturn   ( Mono.just( new BigDecimal("0" ) ) )
         .when       ( tradingDecisionServiceSpy ).getAmountToSell( "litecoin-euro" );
+
+        Mockito
+        .doReturn   ( Mono.empty() )
+        .when       ( priceReferenceRepository ).updatePriceReferenceForApplicationAssetPair( Mockito.anyString(), Mockito.any( BigDecimal.class) );
 
         StepVerifier
         .create         ( tradingDecisionServiceSpy.getDecision( newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("46.45") ) ) )
@@ -112,6 +121,10 @@ class TradingBearingStrategyDecisionServiceImplTest {
         .doReturn   ( Mono.just( new BigDecimal("0.5" ) ) )
         .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
 
+        Mockito
+        .doReturn   ( Mono.empty() )
+        .when       ( priceReferenceRepository ).updatePriceReferenceForApplicationAssetPair( Mockito.anyString(), Mockito.any( BigDecimal.class) );
+
         StepVerifier
         .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.85") )))
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
@@ -132,6 +145,10 @@ class TradingBearingStrategyDecisionServiceImplTest {
         Mockito
         .doReturn   ( Mono.just( new BigDecimal("0.099999" ) ) )
         .when       ( tradingDecisionServiceSpy ).getAmountToBuy( Mockito.any(ApplicationAssetPairTicker.class) );
+
+        Mockito
+        .doReturn   ( Mono.empty() )
+        .when       ( priceReferenceRepository ).updatePriceReferenceForApplicationAssetPair( Mockito.anyString(), Mockito.any( BigDecimal.class) );
 
         StepVerifier
         .create         ( tradingDecisionServiceSpy.getDecision(newApplicationAssetPairTickerForLitecoinEuro( new BigDecimal("44.85") )))
