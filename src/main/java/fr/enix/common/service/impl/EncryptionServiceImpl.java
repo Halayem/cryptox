@@ -1,6 +1,6 @@
 package fr.enix.common.service.impl;
 
-import fr.enix.common.service.KrakenRepositoryService;
+import fr.enix.common.service.EncryptionService;
 import fr.enix.common.utils.cryptography.MacCryptographyUtils;
 import fr.enix.common.utils.cryptography.MessageDigestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +11,14 @@ import java.time.Instant;
 import java.util.Base64;
 
 @Slf4j
-public class KrakenRepositoryServiceImpl implements KrakenRepositoryService {
+public class EncryptionServiceImpl implements EncryptionService {
 
     private final MessageDigestUtils    messageDigestUtilsSha256;
     private final MacCryptographyUtils  macCryptographyUtilsHmacSha512;
     private final NonceHelper           nonceHelper;
 
-    public KrakenRepositoryServiceImpl(final MessageDigestUtils     messageDigestUtilsSha256,
-                                       final MacCryptographyUtils   macCryptographyUtilsHmacSha512) {
+    public EncryptionServiceImpl(final MessageDigestUtils     messageDigestUtilsSha256,
+                                 final MacCryptographyUtils   macCryptographyUtilsHmacSha512) {
 
         this.messageDigestUtilsSha256       = messageDigestUtilsSha256;
         this.macCryptographyUtilsHmacSha512 = macCryptographyUtilsHmacSha512;

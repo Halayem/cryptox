@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PriceReferenceRepositoryImpl implements PriceReferenceRepository  {
 
-    protected Map<String, PriceReference> applicationAssetPairPriceReferences = new ConcurrentHashMap();
+    protected Map<String, PriceReference> applicationAssetPairPriceReferences = new ConcurrentHashMap<>();
 
     @Override
     public Mono<PriceReference> getPriceReferenceForApplicationAssetPair(final String applicationAssetPair) {

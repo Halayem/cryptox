@@ -20,51 +20,45 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final AdminServerProperties adminServerProperties;
     private final int tokenValidityInSeconds = 3600;
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
 
-        httpSecurity.authorizeRequests()
-                        .antMatchers(this.adminServerProperties.getContextPath() + "/assets/**").permitAll()
-                        .antMatchers(this.adminServerProperties.getContextPath() + "/login").permitAll()
-                        .antMatchers(this.adminServerProperties.getContextPath() + "/actuator/health").permitAll()
-                        .anyRequest()
-                        .authenticated()
-                    .and()
-                    .formLogin()
-                        .loginPage      (this.adminServerProperties.getContextPath() + "/login")
-                        .successHandler (getSavedRequestAwareAuthenticationSuccessHandler())
-                    .and()
-                    .logout()
-                        .logoutUrl(this.adminServerProperties.getContextPath() + "/logout")
-                    .and()
-                    .httpBasic()
-                    .and()
-                    .csrf()
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(
-                                new AntPathRequestMatcher(
-                                    this.adminServerProperties.getContextPath() + "/instances", HttpMethod.POST.toString()
-                                ),
-                                new AntPathRequestMatcher(
-                                    this.adminServerProperties.getContextPath() + "/v1/**", HttpMethod.POST.toString()
-                                ),
-                                new AntPathRequestMatcher(
-                                    this.adminServerProperties.getContextPath() + "/instances/*", HttpMethod.DELETE.toString()
-                                ),
-                                new AntPathRequestMatcher(
-                                    this.adminServerProperties.getContextPath() + "/actuator/**"
-                                )
-                        )
-                    .and()
-                    .rememberMe()
-                        .key                    (UUID.randomUUID().toString())
-                        .tokenValiditySeconds   (tokenValidityInSeconds);
+        httpSecurity
+        .authorizeRequests()
+        .antMatchers(this.adminServerProperties.getContextPath() + "/assets/**"         ).permitAll()
+        .antMatchers(this.adminServerProperties.getContextPath() + "/login"             ).permitAll()
+        .antMatchers(this.adminServerProperties.getContextPath() + "/actuator/health"   ).permitAll()
+        .anyRequest()
+        .authenticated()
+            .and()
+        .formLogin()
+        .loginPage      (this.adminServerProperties.getContextPath() + "/login")
+        .successHandler (getSavedRequestAwareAuthenticationSuccessHandler())
+            .and()
+        .logout()
+        .logoutUrl(this.adminServerProperties.getContextPath() + "/logout")
+            .and()
+        .httpBasic()
+            .and()
+        .csrf()
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .ignoringRequestMatchers(
+            new AntPathRequestMatcher( this.adminServerProperties.getContextPath() + "/instances",      HttpMethod.POST.toString()      ),
+            new AntPathRequestMatcher( this.adminServerProperties.getContextPath() + "/v1/**",          HttpMethod.POST.toString()      ),
+            new AntPathRequestMatcher( this.adminServerProperties.getContextPath() + "/instances/*",    HttpMethod.DELETE.toString()    ),
+            new AntPathRequestMatcher( this.adminServerProperties.getContextPath() + "/actuator/**" )
+        )
+            .and()
+        .rememberMe()
+        .key                    (UUID.randomUUID().toString())
+        .tokenValiditySeconds   (tokenValidityInSeconds);
     }
 
     private SavedRequestAwareAuthenticationSuccessHandler getSavedRequestAwareAuthenticationSuccessHandler() {
-        SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler =
-            new SavedRequestAwareAuthenticationSuccessHandler();
+        SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+
         savedRequestAwareAuthenticationSuccessHandler.setTargetUrlParameter("redirectTo");
         savedRequestAwareAuthenticationSuccessHandler.setDefaultTargetUrl  (this.adminServerProperties.getContextPath() + "/" );
 

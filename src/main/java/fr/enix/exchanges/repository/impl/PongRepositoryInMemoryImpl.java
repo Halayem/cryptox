@@ -4,7 +4,7 @@ import fr.enix.exchanges.repository.PongRepository;
 
 import java.time.LocalDateTime;
 
-public class KrakenPongRepositoryInMemoryImpl implements PongRepository {
+public class PongRepositoryInMemoryImpl implements PongRepository {
 
     private LocalDateTime pongDatetime;
 

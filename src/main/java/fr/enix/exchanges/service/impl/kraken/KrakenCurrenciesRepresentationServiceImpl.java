@@ -1,4 +1,4 @@
-package fr.enix.exchanges.service.impl;
+package fr.enix.exchanges.service.impl.kraken;
 
 import fr.enix.exchanges.service.CurrenciesRepresentation;
 import fr.enix.exchanges.service.CurrenciesRepresentationService;

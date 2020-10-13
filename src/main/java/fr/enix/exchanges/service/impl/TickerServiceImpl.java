@@ -9,6 +9,8 @@ import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
+import fr.enix.exchanges.model.business.output.TickerOutput;
+import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,45 +25,45 @@ public class TickerServiceImpl implements TickerService {
     private final MarketOfferService                marketOfferService;
     private final CurrenciesRepresentationService   currenciesRepresentationService;
     private final TickerMapper                      tickerMapper;
-    private final PriceReferenceService             priceReferenceService;
     private final AddOrderMapper                    addOrderMapper;
 
     @Override
     public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
         return
-            tickerMapper.mapTickerResponseToTickerOutput(tickerMapper.mapStringToTickerResponse(payload))
-            .flatMap( tickerOutput ->
-                marketOfferService.saveApplicationAssetPairTicker(
-                    currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
-                    tickerOutput.getAsk().getPrice()
-                )
-            )
-            .flatMap( tradingDecisionService::getDecision)
-            .flatMap( applicationAssetPairTickerTradingDecision -> {
-                log.debug( "trading decision service has acted as follow: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage() );
-                priceReferenceService.checkAndUpdatePriceReference(applicationAssetPairTickerTradingDecision);
-                return placeOrder( applicationAssetPairTickerTradingDecision );
-            });
+            tickerMapper
+            .mapStringToTickerOutput    ( payload                               )
+            .flatMap                    ( this::saveApplicationAssetPairTicker  )
+            .flatMap                    ( tradingDecisionService::getDecision   )
+            .flatMap                    ( this::placeOrder                      );
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        log.info("order will be placed based on this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
+
         return
             Mono
             .just       ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
             .filter     ( this::isSellOrBuyDecision )
             .flatMap    ( decision -> {
+                log.info("order will be placed based on this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
+
                 switch (decision) {
                     case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision );
                     case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision );
+                    default:    return Mono.empty();
                 }
-                return Mono.empty();
             });
     }
 
     private boolean isSellOrBuyDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision) {
         return  ApplicationAssetPairTickerTradingDecision.Decision.SELL.equals  (decision) ||
                 ApplicationAssetPairTickerTradingDecision.Decision.BUY.equals   (decision);
+    }
+
+    Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker( final TickerOutput tickerOutput ) {
+        return marketOfferService.saveApplicationAssetPairTicker(
+                currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
+                tickerOutput.getAsk().getPrice()
+        );
     }
 
 

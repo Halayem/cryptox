@@ -41,23 +41,27 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                 final BigDecimal priceReference = objects.getT1();
                 final BigDecimal gap            = objects.getT2();
 
-                if ( isHighGapReached( currentApplicationAssetPairPrice, priceReference, gap ) ) {
-                    return manageDecisionWhenHighGapReached( applicationAssetPairTicker );
-                }
+                switch( getGapStatus( currentApplicationAssetPairPrice, priceReference, gap) ) {
+                    case HIGH_REACHED: {
+                        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
+                        return manageDecisionWhenHighGapReached ( applicationAssetPairTicker );
+                    }
 
-                if ( isLowGapReached( currentApplicationAssetPairPrice, priceReference, gap ) ) {
-                    return manageDecisionWhenLowGapReached( applicationAssetPairTicker );
-                }
+                    case LOW_REACHED: {
+                        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
+                        return manageDecisionWhenLowGapReached  ( applicationAssetPairTicker );
+                    }
 
-                return newTradingDecisionWhenDoNothing(
-                        applicationAssetPairTicker,
-                          String.format(
-                              "gap: <%f> is not reached yet, price reference: <%f>, current price: <%f>",
-                              gap,
-                              priceReference,
-                              currentApplicationAssetPairPrice
-                          )
-                );
+                    default: return newTradingDecisionWhenDoNothing(
+                            applicationAssetPairTicker,
+                            String.format(
+                                    "gap: <%f> is not reached yet, price reference: <%f>, current price: <%f>",
+                                    gap,
+                                    priceReference,
+                                    currentApplicationAssetPairPrice
+                            )
+                    );
+                }
             })
             .switchIfEmpty(
                 newTradingDecisionError(
@@ -140,7 +144,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .flatMap(availableAssetForSell ->
                         isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
                         .flatMap(isLess ->
-                            isLess
+                            Boolean.TRUE.equals(isLess)
                             ? Mono.just(availableAssetForSell)
                             : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
                         )
@@ -154,7 +158,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .flatMap(availableAssetForBuy ->
                         isAvailableAssetLessThanConfiguredAmountToBuy(applicationAssetPairTicker, availableAssetForBuy)
                         .flatMap(isLess ->
-                            isLess
+                            Boolean.TRUE.equals(isLess)
                             ? Mono.just(ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) )
                             : applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
                         )
@@ -237,16 +241,16 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
                 .map(configuredAmountToSell -> configuredAmountToSell.compareTo(availableAssetForSell) > 0 );
     }
 
+    private GapStatus getGapStatus(final BigDecimal lastPrice,
+                                   final BigDecimal priceReference,
+                                   final BigDecimal gap) {
 
-    private boolean isHighGapReached(final BigDecimal lastPrice,
-                                     final BigDecimal priceReference,
-                                     final BigDecimal gap) {
-        return lastPrice.compareTo(priceReference.add(gap)) >= 0;
+        if ( lastPrice.compareTo(priceReference.add(gap))       >= 0 ) { return GapStatus.HIGH_REACHED;    }
+        if ( lastPrice.compareTo(priceReference.subtract(gap))  <= 0 ) { return GapStatus.LOW_REACHED;     }
+        return GapStatus.NONE;
     }
 
-    private boolean isLowGapReached(final BigDecimal lastPrice,
-                                    final BigDecimal priceReference,
-                                    final BigDecimal gap) {
-        return lastPrice.compareTo(priceReference.subtract(gap)) <= 0;
+    private enum GapStatus {
+        HIGH_REACHED, LOW_REACHED, NONE
     }
 }

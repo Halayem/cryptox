@@ -1,6 +1,6 @@
 package fr.enix.exchanges.model.ws.request;
 
-import fr.enix.common.service.KrakenRepositoryService;
+import fr.enix.common.service.EncryptionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,11 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class AddOrderRequestTest {
 
-    @Autowired KrakenRepositoryService krakenRepositoryService;
+    @Autowired
+    EncryptionService encryptionService;
 
     @Test
     void testGetQueryParametersRepresentation_shouldBuildLeverageAndClose() {
-        final String            nonce           = krakenRepositoryService.getNewNonce();
+        final String            nonce           = encryptionService.getNewNonce();
         final AddOrderRequest   addOrderRequest = AddOrderRequest
                                                                 .builder    ()
                                                                 .nonce      (nonce)
