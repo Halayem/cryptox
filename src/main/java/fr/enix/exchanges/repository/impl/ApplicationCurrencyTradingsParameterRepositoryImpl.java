@@ -32,7 +32,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
 
     @Override
     public Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair) {
-        List<String> strategies = new ArrayList();
+        List<String> strategies = new ArrayList<>();
         if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { strategies.add("bearing");   }
         if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { strategies.add("threshold"); }
 

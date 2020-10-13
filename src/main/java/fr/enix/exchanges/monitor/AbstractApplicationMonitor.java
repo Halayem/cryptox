@@ -9,10 +9,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class AbstractApplicationMonitor implements ApplicationMonitor {
 
+    private static final long INITIAL_DELAY_IN_SECONDS = 1L;
     public void startMonitoring(final long checkFrequency, final ChronoUnit timeunit) {
         Executors
-                .newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(() -> doVerify(), 1, checkFrequency, TimeUnit.of(timeunit));
+        .newSingleThreadScheduledExecutor()
+        .scheduleAtFixedRate(this::doVerify, INITIAL_DELAY_IN_SECONDS, checkFrequency, TimeUnit.of(timeunit));
     }
 
     @Override

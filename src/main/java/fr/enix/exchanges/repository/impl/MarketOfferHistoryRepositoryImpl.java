@@ -17,7 +17,7 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
     /**
      * Key is the application asset pair
      */
-    protected Map<String, Flux<ApplicationAssetPairTicker>> records = new ConcurrentHashMap();
+    protected Map<String, Flux<ApplicationAssetPairTicker>> records = new ConcurrentHashMap<>();
 
     @Override
     public Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {

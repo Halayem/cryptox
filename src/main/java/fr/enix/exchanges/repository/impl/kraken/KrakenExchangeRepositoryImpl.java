@@ -1,12 +1,13 @@
-package fr.enix.exchanges.repository.impl;
+package fr.enix.exchanges.repository.impl.kraken;
 
 import fr.enix.common.exception.KrakenExceptionFactoryProvider;
-import fr.enix.common.service.KrakenRepositoryService;
+import fr.enix.common.service.EncryptionService;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.AssetClass;
+import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
 import fr.enix.exchanges.model.ws.request.NonceRequest;
 import fr.enix.exchanges.model.ws.request.TradeBalanceRequest;
@@ -14,7 +15,7 @@ import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.model.ws.response.BalanceResponse;
 import fr.enix.exchanges.model.ws.response.ErrorResponse;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
-import fr.enix.exchanges.repository.KrakenPrivateRepository;
+import fr.enix.exchanges.repository.ExchangeRepository;
 import fr.enix.exchanges.service.CurrenciesRepresentation;
 import fr.enix.exchanges.service.CurrenciesRepresentationService;
 import lombok.AllArgsConstructor;
@@ -29,14 +30,13 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Slf4j
-public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
+public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
 
-    private final WebClient                 krakenPrivateWebClient;
-    private final KrakenRepositoryService   krakenRepositoryService;
-    private final AddOrderMapper            addOrderMapper;
+    private final WebClient exchangeWebClient;
+    private final EncryptionService encryptionService;
+    private final AddOrderMapper addOrderMapper;
     private final CurrenciesRepresentationService currenciesRepresentationService;
-
-    private final BigDecimal zero = new BigDecimal("0");
+    private final ApplicationRepositoryProperties applicationRepositoryProperties;
 
     @Override
     public Mono<BigDecimal> getAvailableAssetForSellPlacementByApplicationAssetPair(final String applicationAssetPair) {
@@ -68,11 +68,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     @Override
     public Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
-        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest( addOrderInput, krakenRepositoryService.getNewNonce() );
+        final AddOrderRequest addOrderRequest = addOrderMapper.mapAddOrderBusinessToAddOrderRequest( addOrderInput, encryptionService.getNewNonce() );
 
         return
             executeWebClientMono(
-                "/0/private/AddOrder",
+                applicationRepositoryProperties.getWebservice().getUrn().get("addOrder"),
                 addOrderRequest.getQueryParametersRepresentation(),
                 addOrderRequest.getNonce(),
                 AddOrderResponse.class
@@ -90,11 +90,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     protected Mono<BigDecimal> getBalanceByApplicationAsset(final String applicationAsset) {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
-                                                      .nonce      (krakenRepositoryService.getNewNonce())
+                                                      .nonce      (encryptionService.getNewNonce())
                                                       .build      ();
         return
             executeWebClientMono(
-                "/0/private/Balance",
+                applicationRepositoryProperties.getWebservice().getUrn().get("balance"),
                 nonceRequest.getQueryParametersRepresentation(),
                 nonceRequest.getNonce(),
                 BalanceResponse.class
@@ -108,12 +108,12 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     protected Flux<String> getTradeBalance(final AssetClass assetClass) {
         final TradeBalanceRequest tradeBalanceRequest = TradeBalanceRequest.builder ()
-                .nonce   (krakenRepositoryService.getNewNonce())
+                .nonce   (encryptionService.getNewNonce())
                 .aclass  (assetClass.getValue())
                 .build   ();
         return
                 executeWebClient(
-                    "/0/private/TradeBalance",
+                    applicationRepositoryProperties.getWebservice().getUrn().get("tradeBalance"),
                     tradeBalanceRequest.getQueryParametersRepresentation(),
                     tradeBalanceRequest.getNonce(),
                     String.class
@@ -136,7 +136,7 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
             .stream     ()
             .filter     (entry -> openOrderFilter.entryMatch(entry) )
             .map        (entry -> getPlacementOneOrderByOrderType(entry.getValue(), krakenOrderType))
-            .reduce     (zero, BigDecimal::add)
+            .reduce     (BigDecimal.ZERO, BigDecimal::add)
         );
     }
 
@@ -151,11 +151,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     protected Mono<OpenOrdersResponse> getOpenOrders() {
         final NonceRequest nonceRequest = NonceRequest.builder    ()
-                                                      .nonce      (krakenRepositoryService.getNewNonce())
+                                                      .nonce      (encryptionService.getNewNonce())
                                                       .build      ();
 
         return executeWebClientMono(
-                "/0/private/OpenOrders",
+                    applicationRepositoryProperties.getWebservice().getUrn().get("openOrders"),
                     nonceRequest.getQueryParametersRepresentation(),
                     nonceRequest.getNonce(),
                     OpenOrdersResponse.class
@@ -164,11 +164,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     private <T> Flux<T> executeWebClient(String uri, String query, String nonce, Class<T> clazz) {
         return
-                krakenPrivateWebClient
+                exchangeWebClient
                         .post       ()
                         .uri        (uri)
                         .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
-                        .headers    (httpHeaders -> httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri )))
+                        .headers    (httpHeaders -> httpHeaders.set("API-Sign", encryptionService.getHmacDigest(nonce, query, uri )))
                         .retrieve   ()
                         .bodyToFlux (clazz)
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
@@ -176,11 +176,11 @@ public class KrakenPrivateRepositoryImpl implements KrakenPrivateRepository {
 
     private <T> Mono<T> executeWebClientMono(String uri, String query, String nonce, Class<T> type) {
         return
-                krakenPrivateWebClient
+                exchangeWebClient
                         .post       ()
                         .uri        (uri)
                         .body       (BodyInserters.fromPublisher(Mono.just(query), String.class))
-                        .headers    (httpHeaders -> httpHeaders.set("API-Sign",krakenRepositoryService.getHmacDigest(nonce, query, uri )))
+                        .headers    (httpHeaders -> httpHeaders.set("API-Sign", encryptionService.getHmacDigest(nonce, query, uri )))
                         .retrieve   ()
                         .bodyToMono (type)
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));

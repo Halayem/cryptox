@@ -1,7 +1,6 @@
 package fr.enix.exchanges.configuration.manager;
 
 import fr.enix.exchanges.manager.*;
-import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.repository.HeartbeatRepository;
 import fr.enix.exchanges.repository.PongRepository;
 import fr.enix.exchanges.service.ChannelService;

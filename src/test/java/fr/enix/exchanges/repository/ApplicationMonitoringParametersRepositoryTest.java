@@ -21,8 +21,8 @@ class ApplicationMonitoringParametersRepositoryTest {
         final MonitoringConfiguration monitoringConfiguration = applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat");
 
         assertEquals(ChronoUnit.SECONDS, monitoringConfiguration.getTimeunit());
-        assertEquals(7200l,     monitoringConfiguration.getFrequency());
-        assertEquals(1l,        monitoringConfiguration.getMaxAge());
+        assertEquals(7200L,     monitoringConfiguration.getFrequency());
+        assertEquals(1L,        monitoringConfiguration.getMaxAge());
     }
 
     @Test
@@ -30,18 +30,17 @@ class ApplicationMonitoringParametersRepositoryTest {
         final MonitoringConfiguration monitoringConfiguration = applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("pong");
 
         assertEquals(ChronoUnit.SECONDS, monitoringConfiguration.getTimeunit());
-        assertEquals(120l,     monitoringConfiguration.getFrequency());
-        assertEquals(1l,        monitoringConfiguration.getMaxAge());
+        assertEquals(120L,     monitoringConfiguration.getFrequency());
+        assertEquals(1L,        monitoringConfiguration.getMaxAge());
     }
 
     @Test
     void testApplicationMonitoringForUnknownEvent_shouldThrowRuntimeException() {
         final Exception exception = assertThrows(
-                RuntimeException.class,
+                IllegalArgumentException.class,
                 () -> applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("test-unknown-event")
         );
-
-        assertEquals("unknown event: test-unknown-event", exception.getMessage());
-
+        assertEquals("missing monitoring event configuration: test-unknown-event", exception.getMessage());
     }
+
 }

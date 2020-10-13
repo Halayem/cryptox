@@ -1,7 +1,9 @@
-package fr.enix.exchanges.service.impl;
+package fr.enix.exchanges.service.impl.kraken;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class KrakenCurrenciesRepresentationServiceImplTest {
 

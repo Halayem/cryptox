@@ -1,6 +1,6 @@
 package fr.enix.exchanges.mapper;
 
-import fr.enix.common.service.KrakenRepositoryService;
+import fr.enix.common.service.EncryptionService;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
@@ -17,11 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AddOrderMapperTest {
 
     @Autowired AddOrderMapper           addOrderMapper;
-    @Autowired KrakenRepositoryService  krakenRepositoryService;
+    @Autowired
+    EncryptionService encryptionService;
 
     @Test
     void testAddOrderMapper_leverageAndCloseShouldBeNull() {
-        final String nonce = krakenRepositoryService.getNewNonce();
+        final String nonce = encryptionService.getNewNonce();
         assertEquals(
                 AddOrderRequest
                     .builder    ()
@@ -48,7 +49,7 @@ class AddOrderMapperTest {
 
     @Test
     void testAddOrderMapper_leverageAndCloseShouldBeSet() {
-        final String nonce = krakenRepositoryService.getNewNonce();
+        final String nonce = encryptionService.getNewNonce();
         assertEquals(
                 AddOrderRequest
                     .builder    ()
