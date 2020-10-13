@@ -37,7 +37,7 @@ public class ApplicationHeartbeatMonitorImpl extends AbstractApplicationMonitor 
         else                                                                { heartbeatOk();                    }
     }
 
-    private boolean isHeartbeatExceededMaxAge() {
+    protected boolean isHeartbeatExceededMaxAge() {
         return ( monitoringConfiguration
                 .getTimeunit()
                 .between(heartbeatRepository.getLastHeartbeatDatetime(), LocalDateTime.now() ) > monitoringConfiguration.getMaxAge()

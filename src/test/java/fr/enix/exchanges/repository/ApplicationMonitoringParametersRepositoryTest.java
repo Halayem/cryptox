@@ -37,11 +37,10 @@ class ApplicationMonitoringParametersRepositoryTest {
     @Test
     void testApplicationMonitoringForUnknownEvent_shouldThrowRuntimeException() {
         final Exception exception = assertThrows(
-                RuntimeException.class,
+                IllegalArgumentException.class,
                 () -> applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("test-unknown-event")
         );
-
-        assertEquals("unknown event: test-unknown-event", exception.getMessage());
-
+        assertEquals("missing monitoring event configuration: test-unknown-event", exception.getMessage());
     }
+
 }

@@ -1,5 +1,7 @@
 package fr.enix.common.configuration;
 
+import fr.enix.common.service.EncryptionService;
+import fr.enix.common.service.impl.EncryptionServiceImpl;
 import fr.enix.common.utils.cryptography.MacCryptographyUtils;
 import fr.enix.common.utils.cryptography.MessageDigestUtils;
 import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
@@ -28,5 +30,15 @@ public class CryptographyConfiguration {
     @Bean
     public MessageDigestUtils messageDigestUtilsSha256() throws NoSuchAlgorithmException {
         return new MessageDigestUtils("SHA-256");
+    }
+
+    @Bean
+    public EncryptionService encryptionService(final MessageDigestUtils     messageDigestUtilsSha256,
+                                               final MacCryptographyUtils   macCryptographyUtilsHmacSha512) {
+
+        return new EncryptionServiceImpl(
+                messageDigestUtilsSha256,
+                macCryptographyUtilsHmacSha512
+        );
     }
 }

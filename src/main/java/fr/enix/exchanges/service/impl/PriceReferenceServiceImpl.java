@@ -16,10 +16,12 @@ public class PriceReferenceServiceImpl implements PriceReferenceService {
 
     @Override
     public void checkAndUpdatePriceReference(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        switch (applicationAssetPairTickerTradingDecision.getOperation().getDecision()) {
+        final ApplicationAssetPairTickerTradingDecision.Decision decision = applicationAssetPairTickerTradingDecision.getOperation().getDecision();
+        switch (decision) {
             case BUY    :
             case SELL   :
             case ERROR  : setPriceReferenceAsCurrentPrice(applicationAssetPairTickerTradingDecision); break;
+            default     : log.debug("price reference will not be updated for this decision: {}", decision);
         }
     }
 

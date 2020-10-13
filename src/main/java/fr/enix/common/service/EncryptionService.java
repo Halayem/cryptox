@@ -1,6 +1,6 @@
 package fr.enix.common.service;
 
-public interface KrakenRepositoryService {
+public interface EncryptionService {
 
     String getNewNonce();
     String getHmacDigest( String nonce, String postData, String uri);

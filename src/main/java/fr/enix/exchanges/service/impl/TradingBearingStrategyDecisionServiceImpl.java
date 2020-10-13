@@ -140,7 +140,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .flatMap(availableAssetForSell ->
                         isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
                         .flatMap(isLess ->
-                            isLess
+                            Boolean.TRUE.equals(isLess)
                             ? Mono.just(availableAssetForSell)
                             : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
                         )
@@ -154,7 +154,7 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
             .flatMap(availableAssetForBuy ->
                         isAvailableAssetLessThanConfiguredAmountToBuy(applicationAssetPairTicker, availableAssetForBuy)
                         .flatMap(isLess ->
-                            isLess
+                            Boolean.TRUE.equals(isLess)
                             ? Mono.just(ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) )
                             : applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
                         )

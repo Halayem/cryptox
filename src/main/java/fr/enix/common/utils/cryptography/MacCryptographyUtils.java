@@ -11,7 +11,7 @@ import java.util.Arrays;
 @Slf4j
 public class MacCryptographyUtils {
 
-    private Mac mac;
+    private final Mac mac;
 
     public MacCryptographyUtils(byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         mac = Mac.getInstance (algorithm);

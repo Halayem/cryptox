@@ -1,58 +1,63 @@
 package fr.enix.exchanges.monitor.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.enix.exchanges.manager.HeartbeatManager;
-import fr.enix.exchanges.repository.ApplicationMonitoringParametersRepository;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
+import fr.enix.exchanges.repository.HeartbeatRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ApplicationHeartbeatMonitorImplTest {
 
-    @Autowired private HeartbeatManager heartbeatManager;
-    @Autowired private ApplicationHeartbeatMonitorImpl krakenHeartbeatMonitor;
-    @Autowired private ApplicationMonitoringParametersRepository applicationMonitoringParametersRepository;
+    @Autowired
+    private ApplicationHeartbeatMonitorImpl heartbeatMonitor;
+
+    @MockBean
+    private HeartbeatRepository heartbeatRepository;
 
     @Test
-    @Order(0)
     void testMonitorHeartbeatWhenNoHeartbeatYetSaved_shouldSetHeartbeatFlagErrorToTrue() {
-        krakenHeartbeatMonitor.doVerify();
-        assertTrue(krakenHeartbeatMonitor.isError());
+        heartbeatMonitor.doVerify();
+        assertTrue(heartbeatMonitor.isError());
     }
 
     @Test
-    @Order(1)
-    void testMonitorHeartbeatWhenHeartbeatExceededMaxAge_shouldSetHeartbeatFlagErrorToTrue()
-            throws JsonProcessingException, InterruptedException {
+    void testMonitorHeartbeatWhenHeartbeatExceededMaxAge_shouldSetHeartbeatFlagErrorToTrue() {
+        final ApplicationHeartbeatMonitorImpl heartbeatMonitorSpy = Mockito.spy(heartbeatMonitor);
+        setupHeartbeatMonitorSpy( heartbeatMonitorSpy, true );
+        setupHeartbeatRepository( LocalDateTime.now() );
 
-        heartbeatManager.managePayload("{\"event\":\"heartbeat\"}");
-        Thread.sleep(getThreadDurationSleepToExceedStoredHeartbeatAge());
-        krakenHeartbeatMonitor.doVerify();
-        assertTrue(krakenHeartbeatMonitor.isError());
+        heartbeatMonitorSpy.doVerify();
+        assertTrue(heartbeatMonitorSpy.isError());
     }
 
     @Test
-    @Order(2)
-    void testMonitorHeartbeatWhenHeartbeatDoesNotExceededMaxAge_shouldSetHeartbeatFlagErrorToFalse() throws JsonProcessingException {
-        heartbeatManager.managePayload("{\"event\":\"heartbeat\"}");
-        krakenHeartbeatMonitor.doVerify();
-        assertFalse( krakenHeartbeatMonitor.isError() );
+    void testMonitorHeartbeatWhenHeartbeatDoesNotExceededMaxAge_shouldSetHeartbeatFlagErrorToFalse()  {
+        final ApplicationHeartbeatMonitorImpl heartbeatMonitorSpy = Mockito.spy(heartbeatMonitor);
+        setupHeartbeatMonitorSpy( heartbeatMonitorSpy, false );
+        setupHeartbeatRepository( LocalDateTime.now() );
+
+        heartbeatMonitorSpy.doVerify();
+        assertFalse( heartbeatMonitorSpy.isError() );
     }
 
-    private long getThreadDurationSleepToExceedStoredHeartbeatAge() {
-        return ( 2 * TimeUnit
-                        .of         (applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat").getTimeunit())
-                        .toMillis   (applicationMonitoringParametersRepository.getMonitoringConfigurationForEvent("heartbeat").getMaxAge())
-        );
+    private void setupHeartbeatMonitorSpy(final ApplicationHeartbeatMonitorImpl heartbeatMonitorSpy,
+                                          final boolean isHeartbeatExceededMaxAge) {
+        Mockito
+        .doReturn   (isHeartbeatExceededMaxAge)
+        .when       (heartbeatMonitorSpy).isHeartbeatExceededMaxAge();
     }
+
+    private void setupHeartbeatRepository(final LocalDateTime lastHeartbeatDateTime) {
+        Mockito
+        .doReturn   (lastHeartbeatDateTime)
+        .when       (heartbeatRepository).getLastHeartbeatDatetime();
+    }
+
 }

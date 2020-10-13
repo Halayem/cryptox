@@ -46,6 +46,7 @@ public class TickerServiceImpl implements TickerService {
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
         log.info("order will be placed based on this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
+
         return
             Mono
             .just       ( applicationAssetPairTickerTradingDecision.getOperation().getDecision() )
@@ -54,8 +55,8 @@ public class TickerServiceImpl implements TickerService {
                 switch (decision) {
                     case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision );
                     case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision );
+                    default:    return Mono.empty();
                 }
-                return Mono.empty();
             });
     }
 

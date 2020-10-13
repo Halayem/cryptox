@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Profile("kraken")
-public class KrakenTickerMapperImplTest {
+class KrakenTickerMapperImplTest {
 
     @Autowired
     private KrakenTickerMapperImpl krakenTickerMapper;

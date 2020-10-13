@@ -20,6 +20,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final AdminServerProperties adminServerProperties;
     private final int tokenValidityInSeconds = 3600;
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 

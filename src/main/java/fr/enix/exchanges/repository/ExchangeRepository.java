@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
-public interface KrakenPrivateRepository {
+public interface ExchangeRepository {
 
     Mono<BigDecimal> getAvailableAssetForSellPlacementByApplicationAssetPair(final String applicationAssetPair);
     Mono<BigDecimal> getAvailableAssetForBuyPlacementByApplicationAssetPair(final String applicationAssetPair);

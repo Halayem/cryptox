@@ -1,4 +1,4 @@
-package fr.enix.exchanges.service.impl;
+package fr.enix.exchanges.service.impl.kraken;
 
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.service.ApplicationTradingConfigurationService;

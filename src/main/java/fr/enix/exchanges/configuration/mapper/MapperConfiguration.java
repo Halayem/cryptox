@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MapperConfiguration {
 
-    @Bean public AddOrderMapper addOrderMapper( final CurrenciesRepresentationService currenciesRepresentationService) {
+    @Bean
+    public AddOrderMapper addOrderMapper( final CurrenciesRepresentationService currenciesRepresentationService) {
         return new AddOrderMapper(currenciesRepresentationService);
     }
 

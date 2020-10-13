@@ -1,12 +1,9 @@
 package fr.enix.exchanges.configuration.repository;
 
-import fr.enix.common.service.KrakenRepositoryService;
-import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
 import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import fr.enix.exchanges.repository.*;
 import fr.enix.exchanges.repository.impl.*;
-import fr.enix.exchanges.service.CurrenciesRepresentationService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ExchangeRepositoryConfiguration {
 
     @Bean
-    public WebClient krakenPrivateWebClient(final ApplicationRepositoryProperties applicationRepositoryProperties) {
+    public WebClient exchangeWebClient(final ApplicationRepositoryProperties applicationRepositoryProperties) {
         return
             WebClient
             .builder        ()
@@ -33,28 +30,8 @@ public class ExchangeRepositoryConfiguration {
     }
 
     @Bean
-    public KrakenPrivateRepository krakenPrivateRepository(final WebClient krakenPrivateWebClient,
-                                                           final KrakenRepositoryService krakenService,
-                                                           final AddOrderMapper addOrderMapper,
-                                                           final CurrenciesRepresentationService currenciesRepresentationService,
-                                                           final ApplicationRepositoryProperties applicationRepositoryProperties) {
-        return new KrakenPrivateRepositoryImpl(
-                        krakenPrivateWebClient,
-                        krakenService,
-                        addOrderMapper,
-                        currenciesRepresentationService,
-                        applicationRepositoryProperties
-        );
-    }
-
-    @Bean
     public MarketOfferHistoryRepository marketOfferHistoryRepository() {
         return new MarketOfferHistoryRepositoryImpl();
-    }
-
-    @Bean
-    public AssetOrderIntervalRepository assetOrderIntervalRepository() {
-        return new AssetOrderIntervalRepositoryKrakenImpl();
     }
 
     @Bean
@@ -81,7 +58,7 @@ public class ExchangeRepositoryConfiguration {
     }
 
     @Bean
-    public PongRepository pongRepository() { return new KrakenPongRepositoryInMemoryImpl(); }
+    public PongRepository pongRepository() { return new PongRepositoryInMemoryImpl(); }
 
     @Bean
     public ChannelRepository channelRepository() {

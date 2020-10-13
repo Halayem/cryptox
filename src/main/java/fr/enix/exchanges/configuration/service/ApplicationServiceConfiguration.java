@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationServiceConfiguration {
 
     @Bean
-    public ExchangeService exchangeService(final KrakenPrivateRepository krakenPrivateRepository) {
-        return new ExchangeServiceImpl(krakenPrivateRepository);
+    public ExchangeService exchangeService(final ExchangeRepository exchangeRepository) {
+        return new ExchangeServiceImpl(exchangeRepository);
     }
 
     @Bean

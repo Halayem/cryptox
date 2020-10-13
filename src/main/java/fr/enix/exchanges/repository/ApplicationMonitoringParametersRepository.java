@@ -14,9 +14,9 @@ public class ApplicationMonitoringParametersRepository {
 
     private Map<String, MonitoringConfiguration> events;
 
-    public MonitoringConfiguration getMonitoringConfigurationForEvent(String event) {
+    public MonitoringConfiguration getMonitoringConfigurationForEvent(final String event) {
         if( !events.containsKey(event)) {
-            throw new RuntimeException("unknown event: " + event);
+            throw new IllegalArgumentException("missing monitoring event configuration: " + event);
         }
         return events.get(event);
     }
