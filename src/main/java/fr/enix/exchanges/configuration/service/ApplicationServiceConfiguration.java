@@ -2,15 +2,16 @@ package fr.enix.exchanges.configuration.service;
 
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.repository.*;
+import fr.enix.exchanges.repository.ExchangeRepository;
+import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
+import fr.enix.exchanges.repository.PriceReferenceRepository;
 import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.*;
-import lombok.extern.slf4j.Slf4j;
+import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Slf4j
 public class ApplicationServiceConfiguration {
 
     @Bean
@@ -24,17 +25,8 @@ public class ApplicationServiceConfiguration {
     }
 
     @Bean
-    public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final PriceReferenceService priceReferenceService,
-                                                                            final ExchangeService exchangeService,
-                                                                            final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
-                                                                            final AssetOrderIntervalRepository assetOrderIntervalRepository) {
-        return
-            new TradingBearingStrategyDecisionServiceImpl(
-                    priceReferenceService,
-                    exchangeService,
-                    applicationCurrencyTradingsParameterRepository,
-                    assetOrderIntervalRepository
-            );
+    public TradingDecisionService tradingBearingStrategyDecisionServiceImpl(final TradingBearingStrategyDecisionFactory tradingBearingStrategyDecisionFactory) {
+        return new TradingBearingStrategyDecisionServiceImpl(tradingBearingStrategyDecisionFactory);
     }
 
     @Bean

@@ -30,9 +30,10 @@ public class EncryptionServiceImpl implements EncryptionService {
      */
     @Override
     public String getNewNonce() {
-        final String nonce = Long.toString(Instant.now().toEpochMilli())
-                             + nonceHelper.getUnique3Digits();
-        log.info("generating new nonce: {}", nonce);
+        final String nonce =    Long.toString(Instant.now().toEpochMilli()) +
+                                nonceHelper.getUnique3Digits();
+
+        log.info("new nonce generated: {}", nonce);
         return nonce;
     }
 

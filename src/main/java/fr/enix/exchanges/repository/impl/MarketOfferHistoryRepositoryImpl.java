@@ -3,6 +3,7 @@ package fr.enix.exchanges.repository.impl;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @NoArgsConstructor
+@Slf4j
 public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepository {
 
     /**
@@ -21,6 +23,8 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
 
     @Override
     public Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
+        log.debug("ticker will be saved, application asset pair {}, price: {}", applicationAssetPair, price);
+
         return  buildApplicationAssetPairTicker( applicationAssetPair, price )
                 .map( applicationAssetPairTicker -> {
                     saveApplicationAssetPairTickerInRecords(applicationAssetPairTicker);

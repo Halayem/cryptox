@@ -13,6 +13,7 @@ public class TickerResponseManager implements WebSocketSubscriptionManager {
 
     @Override
     public void managePayload(final String payload) throws JsonProcessingException {
+        log.debug("received payload: {}", payload);
         tickerService.marketOfferUpdateHandler(payload).subscribe(
             addOrderOutput -> log.info("order placed successfully, response: {}", addOrderOutput)
         );

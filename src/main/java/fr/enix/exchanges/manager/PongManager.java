@@ -13,7 +13,7 @@ public class PongManager implements WebSocketSubscriptionManager {
 
     @Override
     public void managePayload(String payload) throws JsonProcessingException {
-        log.debug("pong payload received: {}", payload);
+        log.debug("received payload: {}", payload);
         pongRepository.savePongDatetime();
     }
 }

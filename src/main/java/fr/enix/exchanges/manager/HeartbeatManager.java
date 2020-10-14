@@ -13,8 +13,8 @@ public class HeartbeatManager implements WebSocketSubscriptionManager {
 
     @Override
     public void managePayload(String payload) throws JsonProcessingException {
+        log.debug("received payload: {}", payload);
         heartbeatRepository.saveHeartbeatDatetime();
-        log.debug("received heartbeat payload: {}", payload);
     }
 
 }
