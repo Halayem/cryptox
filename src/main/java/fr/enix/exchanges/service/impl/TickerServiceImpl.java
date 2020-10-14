@@ -38,6 +38,7 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
+        log.debug("getting this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage() );
 
         return
             Mono

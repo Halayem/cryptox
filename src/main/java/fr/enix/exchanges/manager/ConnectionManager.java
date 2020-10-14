@@ -11,6 +11,7 @@ public class ConnectionManager implements WebSocketSubscriptionManager {
 
     @Override
     public void managePayload(final String payload) throws JsonProcessingException {
+        log.debug("received payload: {}", payload);
 
         final ConnectionResponse connectionResponse = new ObjectMapper().readValue(payload, ConnectionResponse.class);
         if( ! "online".equals(connectionResponse.getStatus() ) ) {
