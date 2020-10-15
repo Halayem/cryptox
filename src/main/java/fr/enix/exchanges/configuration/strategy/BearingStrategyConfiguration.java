@@ -9,6 +9,7 @@ import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
 import fr.enix.exchanges.strategy.bearing.impl.DoNothingTradingBearingStrategyDecisionImpl;
 import fr.enix.exchanges.strategy.bearing.impl.ErrorTradingBearingStrategyDecisionImpl;
 import fr.enix.exchanges.strategy.bearing.impl.HighGapTradingBearingStrategyDecisionImpl;
+import fr.enix.exchanges.strategy.bearing.impl.LowGapTradingBearingStrategyDecisionImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,7 +36,7 @@ public class BearingStrategyConfiguration {
                                                                                    final AssetOrderIntervalRepository assetOrderIntervalRepository,
                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
 
-        return new HighGapTradingBearingStrategyDecisionImpl(
+        return new LowGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
                         assetOrderIntervalRepository,
