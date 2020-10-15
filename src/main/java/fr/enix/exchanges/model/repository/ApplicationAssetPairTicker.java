@@ -1,9 +1,6 @@
 package fr.enix.exchanges.model.repository;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder(toBuilder = true)
 @ToString
+@EqualsAndHashCode
 public class ApplicationAssetPairTicker implements Comparable<ApplicationAssetPairTicker> {
     private String          applicationAssetPair;
     private BigDecimal      price;
