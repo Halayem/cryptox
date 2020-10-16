@@ -21,13 +21,15 @@ public class BearingStrategyConfiguration {
     public TradingBearingStrategyDecision highGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                     final ExchangeService exchangeService,
                                                                                     final AssetOrderIntervalRepository assetOrderIntervalRepository,
-                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
+                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
+                                                                                    final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
 
         return new HighGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
                         assetOrderIntervalRepository,
-                        applicationCurrencyTradingsParameterRepository
+                        applicationCurrencyTradingsParameterRepository,
+                        applicationAssetPairTickerMapper
         );
     }
 

@@ -3,6 +3,7 @@ package fr.enix.exchanges.strategy.bearing.impl;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.ExchangeService;
+import fr.enix.exchanges.service.PriceReferenceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,11 +22,10 @@ import static org.mockito.Mockito.spy;
 @SpringBootTest
 class LowGapTradingBearingStrategyDecisionImplTest {
 
-    @Autowired
-    private LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionImpl;
+    @Autowired private LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionImpl;
 
-    @MockBean
-    private ExchangeService exchangeService;
+    @MockBean private ExchangeService       exchangeService;
+    @MockBean private PriceReferenceService priceReferenceService;
 
     @Test
     void testGetDecision_shouldReturnBuyDecisionWithComputedAmountToBuyWhenItIsGreaterOrEqualsThanTheMinimumOrder() {
@@ -81,7 +81,7 @@ class LowGapTradingBearingStrategyDecisionImplTest {
     }
 
     @Test
-    void testGetAmountToBuy_shouldReturnTheComputedAmountWhenByConfiguredAmountIsNotPossible() {
+    void testGetAmountToBuy_shouldReturnTheComputedAmountWhenBuyConfiguredAmountIsNotPossible() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("40"), LocalDateTime.now());
 
         doReturn( Mono.just(new BigDecimal("3")))

@@ -29,6 +29,29 @@ public class ApplicationAssetPairTickerMapper {
     public Mono<ApplicationAssetPairTickerTradingDecision> mapBuyDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
                                                                           final BigDecimal amount,
                                                                           final BigDecimal price) {
+        return mapDecision(
+                ApplicationAssetPairTickerTradingDecision.Decision.BUY,
+                applicationAssetPairTickerReference,
+                amount,
+                price
+        );
+    }
+
+    public Mono<ApplicationAssetPairTickerTradingDecision> mapSellDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+                                                                           final BigDecimal amount,
+                                                                           final BigDecimal price) {
+        return mapDecision(
+                ApplicationAssetPairTickerTradingDecision.Decision.SELL,
+                applicationAssetPairTickerReference,
+                amount,
+                price
+        );
+    }
+
+    private Mono<ApplicationAssetPairTickerTradingDecision> mapDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision,
+                                                                        final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+                                                                        final BigDecimal amount,
+                                                                        final BigDecimal price) {
         return Mono.just(
                 ApplicationAssetPairTickerTradingDecision
                 .builder    ()
@@ -38,7 +61,7 @@ public class ApplicationAssetPairTickerMapper {
                     ApplicationAssetPairTickerTradingDecision
                     .Operation
                     .builder    ()
-                    .decision   (ApplicationAssetPairTickerTradingDecision.Decision.BUY)
+                    .decision   (decision)
                     .build      ()
                 )
                 .applicationAssetPairTickerReference(applicationAssetPairTickerReference.toBuilder().build())

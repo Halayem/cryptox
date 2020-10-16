@@ -1,5 +1,6 @@
 package fr.enix.exchanges.strategy.bearing.impl;
 
+import fr.enix.exchanges.mapper.ApplicationAssetPairTickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
@@ -19,7 +20,7 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
     private final ExchangeService exchangeService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
-
+    private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
@@ -29,30 +30,13 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
             getAmountToSell(applicationAssetPairTicker.getApplicationAssetPair())
             .flatMap(amountToSell -> {
                 if ( amountToSell.compareTo(assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(applicationAssetPairTicker.getApplicationAssetPair())) < 0 ) {
-                    return
-                        newTradingDecisionNoSellWhenAmountIsLessThanMinimum(
-                                applicationAssetPairTicker,
-                                amountToSell,
-                                assetOrderIntervalRepository.getMinimumOrderForApplicationAsset( applicationAssetPairTicker.getApplicationAssetPair() )
-                        );
-                }
-
-                return
-                    Mono.just(
-                        ApplicationAssetPairTickerTradingDecision
-                            .builder    ()
-                            .amount     (amountToSell)
-                            .price      (applicationAssetPairTicker.getPrice())
-                            .operation  (
-                                ApplicationAssetPairTickerTradingDecision
-                                    .Operation
-                                    .builder    ()
-                                    .decision   (ApplicationAssetPairTickerTradingDecision.Decision.SELL)
-                                    .build      ()
-                            )
-                            .applicationAssetPairTickerReference(applicationAssetPairTicker.toBuilder().build())
-                            .build()
+                    return applicationAssetPairTickerMapper.mapDoNothingDecision(
+                            applicationAssetPairTicker,
+                            String.format("the computed amount to sell: <%f>, is less than the minimum order by market", amountToSell)
                     );
+                } else {
+                    return applicationAssetPairTickerMapper.mapSellDecision(applicationAssetPairTicker, amountToSell, applicationAssetPairTicker.getPrice() );
+                }
             });
     }
 
@@ -65,46 +49,18 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
 
     protected Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
         return
-                exchangeService
-                        .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
-                        .flatMap(availableAssetForSell ->
-                                isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
-                                        .flatMap(isLess ->
-                                                Boolean.TRUE.equals(isLess)
-                                                        ? Mono.just(availableAssetForSell)
-                                                        : applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
-                                        )
-                        );
-    }
-
-    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionNoSellWhenAmountIsLessThanMinimum(final ApplicationAssetPairTicker applicationAssetPairTicker,
-                                                                                                                final BigDecimal amountToSell,
-                                                                                                                final BigDecimal minimumOrder) {
-        return newTradingDecisionWhenDoNothing(
-                applicationAssetPairTicker,
-                String.format(
-                        "the computed amount to sell: <%f>, is less than the minimum order: <%f>",
-                        amountToSell,
-                        minimumOrder
-                ));
-    }
-
-    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionWhenDoNothing(final ApplicationAssetPairTicker applicationAssetPairTicker,
-                                                                                            final String message) {
-        return Mono.just(
-                ApplicationAssetPairTickerTradingDecision
-                        .builder    ()
-                        .operation  (
-                                ApplicationAssetPairTickerTradingDecision
-                                        .Operation
-                                        .builder  ()
-                                        .decision (ApplicationAssetPairTickerTradingDecision.Decision.DO_NOTHING)
-                                        .message  (message)
-                                        .build    ()
-                        )
-                        .applicationAssetPairTickerReference( applicationAssetPairTicker.toBuilder().build() )
-                        .build()
-        );
+            exchangeService
+            .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
+            .flatMap(availableAssetForSell ->
+                isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
+                .flatMap( isLess -> {
+                    if (Boolean.TRUE.equals(isLess)) {
+                        return Mono.just(availableAssetForSell);
+                    } else {
+                        return applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair);
+                    }
+                })
+            );
     }
 
 }
