@@ -1,4 +1,4 @@
-package fr.enix.exchanges.mapper.impl;
+package fr.enix.exchanges.mapper.impl.kraken;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

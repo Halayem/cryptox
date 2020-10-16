@@ -1,5 +1,6 @@
 package fr.enix.exchanges.strategy.bearing;
 
+import fr.enix.common.exception.FactoryException;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.service.PriceReferenceService;
@@ -28,32 +29,34 @@ public class TradingBearingStrategyDecisionFactory {
                 priceReferenceService.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(priceReference -> priceReference.getPrice()),
                 applicationCurrencyTradingsParameterRepository.getGapScaleByApplicationAssetPair(applicationAssetPair)
             )
-            .flatMap(objects -> {
-                final BigDecimal priceReference = objects.getT1();
-                final BigDecimal gap            = objects.getT2();
-                final GapStatus gapStatus       = getGapStatus(currentApplicationAssetPairPrice, priceReference, gap);
-
-                switch( gapStatus ) {
-                    case HIGH_REACHED:  return Mono.just(highGapTradingBearingStrategyDecisionImpl  );
-                    case LOW_REACHED:   return Mono.just(lowGapTradingBearingStrategyDecisionImpl   );
-                    case NOT_REACHED:   return Mono.just(doNothingTradingBearingStrategyDecisionImpl);
-                    default:            throw new RuntimeException("unhandled gap status: " + gapStatus.toString());
-                }
-            })
-            .switchIfEmpty(Mono.just(errorTradingBearingStrategyDecisionImpl));
+            .flatMap        ( objects ->  Mono.just( getTradingBearingStrategyInstance(currentApplicationAssetPairPrice, objects.getT1(), objects.getT2())) )
+            .switchIfEmpty  ( Mono.just(errorTradingBearingStrategyDecisionImpl));
     }
 
+    protected TradingBearingStrategyDecision getTradingBearingStrategyInstance(final BigDecimal currentApplicationAssetPairPrice,
+                                                                               final BigDecimal priceReference,
+                                                                               final BigDecimal gap) {
 
-    private GapStatus getGapStatus(final BigDecimal lastPrice,
-                                   final BigDecimal priceReference,
-                                   final BigDecimal gap) {
+        final GapStatus gapStatus = getGapStatus( currentApplicationAssetPairPrice, priceReference, gap );
+        switch( gapStatus ) {
+            case HIGH_REACHED:  return highGapTradingBearingStrategyDecisionImpl    ;
+            case LOW_REACHED:   return lowGapTradingBearingStrategyDecisionImpl     ;
+            case NOT_REACHED:   return doNothingTradingBearingStrategyDecisionImpl  ;
+            default:            throw new FactoryException("unhandled gap status: " + gapStatus.toString());
+        }
+    }
+
+    protected GapStatus getGapStatus(final BigDecimal lastPrice,
+                                     final BigDecimal priceReference,
+                                     final BigDecimal gap) {
 
         if ( lastPrice.compareTo(priceReference.add(gap))       >= 0 ) { return GapStatus.HIGH_REACHED;    }
         if ( lastPrice.compareTo(priceReference.subtract(gap))  <= 0 ) { return GapStatus.LOW_REACHED;     }
         return GapStatus.NOT_REACHED;
     }
 
-    private enum GapStatus {
+    protected enum GapStatus {
         HIGH_REACHED, LOW_REACHED, NOT_REACHED
     }
+
 }

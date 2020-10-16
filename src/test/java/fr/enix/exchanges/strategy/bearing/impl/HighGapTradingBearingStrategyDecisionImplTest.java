@@ -20,25 +20,25 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 @SpringBootTest
-class LowGapTradingBearingStrategyDecisionImplTest {
+class HighGapTradingBearingStrategyDecisionImplTest {
 
-    @Autowired private LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionImpl;
+    @Autowired private HighGapTradingBearingStrategyDecisionImpl highGapTradingBearingStrategyDecision;
 
-    @MockBean private ExchangeService       exchangeService;
     @MockBean private PriceReferenceService priceReferenceService;
+    @MockBean private ExchangeService       exchangeService;
 
     @Test
-    void testGetDecision_shouldReturnBuyDecisionWithComputedAmountToBuyWhenItIsGreaterOrEqualsThanTheMinimumOrder() {
+    void testGetDecision_shouldReturnSellDecisionWithComputedAmountToSellWhenItIsGreaterOrEqualsThanTheMinimumOrder() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
-        final LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionSpy = spy(lowGapTradingBearingStrategyDecisionImpl);
+        final HighGapTradingBearingStrategyDecisionImpl highGapTradingBearingStrategyDecisionSpy = spy(highGapTradingBearingStrategyDecision);
 
         doReturn( Mono.just( new BigDecimal("0.1") ) )
-        .when   ( lowGapTradingBearingStrategyDecisionSpy).getAmountToBuy(applicationAssetPairTicker);
+        .when   ( highGapTradingBearingStrategyDecisionSpy).getAmountToSell("litecoin-euro");
 
         StepVerifier
-        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
-            assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.BUY, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
+            assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.SELL, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
             assertEquals(new BigDecimal("0.1"), applicationAssetPairTickerTradingDecision.getAmount());
             assertEquals(new BigDecimal("42.05"), applicationAssetPairTickerTradingDecision.getPrice());
             assertEquals(applicationAssetPairTicker, applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
@@ -50,18 +50,18 @@ class LowGapTradingBearingStrategyDecisionImplTest {
     @Test
     void testGetDecision_shouldReturnDoNothingDecisionWhenComputedAmountIsLessThanTheMinimumOrder() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
-        final LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionSpy = spy(lowGapTradingBearingStrategyDecisionImpl);
+        final HighGapTradingBearingStrategyDecisionImpl highGapTradingBearingStrategyDecisionSpy = spy(highGapTradingBearingStrategyDecision);
 
         doReturn( Mono.just( new BigDecimal("0.099999") ) )
-        .when   ( lowGapTradingBearingStrategyDecisionSpy).getAmountToBuy(applicationAssetPairTicker);
+                .when   ( highGapTradingBearingStrategyDecisionSpy).getAmountToSell("litecoin-euro");
 
         StepVerifier
-        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertNull(applicationAssetPairTickerTradingDecision.getAmount(), "amount should be null for do nothing decision");
             assertNull(applicationAssetPairTickerTradingDecision.getPrice(),  "price should be null for do nothing decision");
 
-            assertEquals("the computed amount to buy: <0,099999>, is less than the minimum order by market", applicationAssetPairTickerTradingDecision.getOperation().getMessage());
+            assertEquals("the computed amount to sell: <0,099999>, is less than the minimum order by market", applicationAssetPairTickerTradingDecision.getOperation().getMessage());
             assertEquals(applicationAssetPairTicker, applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
             assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.DO_NOTHING, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
         })
@@ -69,27 +69,27 @@ class LowGapTradingBearingStrategyDecisionImplTest {
     }
 
     @Test
-    void testGetAmountToBuy_shouldReturnTheConfiguredAmountWhenBuyIsPossible() {
+    void testGetAmountToSell_shouldReturnTheConfiguredAmountWhenBuyIsPossible() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
 
         doReturn( Mono.just(new BigDecimal("5")))
-        .when   (exchangeService).getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro");
+        .when   (exchangeService).getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro");
 
         StepVerifier
-        .create         (lowGapTradingBearingStrategyDecisionImpl.getAmountToBuy(applicationAssetPairTicker))
-        .consumeNextWith(amountToBuy -> assertEquals(new BigDecimal("0.1"), amountToBuy));
+        .create         (highGapTradingBearingStrategyDecision.getAmountToSell("litecoin-euro"))
+        .consumeNextWith(amountToSell -> assertEquals(new BigDecimal("0.1"), amountToSell));
     }
 
     @Test
-    void testGetAmountToBuy_shouldReturnTheComputedAmountWhenBuyConfiguredAmountIsNotPossible() {
+    void testGetAmountToSell_shouldReturnTheComputedAmountWhenSellConfiguredAmountIsNotPossible() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("40"), LocalDateTime.now());
 
-        doReturn( Mono.just(new BigDecimal("3")))
-        .when   (exchangeService).getAvailableAssetForBuyPlacementByApplicationAssetPair("litecoin-euro");
+        doReturn( Mono.just(new BigDecimal("0.099999")))
+        .when   (exchangeService).getAvailableAssetForSellPlacementByApplicationAssetPair("litecoin-euro");
 
         StepVerifier
-        .create         ( lowGapTradingBearingStrategyDecisionImpl.getAmountToBuy(applicationAssetPairTicker) )
-        .consumeNextWith( amountToBuy -> assertEquals(new BigDecimal("0.075"), amountToBuy) );
+        .create         ( highGapTradingBearingStrategyDecision.getAmountToSell("litecoin-euro") )
+        .consumeNextWith( amountToSell -> assertEquals(new BigDecimal("0.099999"), amountToSell) );
     }
 
     private ApplicationAssetPairTicker newApplicationAssetPairTickerForLitecoinEuro(final BigDecimal price,
@@ -101,5 +101,4 @@ class LowGapTradingBearingStrategyDecisionImplTest {
                 .dateTime               ( dateTime          )
                 .build();
     }
-
 }

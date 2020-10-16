@@ -1,7 +1,7 @@
 package fr.enix.exchanges.configuration.mapper;
 
 import fr.enix.exchanges.mapper.TickerMapper;
-import fr.enix.exchanges.mapper.impl.KrakenTickerMapperImpl;
+import fr.enix.exchanges.mapper.impl.kraken.KrakenTickerMapperImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

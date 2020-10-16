@@ -1,4 +1,4 @@
-package fr.enix.exchanges.mapper.impl;
+package fr.enix.exchanges.mapper.impl.kraken;
 
 import fr.enix.common.utils.file.ApplicationFileUtils;
 import org.junit.jupiter.api.Test;
