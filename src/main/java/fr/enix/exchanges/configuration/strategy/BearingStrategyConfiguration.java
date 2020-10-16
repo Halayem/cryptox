@@ -1,5 +1,6 @@
 package fr.enix.exchanges.configuration.strategy;
 
+import fr.enix.exchanges.mapper.ApplicationAssetPairTickerMapper;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
@@ -34,13 +35,15 @@ public class BearingStrategyConfiguration {
     public TradingBearingStrategyDecision lowGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                    final ExchangeService exchangeService,
                                                                                    final AssetOrderIntervalRepository assetOrderIntervalRepository,
-                                                                                   final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
+                                                                                   final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
+                                                                                   final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
 
         return new LowGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
                         assetOrderIntervalRepository,
-                        applicationCurrencyTradingsParameterRepository
+                        applicationCurrencyTradingsParameterRepository,
+                        applicationAssetPairTickerMapper
         );
     }
 
