@@ -50,8 +50,8 @@ public class BearingStrategyConfiguration {
     }
 
     @Bean
-    public TradingBearingStrategyDecision doNothingTradingBearingStrategyDecisionImpl() {
-        return new DoNothingTradingBearingStrategyDecisionImpl();
+    public TradingBearingStrategyDecision doNothingTradingBearingStrategyDecisionImpl(final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
+        return new DoNothingTradingBearingStrategyDecisionImpl(applicationAssetPairTickerMapper);
     }
 
     @Bean
