@@ -23,6 +23,9 @@
     <spring-boot-admin-server-ui-login.version>1.5.7</spring-boot-admin-server-ui-login.version>
     <swagger-annotations.version>1.6.2</swagger-annotations.version>
     <commons-lang3.version>3.10</commons-lang3.version>
+    <javax.mail.version>1.6.2</javax.mail.version>
+    <javax.activation.version>1.2.0</javax.activation.version>
+
     <wiremock.version>2.26.3</wiremock.version>
     <mockito-core.version>3.5.11</mockito-core.version>
     <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
@@ -96,23 +99,17 @@
       <version>${commons-lang3.version}</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
     <dependency>
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
-      <version>1.6.2</version>
+      <version>${javax.mail.version}</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.sun.activation/javax.activation -->
     <dependency>
       <groupId>com.sun.activation</groupId>
       <artifactId>javax.activation</artifactId>
-      <version>1.2.0</version>
+      <version>${javax.activation.version}</version>
     </dependency>
-
-
-
-
 
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
