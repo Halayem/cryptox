@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
 
-    private final PriceReferenceService priceReferenceService;
+    private final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper;
     private final ExchangeService exchangeService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
@@ -24,7 +24,7 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
 
     @Override
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
-        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
+        tradingBearingStrategyDecisionHelper.updatePriceReference(applicationAssetPairTicker);
 
         return
             getAmountToSell(applicationAssetPairTicker.getApplicationAssetPair())

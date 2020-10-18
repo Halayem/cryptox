@@ -7,7 +7,6 @@ import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
-import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -17,7 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
 
-    private final PriceReferenceService priceReferenceService;
+    private final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper;
     private final ExchangeService exchangeService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
@@ -25,7 +24,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     @Override
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
-        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
+        tradingBearingStrategyDecisionHelper.updatePriceReference(applicationAssetPairTicker);
 
         return
             getAmountToBuy  ( applicationAssetPairTicker)

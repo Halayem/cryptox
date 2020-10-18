@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 public class PriceReference {
+    private String updatedBy;
     private BigDecimal price;
     private LocalDateTime datetime;
 }

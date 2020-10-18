@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 public interface PriceReferenceRepository {
 
     Mono<PriceReference> getPriceReferenceForApplicationAssetPair(final String applicationAssetPair);
-    Mono<PriceReference> updatePriceReferenceForApplicationAssetPair(final String applicationAssetPair, final BigDecimal priceReference);
+    Mono<PriceReference> updatePriceReferenceForApplicationAssetPair(final String applicationAssetPair, final BigDecimal priceReference, final String updatedBy);
 }

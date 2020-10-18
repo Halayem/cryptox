@@ -7,10 +7,7 @@ import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
-import fr.enix.exchanges.strategy.bearing.impl.DoNothingTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.ErrorTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.HighGapTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.LowGapTradingBearingStrategyDecisionImpl;
+import fr.enix.exchanges.strategy.bearing.impl.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,14 +15,19 @@ import org.springframework.context.annotation.Configuration;
 public class BearingStrategyConfiguration {
 
     @Bean
-    public TradingBearingStrategyDecision highGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
+    public TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper(final PriceReferenceService priceReferenceService) {
+        return new TradingBearingStrategyDecisionHelper(priceReferenceService);
+    }
+
+    @Bean
+    public TradingBearingStrategyDecision highGapTradingBearingStrategyDecisionImpl(final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper,
                                                                                     final ExchangeService exchangeService,
                                                                                     final AssetOrderIntervalRepository assetOrderIntervalRepository,
                                                                                     final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                     final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
 
         return new HighGapTradingBearingStrategyDecisionImpl(
-                        priceReferenceService,
+                        tradingBearingStrategyDecisionHelper,
                         exchangeService,
                         assetOrderIntervalRepository,
                         applicationCurrencyTradingsParameterRepository,
@@ -34,14 +36,14 @@ public class BearingStrategyConfiguration {
     }
 
     @Bean
-    public TradingBearingStrategyDecision lowGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
+    public TradingBearingStrategyDecision lowGapTradingBearingStrategyDecisionImpl(final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper,
                                                                                    final ExchangeService exchangeService,
                                                                                    final AssetOrderIntervalRepository assetOrderIntervalRepository,
                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                    final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
 
         return new LowGapTradingBearingStrategyDecisionImpl(
-                        priceReferenceService,
+                        tradingBearingStrategyDecisionHelper,
                         exchangeService,
                         assetOrderIntervalRepository,
                         applicationCurrencyTradingsParameterRepository,
@@ -55,8 +57,8 @@ public class BearingStrategyConfiguration {
     }
 
     @Bean
-    public TradingBearingStrategyDecision errorTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService) {
-        return new ErrorTradingBearingStrategyDecisionImpl(priceReferenceService);
+    public TradingBearingStrategyDecision errorTradingBearingStrategyDecisionImpl(final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper) {
+        return new ErrorTradingBearingStrategyDecisionImpl(tradingBearingStrategyDecisionHelper);
     }
 
     @Bean

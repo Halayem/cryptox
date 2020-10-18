@@ -15,12 +15,14 @@ public class PriceReferenceServiceImpl implements PriceReferenceService {
     private final PriceReferenceRepository priceReferenceRepository;
 
     @Override
-    public void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    public void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker, final String updatedBy) {
+
         priceReferenceRepository.updatePriceReferenceForApplicationAssetPair(
                 applicationAssetPairTicker.getApplicationAssetPair(),
-                applicationAssetPairTicker.getPrice()
+                applicationAssetPairTicker.getPrice(),
+                updatedBy
         )
-        .subscribe( priceReference -> log.debug("price reference updated: {}", priceReference) );
+        .subscribe( priceReference -> log.debug("price reference updated, price: {}, updated by: {}", priceReference, updatedBy) );
     }
 
     @Override

@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface PriceReferenceService {
 
-    void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker);
+    void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker, final String updatedBy);
     Mono<PriceReference> getPriceReferenceForApplicationAssetPair(final String applicationAssetPair);
 }
