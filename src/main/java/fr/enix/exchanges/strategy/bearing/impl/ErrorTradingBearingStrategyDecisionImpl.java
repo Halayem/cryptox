@@ -10,11 +10,11 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class ErrorTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
 
-    private final TradingBearingStrategyDecisionHelper tradingBearingStrategyDecisionHelper;
+    private final PriceReferenceService priceReferenceService;
 
     @Override
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
-        tradingBearingStrategyDecisionHelper.updatePriceReference(applicationAssetPairTicker);
+        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
 
         return newTradingDecisionError(
                 applicationAssetPairTicker,

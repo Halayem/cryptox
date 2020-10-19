@@ -23,11 +23,12 @@ public class PriceReferenceRepositoryImpl implements PriceReferenceRepository  {
         return
             Mono.just(
                 PriceReference
-                .builder    ()
-                .price      (newPrice           )
-                .datetime   (LocalDateTime.now())
-                .updatedBy  (updatedBy          )
-                .build      ()
+                .builder()
+                .applicationAssetPair   (applicationAssetPair   )
+                .price                  (newPrice               )
+                .datetime               (LocalDateTime.now()    )
+                .updatedBy              (updatedBy              )
+                .build()
             ).flatMap(priceReference -> {
                 applicationAssetPairPriceReferences.put( applicationAssetPair, priceReference );
                 return Mono.just(priceReference);

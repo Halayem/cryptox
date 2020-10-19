@@ -13,17 +13,30 @@ import reactor.core.publisher.Mono;
 public class PriceReferenceServiceImpl implements PriceReferenceService {
 
     private final PriceReferenceRepository priceReferenceRepository;
+    private static final String UPDATED_BY_APPLICATION  = "application";
+    private static final String UPDATED_BY_USER         = "user";
 
     @Override
-    public void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker, final String updatedBy) {
+    public void updatePriceReference(final ApplicationAssetPairTicker applicationAssetPairTicker) {
 
         priceReferenceRepository.updatePriceReferenceForApplicationAssetPair(
-                applicationAssetPairTicker.getApplicationAssetPair(),
-                applicationAssetPairTicker.getPrice(),
-                updatedBy
+            applicationAssetPairTicker.getApplicationAssetPair(),
+            applicationAssetPairTicker.getPrice(),
+            UPDATED_BY_APPLICATION
         )
-        .subscribe( priceReference -> log.debug("price reference updated, price: {}, updated by: {}", priceReference, updatedBy) );
+        .subscribe( priceReference -> log.debug("update: {}", priceReference) );
     }
+
+    @Override
+    public void updatePriceReference(final fr.enix.exchanges.model.dto.PriceReference priceReference) {
+        priceReferenceRepository.updatePriceReferenceForApplicationAssetPair(
+            priceReference.getApplicationAssetPair(),
+            priceReference.getPrice(),
+            UPDATED_BY_USER
+        )
+        .subscribe( priceReference1 -> log.debug("update: {}", priceReference1) );
+    }
+
 
     @Override
     public Mono<PriceReference> getPriceReferenceForApplicationAssetPair(String applicationAssetPair) {

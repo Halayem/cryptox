@@ -22,7 +22,7 @@ public class CryptographyConfiguration {
             throws InvalidKeyException, NoSuchAlgorithmException {
 
         return new MacCryptographyUtils(
-                Base64.getDecoder().decode(applicationRepositoryProperties.getWebservice().getPrivateKey()),
+                Base64.getDecoder().decode(applicationRepositoryProperties.getWebservice().getPrivatekey()),
                 "HmacSHA512"
         );
     }
