@@ -3,6 +3,7 @@ package fr.enix.exchanges.model.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,11 +16,11 @@ class ApplicationRepositoryPropertiesTest {
     void testApplicationRepositoryProperties() {
         assertEquals(
             "ARhllSp+6hRurZfDbK64sXliA7th+/hGg5aTKXo/MP0Tlb0GikZUtg6K",
-            applicationRepositoryProperties.getWebservice().getApiKey()
+            applicationRepositoryProperties.getWebservice().getApikey()
         );
         assertEquals(
             "u6iAS7Wr9h5W9jEOjuNZnhemUBgM0JY4rEkNasKDyg88o53r3hk4W/e5XHdNV6I5CUs1C+N4/kOYr2kdzcmKmg==",
-            applicationRepositoryProperties.getWebservice().getPrivateKey()
+            applicationRepositoryProperties.getWebservice().getPrivatekey()
         );
 
         assertEquals("http://localhost:8080/",      applicationRepositoryProperties.getWebservice().getUrl());

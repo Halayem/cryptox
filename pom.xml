@@ -11,7 +11,7 @@
   </parent>
   <groupId>fr.enix</groupId>
   <artifactId>cryptox</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
+  <version>0.1.5-SNAPSHOT</version>
 
   <name>cryptox</name>
 

@@ -18,8 +18,8 @@ public class ApplicationRepositoryProperties {
     @Setter
     public static class Webservice {
         private String url;
-        private String apiKey;
-        private String privateKey;
+        private String apikey;
+        private String privatekey;
         private Map<String, String> urn;
     }
 

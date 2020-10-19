@@ -24,7 +24,7 @@ public class ExchangeRepositoryConfiguration {
             .defaultHeaders (httpHeaders -> {
 
                 httpHeaders.set(HttpHeaders.CONTENT_TYPE,   MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-                httpHeaders.set("API-Key",                  applicationRepositoryProperties.getWebservice().getApiKey());
+                httpHeaders.set("API-Key",                  applicationRepositoryProperties.getWebservice().getApikey());
             })
             .build          ();
     }
