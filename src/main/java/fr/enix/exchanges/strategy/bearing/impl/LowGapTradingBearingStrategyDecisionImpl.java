@@ -8,6 +8,7 @@ import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterReposito
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
+import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -19,6 +20,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
+    private final AmountMultiplierService amountMultiplierService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
