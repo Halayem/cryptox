@@ -42,27 +42,21 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
             });
     }
 
-    private Mono<Boolean> isAvailableAssetLessThanConfiguredAmountToSell(final String applicationAssetPair,
-                                                                         final BigDecimal availableAssetForSell) {
-        return applicationCurrencyTradingsParameterRepository
-                .getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
-                .map(configuredAmountToSell -> configuredAmountToSell.compareTo(availableAssetForSell) > 0 );
-    }
-
-    protected Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
+    protected Mono<BigDecimal> getAmountToSell( final String applicationAssetPair ) {
         return
             exchangeService
-            .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
-            .flatMap(availableAssetForSell ->
-                isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
-                .flatMap( isLess -> {
-                    if (Boolean.TRUE.equals(isLess)) {
-                        return Mono.just(availableAssetForSell);
-                    } else {
-                        return applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair);
-                    }
-                })
+            .getAvailableAssetForSellPlacementByApplicationAssetPair( applicationAssetPair )
+            .flatMap( availableAssetForSell ->
+                getComputedAmountToSell ( applicationAssetPair )
+                .map( computedAmountToSell -> computedAmountToSell.compareTo( availableAssetForSell ) > 0 ? computedAmountToSell : availableAssetForSell)
             );
+    }
+
+    private Mono<BigDecimal> getComputedAmountToSell(final String applicationAssetPair) {
+        return
+            applicationCurrencyTradingsParameterRepository
+            .getAmountToSellForBearingStrategyByApplicationAssetPair( applicationAssetPair )
+            .map(configuredAmountToSell -> configuredAmountToSell.multiply( BigDecimal.valueOf( amountMultiplierService.getNewAmountMultiplierForSell( applicationAssetPair ) ) ) );
     }
 
 }

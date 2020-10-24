@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,64 +17,44 @@ class AmountMultiplierServiceTest {
 
     @Test
     @Order(0)
-    void testGetAmountMultiplierForSell_shouldBeOneForFirstSellRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForSell("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(1, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForSell_shouldBeOneForFirstSellRequest() {
+        assertEquals(1, amountMultiplierService.getNewAmountMultiplierForSell("litecoin-euro"));
+       
     }
 
     @Test
     @Order(1)
-    void testGetAmountMultiplierForSell_shouldBeTwoForSecondConsecutiveSellRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForSell("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(2, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForSell_shouldBeTwoForSecondConsecutiveSellRequest() {
+        assertEquals(2, amountMultiplierService.getNewAmountMultiplierForSell("litecoin-euro"));
     }
 
     @Test
     @Order(2)
-    void testGetAmountMultiplierForSell_shouldBeThreeForThirdConsecutiveSellRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForSell("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(3, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForSell_shouldBeThreeForThirdConsecutiveSellRequest() {
+        assertEquals(3, amountMultiplierService.getNewAmountMultiplierForSell("litecoin-euro"));
     }
 
     @Test
     @Order(3)
-    void testGetAmountMultiplierForBuy_shouldBeOneForFirstBuyRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForBuy("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(1, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForBuy_shouldBeOneForFirstBuyRequest() {
+        assertEquals(1, amountMultiplierService.getNewAmountMultiplierForBuy("litecoin-euro"));
     }
 
     @Test
     @Order(4)
-    void testGetAmountMultiplierForBuy_shouldBeTwoForSecondConsecutiveBuyRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForBuy("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(2, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForBuy_shouldBeTwoForSecondConsecutiveBuyRequest() {
+        assertEquals(2, amountMultiplierService.getNewAmountMultiplierForBuy("litecoin-euro"));
     }
 
     @Test
     @Order(5)
-    void testGetAmountMultiplierForBuy_shouldBeThreeForThirdConsecutiveBuyRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForBuy("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(3, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForBuy_shouldBeThreeForThirdConsecutiveBuyRequest() {
+        assertEquals(3, amountMultiplierService.getNewAmountMultiplierForBuy("litecoin-euro"));
     }
 
     @Test
     @Order(6)
-    void testGetAmountMultiplierForSell_shouldBeOneAfterConsecutiveBuyRequest() {
-        StepVerifier
-        .create         (amountMultiplierService.getAmountMultiplierForSell("litecoin-euro"))
-        .consumeNextWith(amountMultiplier -> assertEquals(1, amountMultiplier ))
-        .verifyComplete ();
+    void testGetNewAmountMultiplierForSell_shouldBeOneAfterConsecutiveBuyRequest() {
+        assertEquals(1, amountMultiplierService.getNewAmountMultiplierForSell("litecoin-euro"));
     }
 }

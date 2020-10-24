@@ -2,12 +2,13 @@ package fr.enix.exchanges.strategy.bearing.impl;
 
 import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
 import lombok.NoArgsConstructor;
-import reactor.core.publisher.Mono;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor
+@Slf4j
 public class AmountMultiplierServiceImpl implements AmountMultiplierService {
 
     /**
@@ -16,19 +17,20 @@ public class AmountMultiplierServiceImpl implements AmountMultiplierService {
     private final Map<String, Integer> amountMultiplier = new HashMap<>();
 
     @Override
-    public Mono<Integer> getAmountMultiplierForSell(final String applicationAssetPair) {
+    public Integer getNewAmountMultiplierForSell(final String applicationAssetPair) {
         updateAmountMultiplier(applicationAssetPair, CurveDirection.UP);
-        return Mono.just( amountMultiplier.get(applicationAssetPair) );
+        return amountMultiplier.get(applicationAssetPair);
     }
 
     @Override
-    public Mono<Integer> getAmountMultiplierForBuy(final String applicationAssetPair) {
+    public Integer getNewAmountMultiplierForBuy(final String applicationAssetPair) {
         updateAmountMultiplier(applicationAssetPair, CurveDirection.DOWN);
-        return Mono.just( Math.abs( amountMultiplier.get(applicationAssetPair) ) );
+        return Math.abs( amountMultiplier.get(applicationAssetPair) );
     }
 
     private void updateAmountMultiplier(final String applicationAssetPair, final CurveDirection curveDirection) {
         amountMultiplier.put( applicationAssetPair, amountMultiplierRedux( curveDirection, getCurrentAmountMultiplier( applicationAssetPair ) ) );
+        log.info("application asset pair: {} has new amount multiplier: {} for curve direction: {}", applicationAssetPair, amountMultiplier.get(applicationAssetPair), curveDirection.toString());
     }
 
     private Integer amountMultiplierRedux(final CurveDirection curveDirection, final Integer currentAmountMultiplier) {
