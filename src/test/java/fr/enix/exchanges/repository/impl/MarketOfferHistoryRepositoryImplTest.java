@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class MarketOfferHistoryRepositoryTest {
+class MarketOfferHistoryRepositoryImplTest {
 
     @Autowired
     private MarketOfferHistoryRepositoryImpl marketOfferHistoryRepository;

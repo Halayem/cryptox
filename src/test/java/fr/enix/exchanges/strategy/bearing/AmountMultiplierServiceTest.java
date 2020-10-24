@@ -19,7 +19,6 @@ class AmountMultiplierServiceTest {
     @Order(0)
     void testGetNewAmountMultiplierForSell_shouldBeOneForFirstSellRequest() {
         assertEquals(1, amountMultiplierService.getNewAmountMultiplierForSell("litecoin-euro"));
-       
     }
 
     @Test

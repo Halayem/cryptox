@@ -2,6 +2,7 @@ package fr.enix.exchanges.strategy.bearing;
 
 import fr.enix.common.exception.FactoryException;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
+import fr.enix.exchanges.model.repository.PriceReference;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.service.PriceReferenceService;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class TradingBearingStrategyDecisionFactory {
 
         return
             Mono.zip(
-                priceReferenceService.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(priceReference -> priceReference.getPrice()),
+                priceReferenceService.getPriceReferenceForApplicationAssetPair(applicationAssetPair).map(PriceReference::getPrice),
                 applicationCurrencyTradingsParameterRepository.getGapScaleByApplicationAssetPair(applicationAssetPair)
             )
             .flatMap        ( objects ->  Mono.just( getTradingBearingStrategyInstance(currentApplicationAssetPairPrice, objects.getT1(), objects.getT2())) )

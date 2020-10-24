@@ -37,13 +37,16 @@ public class MarketOfferHistoryRepositoryImpl implements MarketOfferHistoryRepos
         return
             records.containsKey(applicationAssetPair)
             ? records
-              .get(applicationAssetPair)
-              .reduce((applicationAssetPairTicker1, applicationAssetPairTicker2) ->
-                    (applicationAssetPairTicker1.compareTo(applicationAssetPairTicker2) > 0 ) ? applicationAssetPairTicker1 : applicationAssetPairTicker2
-              )
-              .map(applicationAssetPairTicker -> applicationAssetPairTicker.getPrice())
+              .get      ( applicationAssetPair )
+              .reduce   ( this::getGreater )
+              .map      ( ApplicationAssetPairTicker::getPrice )
             : Mono.empty();
 
+    }
+
+    private ApplicationAssetPairTicker getGreater( final ApplicationAssetPairTicker applicationAssetPairTicker1,
+                                                   final ApplicationAssetPairTicker applicationAssetPairTicker2) {
+        return (applicationAssetPairTicker1.compareTo(applicationAssetPairTicker2) > 0 ) ? applicationAssetPairTicker1 : applicationAssetPairTicker2;
     }
 
     private void saveApplicationAssetPairTickerInRecords(final ApplicationAssetPairTicker applicationAssetPairTicker) {

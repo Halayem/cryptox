@@ -85,10 +85,10 @@ public class TickerControllerConfiguration {
                             .timeout    (Duration.ofSeconds(webSocketSessionReceiveTimeoutInSeconds))
                             .map        (WebSocketMessage::getPayloadAsText)
                             .doOnNext   (tickerConsumer)
-                            .doOnTerminate(() -> {
+                            .doOnTerminate(() ->
                                 applicationEventPublisher.publishEvent(
-                                    new WebSocketClientConnectionTerminatedEvent(webSocketClientTimeoutMessage()));
-                            })
+                                    new WebSocketClientConnectionTerminatedEvent(webSocketClientTimeoutMessage()))
+                            )
                             .then       ()
                     )
                     .then();

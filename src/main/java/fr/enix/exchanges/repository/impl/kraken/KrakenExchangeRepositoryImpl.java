@@ -134,9 +134,9 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
             openOrders
             .entrySet   ()
             .stream     ()
-            .filter     (entry -> openOrderFilter.entryMatch(entry) )
-            .map        (entry -> getPlacementOneOrderByOrderType(entry.getValue(), krakenOrderType))
-            .reduce     (BigDecimal.ZERO, BigDecimal::add)
+            .filter     ( openOrderFilter::entryMatch )
+            .map        ( entry -> getPlacementOneOrderByOrderType( entry.getValue(), krakenOrderType ) )
+            .reduce     ( BigDecimal.ZERO, BigDecimal::add )
         );
     }
 
