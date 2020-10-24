@@ -8,6 +8,7 @@ import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterReposito
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
+import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -19,6 +20,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
+    private final AmountMultiplierService amountMultiplierService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
@@ -47,27 +49,31 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     protected Mono<BigDecimal> getAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         return
-            exchangeService
-            .getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
-            .flatMap(availableAssetForBuy ->
-                isAvailableAssetCanBuyTheConfiguredAmount(applicationAssetPairTicker, availableAssetForBuy)
-                .flatMap(isLess -> {
-                    if (Boolean.TRUE.equals(isLess)) {
-                        return Mono.just(ApplicationMathUtils.doDivision(availableAssetForBuy, applicationAssetPairTicker.getPrice()));
-                    } else {
-                        return applicationCurrencyTradingsParameterRepository.getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair());
-                    }
-                })
-            );
+            Mono.zip(
+                getComputedAmountToBuy(applicationAssetPairTicker.getApplicationAssetPair()),
+                exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+            )
+            .flatMap( objects -> {
+                final BigDecimal computedAmountToBuy    = objects.getT1();
+                final BigDecimal availableAssetForBuy   = objects.getT2();
+
+                return isAvailableAssetCanBuyTheComputedAmount(applicationAssetPairTicker, availableAssetForBuy, computedAmountToBuy )
+                        ? Mono.just( computedAmountToBuy )
+                        : Mono.just(ApplicationMathUtils.doDivision(availableAssetForBuy, applicationAssetPairTicker.getPrice()));
+            });
     }
 
-    private Mono<Boolean> isAvailableAssetCanBuyTheConfiguredAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,
-                                                                    final BigDecimal availableAssetForBuy ) {
-        return  applicationCurrencyTradingsParameterRepository
-                .getAmountToBuyForBearingStrategyByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
-                .map( configuredAmountToBuy ->
-                    ( configuredAmountToBuy.multiply(applicationAssetPairTicker.getPrice()) ).compareTo(availableAssetForBuy) > 0
-                );
+    private Mono<BigDecimal> getComputedAmountToBuy(final String applicationAssetPair) {
+        return
+            applicationCurrencyTradingsParameterRepository
+            .getAmountToBuyForBearingStrategyByApplicationAssetPair( applicationAssetPair )
+            .map(configuredAmountToBuy -> configuredAmountToBuy.multiply( BigDecimal.valueOf( amountMultiplierService.getNewAmountMultiplierForBuy( applicationAssetPair ) ) ) );
+    }
+
+    private boolean isAvailableAssetCanBuyTheComputedAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,
+                                                                  final BigDecimal availableAssetForBuy,
+                                                                  final BigDecimal computedAmountToBuy) {
+        return computedAmountToBuy.multiply(applicationAssetPairTicker.getPrice()).compareTo(availableAssetForBuy) > 0;
     }
 
     private boolean amountToBuyIsLessThanTheMinimumOrder(final String applicationAssetPair,

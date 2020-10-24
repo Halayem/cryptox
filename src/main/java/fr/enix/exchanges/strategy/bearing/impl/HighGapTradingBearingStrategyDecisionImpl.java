@@ -7,6 +7,7 @@ import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterReposito
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
+import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,7 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
 
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
+    private final AmountMultiplierService amountMultiplierService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
@@ -40,27 +42,21 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
             });
     }
 
-    private Mono<Boolean> isAvailableAssetLessThanConfiguredAmountToSell(final String applicationAssetPair,
-                                                                         final BigDecimal availableAssetForSell) {
-        return applicationCurrencyTradingsParameterRepository
-                .getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair)
-                .map(configuredAmountToSell -> configuredAmountToSell.compareTo(availableAssetForSell) > 0 );
-    }
-
-    protected Mono<BigDecimal> getAmountToSell(final String applicationAssetPair) {
+    protected Mono<BigDecimal> getAmountToSell( final String applicationAssetPair ) {
         return
             exchangeService
-            .getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair)
-            .flatMap(availableAssetForSell ->
-                isAvailableAssetLessThanConfiguredAmountToSell(applicationAssetPair, availableAssetForSell)
-                .flatMap( isLess -> {
-                    if (Boolean.TRUE.equals(isLess)) {
-                        return Mono.just(availableAssetForSell);
-                    } else {
-                        return applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair);
-                    }
-                })
+            .getAvailableAssetForSellPlacementByApplicationAssetPair( applicationAssetPair )
+            .flatMap( availableAssetForSell ->
+                getComputedAmountToSell ( applicationAssetPair )
+                .map( computedAmountToSell -> computedAmountToSell.compareTo( availableAssetForSell ) > 0 ? computedAmountToSell : availableAssetForSell)
             );
+    }
+
+    private Mono<BigDecimal> getComputedAmountToSell(final String applicationAssetPair) {
+        return
+            applicationCurrencyTradingsParameterRepository
+            .getAmountToSellForBearingStrategyByApplicationAssetPair( applicationAssetPair )
+            .map(configuredAmountToSell -> configuredAmountToSell.multiply( BigDecimal.valueOf( amountMultiplierService.getNewAmountMultiplierForSell( applicationAssetPair ) ) ) );
     }
 
 }

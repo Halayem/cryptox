@@ -5,12 +5,10 @@ import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterReposito
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
+import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
-import fr.enix.exchanges.strategy.bearing.impl.DoNothingTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.ErrorTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.HighGapTradingBearingStrategyDecisionImpl;
-import fr.enix.exchanges.strategy.bearing.impl.LowGapTradingBearingStrategyDecisionImpl;
+import fr.enix.exchanges.strategy.bearing.impl.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +16,14 @@ import org.springframework.context.annotation.Configuration;
 public class BearingStrategyConfiguration {
 
     @Bean
+    public AmountMultiplierService amountMultiplierService() {
+        return new AmountMultiplierServiceImpl();
+    }
+
+    @Bean
     public TradingBearingStrategyDecision highGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                     final ExchangeService exchangeService,
+                                                                                    final AmountMultiplierService amountMultiplierService,
                                                                                     final AssetOrderIntervalRepository assetOrderIntervalRepository,
                                                                                     final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                     final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
@@ -27,6 +31,7 @@ public class BearingStrategyConfiguration {
         return new HighGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
+                        amountMultiplierService,
                         assetOrderIntervalRepository,
                         applicationCurrencyTradingsParameterRepository,
                         applicationAssetPairTickerMapper
@@ -36,6 +41,7 @@ public class BearingStrategyConfiguration {
     @Bean
     public TradingBearingStrategyDecision lowGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                    final ExchangeService exchangeService,
+                                                                                   final AmountMultiplierService amountMultiplierService,
                                                                                    final AssetOrderIntervalRepository assetOrderIntervalRepository,
                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                    final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
@@ -43,6 +49,7 @@ public class BearingStrategyConfiguration {
         return new LowGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
+                        amountMultiplierService,
                         assetOrderIntervalRepository,
                         applicationCurrencyTradingsParameterRepository,
                         applicationAssetPairTickerMapper

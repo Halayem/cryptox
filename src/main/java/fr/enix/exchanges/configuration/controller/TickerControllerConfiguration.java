@@ -62,7 +62,7 @@ public class TickerControllerConfiguration {
         };
     }
 
-    private final long webSocketSessionReceiveTimeoutInSeconds = 5l;
+    private final long webSocketSessionReceiveTimeoutInSeconds = 300L;
 
     @Bean
     public WebSocketHandler webSocketHandler(final String tickerSubscriptionMessage,
@@ -85,10 +85,10 @@ public class TickerControllerConfiguration {
                             .timeout    (Duration.ofSeconds(webSocketSessionReceiveTimeoutInSeconds))
                             .map        (WebSocketMessage::getPayloadAsText)
                             .doOnNext   (tickerConsumer)
-                            .doOnTerminate(() -> {
+                            .doOnTerminate(() ->
                                 applicationEventPublisher.publishEvent(
-                                    new WebSocketClientConnectionTerminatedEvent(webSocketClientTimeoutMessage()));
-                            })
+                                    new WebSocketClientConnectionTerminatedEvent(webSocketClientTimeoutMessage()))
+                            )
                             .then       ()
                     )
                     .then();

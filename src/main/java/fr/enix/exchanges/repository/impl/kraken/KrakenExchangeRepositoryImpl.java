@@ -134,9 +134,9 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
             openOrders
             .entrySet   ()
             .stream     ()
-            .filter     (entry -> openOrderFilter.entryMatch(entry) )
-            .map        (entry -> getPlacementOneOrderByOrderType(entry.getValue(), krakenOrderType))
-            .reduce     (BigDecimal.ZERO, BigDecimal::add)
+            .filter     ( openOrderFilter::entryMatch )
+            .map        ( entry -> getPlacementOneOrderByOrderType( entry.getValue(), krakenOrderType ) )
+            .reduce     ( BigDecimal.ZERO, BigDecimal::add )
         );
     }
 
@@ -145,7 +145,7 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
         switch (orderType) {
             case "buy":     return order.getVol().multiply(order.getDescr().getPrice());
             case "sell":    return order.getVol();
-            default:        throw new RuntimeException("unknown kraken order type: " + orderType);
+            default:        throw new IllegalArgumentException("unhandled kraken order type: " + orderType);
         }
     }
 
