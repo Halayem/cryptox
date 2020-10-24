@@ -30,7 +30,7 @@ public class AmountMultiplierServiceImpl implements AmountMultiplierService {
 
     private void updateAmountMultiplier(final String applicationAssetPair, final CurveDirection curveDirection) {
         amountMultiplier.put( applicationAssetPair, amountMultiplierRedux( curveDirection, getCurrentAmountMultiplier( applicationAssetPair ) ) );
-        log.info("application asset pair: {} has new amount multiplier: {} for curve direction: {}", applicationAssetPair, amountMultiplier.get(applicationAssetPair), curveDirection.toString());
+        log.info("application asset pair: {} has new amount multiplier: {} for curve direction: {}", applicationAssetPair, Math.abs(amountMultiplier.get(applicationAssetPair)), curveDirection.toString());
     }
 
     private Integer amountMultiplierRedux(final CurveDirection curveDirection, final Integer currentAmountMultiplier) {
