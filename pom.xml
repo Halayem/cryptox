@@ -30,7 +30,7 @@
     <mockito-core.version>3.5.11</mockito-core.version>
     <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
     <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
-    <junit.version>4.13</junit.version>
+    <junit.version>4.13.1</junit.version>
   </properties>
 
   <dependencies>
