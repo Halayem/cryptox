@@ -62,7 +62,7 @@ public class TickerControllerConfiguration {
         };
     }
 
-    private final long webSocketSessionReceiveTimeoutInSeconds = 5l;
+    private final long webSocketSessionReceiveTimeoutInSeconds = 300L;
 
     @Bean
     public WebSocketHandler webSocketHandler(final String tickerSubscriptionMessage,
