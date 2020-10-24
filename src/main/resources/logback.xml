@@ -7,7 +7,7 @@
         <smtpHost>${SMTP_HOST}</smtpHost>
         <smtpPort>${SMTP_PORT}</smtpPort>
         <STARTTLS>true</STARTTLS>
-        <asynchronousSending>false</asynchronousSending>
+        <asynchronousSending>true</asynchronousSending>
         <username>${SMTP_USERNAME}</username>
         <password>${SMTP_PASSWORD}</password>
         <from>${APPLICATION_REPORTING_MAIL_FROM}</from>
