@@ -73,7 +73,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private boolean isAvailableAssetCanBuyTheComputedAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,
                                                                   final BigDecimal availableAssetForBuy,
                                                                   final BigDecimal computedAmountToBuy) {
-        return computedAmountToBuy.multiply(applicationAssetPairTicker.getPrice()).compareTo(availableAssetForBuy) > 0;
+        return computedAmountToBuy.multiply(applicationAssetPairTicker.getPrice()).compareTo(availableAssetForBuy) < 0;
     }
 
     private boolean amountToBuyIsLessThanTheMinimumOrder(final String applicationAssetPair,

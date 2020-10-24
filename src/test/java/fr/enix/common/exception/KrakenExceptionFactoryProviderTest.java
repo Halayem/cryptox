@@ -2,6 +2,7 @@ package fr.enix.common.exception;
 
 import fr.enix.common.exception.eapi.*;
 import fr.enix.common.exception.egeneral.KrakenEgeneralInvalidArgumentsException;
+import fr.enix.common.exception.eorder.KrakenEorderInsufficientFundsException;
 import fr.enix.common.exception.eorder.KrakenEorderPositionsLimitExceededException;
 import fr.enix.common.exception.eorder.KrakenEorderTradingAgreementRequiredException;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,12 @@ class KrakenExceptionFactoryProviderTest {
     void testKrakenEorderTradingAgreementRequiredException() {
         final KrakenException krakenException = KrakenExceptionFactoryProvider.getFactory("EOrder:Trading agreement required").getKrakenException();
         assertThrows(KrakenEorderTradingAgreementRequiredException.class, () -> { throw krakenException; });
+    }
+
+    @Test
+    void testKrakenEorderInsufficientFundsException() {
+        final KrakenException krakenException = KrakenExceptionFactoryProvider.getFactory("EOrder:Insufficient funds").getKrakenException();
+        assertThrows(KrakenEorderInsufficientFundsException.class, () -> { throw krakenException; });
     }
 
     @Test

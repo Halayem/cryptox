@@ -48,7 +48,7 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
             .getAvailableAssetForSellPlacementByApplicationAssetPair( applicationAssetPair )
             .flatMap( availableAssetForSell ->
                 getComputedAmountToSell ( applicationAssetPair )
-                .map( computedAmountToSell -> computedAmountToSell.compareTo( availableAssetForSell ) > 0 ? computedAmountToSell : availableAssetForSell)
+                .map( computedAmountToSell -> computedAmountToSell.compareTo( availableAssetForSell ) < 0 ? computedAmountToSell : availableAssetForSell)
             );
     }
 
