@@ -16,10 +16,10 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryImpl i
     public Mono<BigDecimal> getGapByApplicationAssetPair(String applicationAssetPair) {
         return Mono.just(
                 applicationCurrencyTradingsParameter
-                        .getTradings()
-                        .get(applicationAssetPair)
-                        .getBearingStrategy()
-                        .getGap()
+                .getTradings()
+                .get(applicationAssetPair)
+                .getBearingStrategy()
+                .getGap()
         );
     }
 
@@ -27,10 +27,10 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryImpl i
     public Mono<BigDecimal> getAmountToSellByApplicationAssetPair(String applicationAssetPair) {
         return Mono.just(
                 applicationCurrencyTradingsParameter
-                        .getTradings()
-                        .get(applicationAssetPair)
-                        .getBearingStrategy()
-                        .getAmountToSell()
+                .getTradings()
+                .get(applicationAssetPair)
+                .getBearingStrategy()
+                .getAmountToSell()
         );
     }
 
@@ -38,10 +38,15 @@ public class ApplicationCurrencyBearingStrategyTradingsParameterRepositoryImpl i
     public Mono<BigDecimal> getAmountToBuyByApplicationAssetPair(String applicationAssetPair) {
         return Mono.just(
                 applicationCurrencyTradingsParameter
-                        .getTradings()
-                        .get(applicationAssetPair)
-                        .getBearingStrategy()
-                        .getAmountToBuy()
+                .getTradings()
+                .get(applicationAssetPair)
+                .getBearingStrategy()
+                .getAmountToBuy()
         );
+    }
+
+    @Override
+    public Mono<BigDecimal> getAmountEnhanceByApplicationAssetPair(String applicationAssetPair) {
+        return null;
     }
 }

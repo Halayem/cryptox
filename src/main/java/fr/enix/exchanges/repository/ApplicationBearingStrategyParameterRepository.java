@@ -9,4 +9,5 @@ public interface ApplicationBearingStrategyParameterRepository {
     Mono<BigDecimal> getGapByApplicationAssetPair(final String applicationAssetPair);
     Mono<BigDecimal> getAmountToSellByApplicationAssetPair(final String applicationAssetPair);
     Mono<BigDecimal> getAmountToBuyByApplicationAssetPair(final String applicationAssetPair);
+    Mono<BigDecimal> getAmountEnhanceByApplicationAssetPair(final String applicationAssetPair);
 }

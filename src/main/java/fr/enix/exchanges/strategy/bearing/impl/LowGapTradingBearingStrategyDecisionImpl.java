@@ -8,7 +8,7 @@ import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterReposito
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
-import fr.enix.exchanges.strategy.bearing.AmountMultiplierService;
+import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -20,7 +20,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
-    private final AmountMultiplierService amountMultiplierService;
+    private final AmountEnhancerService amountEnhancerService;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
@@ -67,7 +67,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
         return
             applicationCurrencyTradingsParameterRepository
             .getAmountToBuyForBearingStrategyByApplicationAssetPair( applicationAssetPair )
-            .map(configuredAmountToBuy -> configuredAmountToBuy.multiply( BigDecimal.valueOf( amountMultiplierService.getNewAmountMultiplierForBuy( applicationAssetPair ) ) ) );
+            .map(configuredAmountToBuy -> configuredAmountToBuy.add( amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ) ) );
     }
 
     private boolean isAvailableAssetCanBuyTheComputedAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,

@@ -28,6 +28,7 @@ public class ApplicationCurrencyTradingsParameter {
         private BigDecimal gap;
         private BigDecimal amountToSell;
         private BigDecimal amountToBuy;
+        private BigDecimal amountEnhanceStep;
     }
 
     @Getter
