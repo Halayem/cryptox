@@ -44,10 +44,7 @@ public class ExchangeRepositoryConfiguration {
         return new ApplicationThresholdStrategyParameterRepositoryImpl(applicationCurrencyTradingsParameter);
     }
 
-    @Bean
-    public ApplicationBearingStrategyParameterRepository applicationBearingStrategyParameterRepository(final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter) {
-        return new ApplicationCurrencyBearingStrategyTradingsParameterRepositoryImpl(applicationCurrencyTradingsParameter);
-    }
+
 
     @Bean
     public PriceReferenceRepository priceReferenceRepository() { return new PriceReferenceRepositoryImpl(); }

@@ -72,6 +72,15 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         );
     }
 
+    @Override
+    public BigDecimal getAmountEnhanceStepByApplicationAssetPair(final String applicationAssetPair) {
+        return applicationCurrencyTradingsParameter
+                .getTradings()
+                .get(applicationAssetPair)
+                .getBearingStrategy()
+                .getAmountEnhanceStep();
+    }
+
     private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
         return tradingParameters.getValue().isEnabled();
     }
