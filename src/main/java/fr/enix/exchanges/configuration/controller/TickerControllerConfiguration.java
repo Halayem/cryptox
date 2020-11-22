@@ -15,11 +15,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
-import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.function.Consumer;
 
@@ -92,17 +90,6 @@ public class TickerControllerConfiguration {
                             .then       ()
                     )
                     .then();
-    }
-
-    @Bean
-    public Mono<Void> tickerWebSocketClient(final ApplicationRepositoryProperties applicationRepositoryProperties,
-                                            final WebSocketHandler webSocketHandler) {
-        return
-            new ReactorNettyWebSocketClient()
-                .execute(
-                    URI.create(applicationRepositoryProperties.getWebSocket().getUrl()),
-                    webSocketHandler
-                );
     }
 
     private String webSocketClientTimeoutMessage() {
