@@ -1,5 +1,6 @@
 package fr.enix.exchanges.repository.impl.kraken;
 
+import fr.enix.common.exception.KrakenException;
 import fr.enix.common.exception.KrakenExceptionFactoryProvider;
 import fr.enix.common.service.EncryptionService;
 import fr.enix.exchanges.mapper.AddOrderMapper;
@@ -174,7 +175,7 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
                         .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
     }
 
-    private <T> Mono<T> executeWebClientMono(String uri, String query, String nonce, Class<T> type) {
+    protected <T> Mono<T> executeWebClientMono(String uri, String query, String nonce, Class<T> type) {
         return
                 exchangeWebClient
                         .post       ()
@@ -183,7 +184,23 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
                         .headers    (httpHeaders -> httpHeaders.set("API-Sign", encryptionService.getHmacDigest(nonce, query, uri )))
                         .retrieve   ()
                         .bodyToMono (type)
-                        .doOnNext   (response -> checkKrakenBodyResponse((ErrorResponse)response));
+                        .handle     ((object, synchronousSink) -> {
+                            final KrakenException krakenException = getKrakenException((ErrorResponse)object);
+                            if ( krakenException == null ) {
+                                synchronousSink.next(object);
+                            } else {
+                                synchronousSink.error(krakenException);
+                            }
+                        });
+    }
+
+    protected KrakenException getKrakenException(final ErrorResponse errorResponse) {
+        if ( errorResponse.getError().isEmpty() ) {
+            return null;
+        } else {
+            log.error("received error message(s) from Kraken: {}, trying to throw the appropriate exception", errorResponse.getError());
+            return KrakenExceptionFactoryProvider.getFactory( errorResponse.getError().get( 0 ) ).getKrakenException ();
+        }
     }
 
     private void checkKrakenBodyResponse(final ErrorResponse errorResponse) {
