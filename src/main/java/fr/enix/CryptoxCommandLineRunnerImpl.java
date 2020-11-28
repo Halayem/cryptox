@@ -43,7 +43,7 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
 
     @EventListener(WebSocketClientConnectionTerminatedEvent.class)
     public void onWebSocketClientConnectionTerminatedEvent(WebSocketClientConnectionTerminatedEvent webSocketClientConnectionTerminatedEvent) {
-        log.info("received event: {}, message: {}, trying to reconnect...", webSocketClientConnectionTerminatedEvent.getClass().getName(), webSocketClientConnectionTerminatedEvent.getMessage() );
+        log.warn("received event: {}, message: {}, trying to reconnect...", webSocketClientConnectionTerminatedEvent.getClass().getName(), webSocketClientConnectionTerminatedEvent.getMessage() );
         tickerWebSocketClientManager.restartTickerWebSocketClient();
     }
 
