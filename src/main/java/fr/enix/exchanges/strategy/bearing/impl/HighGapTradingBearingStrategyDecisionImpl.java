@@ -34,7 +34,7 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
                 if ( amountToSell.compareTo(assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(applicationAssetPairTicker.getApplicationAssetPair())) < 0 ) {
                     return applicationAssetPairTickerMapper.mapDoNothingDecision(
                             applicationAssetPairTicker,
-                            String.format("the computed amount to sell: <%f>, is less than the minimum order by market", amountToSell)
+                            String.format("the computed amount to sell: <%,f>, is less than the minimum order by market", amountToSell)
                     );
                 } else {
                     return applicationAssetPairTickerMapper.mapSellDecision(applicationAssetPairTicker, amountToSell, applicationAssetPairTicker.getPrice() );

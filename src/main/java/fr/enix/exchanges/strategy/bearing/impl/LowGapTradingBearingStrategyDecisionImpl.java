@@ -35,7 +35,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
                 if ( amountToBuyIsLessThanTheMinimumOrder(applicationAssetPairTicker.getApplicationAssetPair(), amountToBuy) ) {
                     return applicationAssetPairTickerMapper.mapDoNothingDecision(
                             applicationAssetPairTicker,
-                            String.format("the computed amount to buy: <%f>, is less than the minimum order by market", amountToBuy)
+                            String.format("the computed amount to buy: <%,f>, is less than the minimum order by market", amountToBuy)
                     );
                 }
 
