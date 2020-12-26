@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.enix.common.utils.file.ApplicationFileUtils;
 import fr.enix.exchanges.model.ws.response.OpenOrdersResponse;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -20,7 +18,6 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 class KrakenExchangeRepositoryImplTest {
 
     @Autowired
