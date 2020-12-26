@@ -11,7 +11,7 @@
   </parent>
   <groupId>fr.enix</groupId>
   <artifactId>cryptox</artifactId>
-  <version>0.2.3-SNAPSHOT</version>
+  <version>0.2.4-SNAPSHOT</version>
 
   <name>cryptox</name>
 
@@ -28,9 +28,7 @@
 
     <wiremock.version>2.26.3</wiremock.version>
     <mockito-core.version>3.5.11</mockito-core.version>
-    <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
-    <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
-    <junit.version>4.13.1</junit.version>
+    <junit-jupiter.version>5.7.0</junit-jupiter.version>
   </properties>
 
   <dependencies>
@@ -155,7 +153,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.7.0</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
 
