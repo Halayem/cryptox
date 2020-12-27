@@ -16,7 +16,7 @@ public class DoNothingTradingBearingStrategyDecisionImpl implements TradingBeari
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         return applicationAssetPairTickerMapper.mapDoNothingDecision(
                 applicationAssetPairTicker,
-                String.format( "price: <%,f> (%s) did not reach the gap", applicationAssetPairTicker.getPrice(), applicationAssetPairTicker.getApplicationAssetPair())
+                String.format( "price: <%,.6f> (%s) did not reach the gap", applicationAssetPairTicker.getPrice(), applicationAssetPairTicker.getApplicationAssetPair())
         );
     }
 }
