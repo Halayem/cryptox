@@ -1,9 +1,7 @@
-package fr.enix.exchanges.strategy.bearing;
+package fr.enix.exchanges.strategy.bearing.impl;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,10 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Slf4j
 class AmountEnhancerServiceTest {
 
     @Autowired
-    AmountEnhancerService amountEnhancerService;
+    AmountEnhancerServiceImpl amountEnhancerService;
 
     @Test
     @Order(0)
@@ -58,5 +58,17 @@ class AmountEnhancerServiceTest {
     @Order(6)
     void testGetNewAmountEnhanceForSell_shouldReturnZeroForFirstSellRequestComingAfterOneOrMultipleBuyRequests() {
         assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForSell("litecoin-euro"));
+    }
+
+    @BeforeAll
+    public void setup() {
+        amountEnhancerService.resetAllComputedAmountEnhance();
+        log.info("send request to reset all computed amount enhance before executing unit tests");
+    }
+
+    @AfterAll
+    public void tearDown() {
+        amountEnhancerService.resetAllComputedAmountEnhance();
+        log.info("send request to reset all computed amount enhance after executing unit tests");
     }
 }

@@ -5,8 +5,8 @@ import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class AmountEnhancerServiceImpl implements AmountEnhancerService {
@@ -14,11 +14,11 @@ public class AmountEnhancerServiceImpl implements AmountEnhancerService {
     /**
      * key is application asset pair
      */
-    private final Map<String, BigDecimal> computedAmountEnhance;
+    private Map<String, BigDecimal> computedAmountEnhance;
     private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
 
     public AmountEnhancerServiceImpl(final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
-        this.computedAmountEnhance = new HashMap<>();
+        this.computedAmountEnhance = new ConcurrentHashMap<>();
         this.applicationCurrencyTradingsParameterRepository = applicationCurrencyTradingsParameterRepository;
     }
 
@@ -32,6 +32,10 @@ public class AmountEnhancerServiceImpl implements AmountEnhancerService {
     public BigDecimal getNewAmountEnhanceForBuy(final String applicationAssetPair) {
         updateAmountEnhance(applicationAssetPair, CurveDirection.DOWN);
         return computedAmountEnhance.get(applicationAssetPair).abs();
+    }
+
+    protected void resetAllComputedAmountEnhance() {
+        computedAmountEnhance = new ConcurrentHashMap<>();
     }
 
     private void updateAmountEnhance(final String applicationAssetPair, final CurveDirection curveDirection) {
