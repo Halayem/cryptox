@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 @AllArgsConstructor
 public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
@@ -35,7 +36,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
                 if ( amountToBuyIsLessThanTheMinimumOrder(applicationAssetPairTicker.getApplicationAssetPair(), amountToBuy) ) {
                     return applicationAssetPairTickerMapper.mapDoNothingDecision(
                             applicationAssetPairTicker,
-                            String.format("the computed amount to buy: <%,.6f>, is less than the minimum order by market", amountToBuy)
+                            String.format( Locale.FRANCE, "the computed amount to buy: <%.6f>, is less than the minimum order by market", amountToBuy)
                     );
                 }
 

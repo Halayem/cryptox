@@ -7,6 +7,8 @@ import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
+
 @AllArgsConstructor
 public class DoNothingTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
 
@@ -16,7 +18,7 @@ public class DoNothingTradingBearingStrategyDecisionImpl implements TradingBeari
     public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         return applicationAssetPairTickerMapper.mapDoNothingDecision(
                 applicationAssetPairTicker,
-                String.format( "price: <%,.6f> (%s) did not reach the gap", applicationAssetPairTicker.getPrice(), applicationAssetPairTicker.getApplicationAssetPair())
+                String.format( Locale.FRANCE, "price: <%.6f> (%s) did not reach the gap", applicationAssetPairTicker.getPrice(), applicationAssetPairTicker.getApplicationAssetPair())
         );
     }
 }
