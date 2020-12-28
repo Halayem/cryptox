@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.7.RELEASE</version>
+    <version>2.2.12.RELEASE</version>
   </parent>
   <groupId>fr.enix</groupId>
   <artifactId>cryptox</artifactId>
-  <version>0.2.3-SNAPSHOT</version>
+  <version>0.2.4-SNAPSHOT</version>
 
   <name>cryptox</name>
 
@@ -28,9 +28,7 @@
 
     <wiremock.version>2.26.3</wiremock.version>
     <mockito-core.version>3.5.11</mockito-core.version>
-    <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
-    <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
-    <junit.version>4.13.1</junit.version>
+    <junit-jupiter.version>5.7.0</junit-jupiter.version>
   </properties>
 
   <dependencies>
@@ -128,7 +126,10 @@
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
-
+        <exclusion>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-engine</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
@@ -151,22 +152,8 @@
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit-jupiter-api.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit-jupiter-engine}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
 
