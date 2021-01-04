@@ -8,10 +8,10 @@
             <column autoIncrement="true" name ="ID" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_MARKET_PLACE"/>
             </column>
-            <column name="MARKET"       type="VARCHAR(16)"  />
-            <column name="ASSET_PAIR"   type="VARCHAR(32)"  />
-            <column name="PRICE"        type="DECIMAL"      />
-            <column name="AT"           type="DATETIME"      />
+            <column name="MARKET"       type="VARCHAR(16)"      />
+            <column name="ASSET_PAIR"   type="VARCHAR(32)"      />
+            <column name="PRICE"        type="DECIMAL(10, 5)"   />
+            <column name="AT"           type="DATETIME"         />
         </createTable>
     </changeSet>
 
