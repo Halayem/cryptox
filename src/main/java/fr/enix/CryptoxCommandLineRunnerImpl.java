@@ -44,7 +44,7 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args)  {
-        testSaveTicker();
+        //testSaveTicker();
     }
 
     public void testSaveTicker() {

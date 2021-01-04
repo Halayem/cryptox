@@ -26,6 +26,7 @@
     <javax.mail.version>1.6.2</javax.mail.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <liquibase-maven-plugin.version>4.2.2</liquibase-maven-plugin.version>
+    <r2dbc-mysql.version>0.8.2.RELEASE</r2dbc-mysql.version>
 
     <wiremock.version>2.26.3</wiremock.version>
     <mockito-core.version>3.5.11</mockito-core.version>
@@ -118,7 +119,7 @@
     <dependency>
       <groupId>dev.miku</groupId>
       <artifactId>r2dbc-mysql</artifactId>
-      <version>0.8.2.RELEASE</version>
+      <version>${r2dbc-mysql.version}</version>
     </dependency>
 
 
@@ -166,6 +167,19 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>io.r2dbc</groupId>
+      <artifactId>r2dbc-h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+
 
     <dependency>
       <groupId>io.projectreactor</groupId>
