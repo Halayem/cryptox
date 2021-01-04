@@ -1,0 +1,18 @@
+<databaseChangeLog  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet  author="anis"  id="CRY-026">
+        <createTable tableName="TICKER">
+            <column autoIncrement="true" name ="ID" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_MARKET_PLACE"/>
+            </column>
+            <column name="MARKET"       type="VARCHAR(16)"      />
+            <column name="ASSET_PAIR"   type="VARCHAR(32)"      />
+            <column name="PRICE"        type="DECIMAL(10, 5)"   />
+            <column name="AT"           type="DATETIME"         />
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
