@@ -25,6 +25,7 @@
     <commons-lang3.version>3.10</commons-lang3.version>
     <javax.mail.version>1.6.2</javax.mail.version>
     <javax.activation.version>1.2.0</javax.activation.version>
+    <liquibase-maven-plugin.version>4.2.2</liquibase-maven-plugin.version>
 
     <wiremock.version>2.26.3</wiremock.version>
     <mockito-core.version>3.5.11</mockito-core.version>
@@ -117,7 +118,7 @@
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-maven-plugin</artifactId>
-      <version>4.2.2</version>
+      <version>${liquibase-maven-plugin.version}</version>
     </dependency>
 
     <dependency>
@@ -192,11 +193,7 @@
       <plugin>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-maven-plugin</artifactId>
-        <version>4.2.2</version>
-        <configuration>
-          <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-          <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
-        </configuration>
+        <version>${liquibase-maven-plugin.version}</version>
       </plugin>
 
     </plugins>
