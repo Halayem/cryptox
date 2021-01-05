@@ -4,7 +4,7 @@
                     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet  author="anis"  id="CRY-026">
-        <createTable tableName="TICKER">
+        <createTable tableName="TICKER_HISTORY">
             <column autoIncrement="true" name ="ID" type="INTEGER">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_MARKET_PLACE"/>
             </column>

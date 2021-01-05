@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @ToString
 @EqualsAndHashCode
-// @TODO to delete
 public class ApplicationAssetPairTicker implements Comparable<ApplicationAssetPairTicker> {
+    private String          market;
     private String          applicationAssetPair;
     private BigDecimal      price;
     private LocalDateTime   dateTime;

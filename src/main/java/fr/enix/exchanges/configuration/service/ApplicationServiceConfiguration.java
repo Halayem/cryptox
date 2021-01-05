@@ -3,8 +3,8 @@ package fr.enix.exchanges.configuration.service;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.repository.ExchangeRepository;
-import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
+import fr.enix.exchanges.repository.TickerHistoryRepository;
 import fr.enix.exchanges.service.*;
 import fr.enix.exchanges.service.impl.*;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
@@ -20,8 +20,9 @@ public class ApplicationServiceConfiguration {
     }
 
     @Bean
-    public MarketOfferService marketOfferService(final MarketOfferHistoryRepository marketOfferHistoryRepository) {
-        return new MarketOfferServiceImpl(marketOfferHistoryRepository);
+    public MarketOfferService marketOfferService(final MarketPlaceService marketPlaceService,
+                                                 final TickerHistoryRepository tickerHistoryRepository) {
+        return new MarketOfferServiceImpl(marketPlaceService, tickerHistoryRepository);
     }
 
     @Bean

@@ -3,8 +3,8 @@ package fr.enix.exchanges.service.impl;
 import fr.enix.common.MarketPlace;
 import fr.enix.exchanges.model.business.MarketExtremumPrice;
 import fr.enix.exchanges.model.business.MarketOfferHistorySearchRequest;
-import fr.enix.exchanges.model.business.MarketOfferHistorySearchResponse;
-import fr.enix.exchanges.repository.MarketOfferHistoryRepository;
+import fr.enix.exchanges.model.repository.Ticker;
+import fr.enix.exchanges.repository.TickerHistoryRepository;
 import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.MarketPlaceService;
 import lombok.AllArgsConstructor;
@@ -12,28 +12,33 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class MarketOfferServiceImpl implements MarketOfferService {
 
-    private final MarketOfferHistoryRepository marketOfferHistoryRepository;
-    private final MarketPlaceService marketPlaceService;
-    private final MarketOfferHelper marketOfferHelper;
+    private final TickerHistoryRepository   tickerHistoryRepository;
+    private final MarketPlaceService        marketPlaceService;
+    private final MarketOfferHelper         marketOfferHelper;
 
-    public MarketOfferServiceImpl(final MarketOfferHistoryRepository marketOfferHistoryRepository,
-                                  final MarketPlaceService marketPlaceService) {
+    public MarketOfferServiceImpl(final MarketPlaceService marketPlaceService,
+                                  final TickerHistoryRepository tickerHistoryRepository) {
 
-        this.marketOfferHistoryRepository   = marketOfferHistoryRepository;
-        this.marketPlaceService             = marketPlaceService;
-        this.marketOfferHelper              = new MarketOfferHelper(this.marketPlaceService.getMarketPlace());
+        this.tickerHistoryRepository    = tickerHistoryRepository;
+        this.marketPlaceService         = marketPlaceService;
+        this.marketOfferHelper          = new MarketOfferHelper(this.marketPlaceService.getMarketPlace());
     }
 
     @Override
-    public Mono<Void> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
-        return marketOfferHistoryRepository.saveApplicationAssetPairTicker(
-            marketPlaceService.getMarketPlace(),
-            applicationAssetPair,
-            price
+    public Mono<Ticker> saveApplicationAssetPairTicker( final String applicationAssetPair, final BigDecimal price ) {
+        return tickerHistoryRepository.save(
+                    Ticker
+                    .builder    ()
+                    .market     ( marketPlaceService.getMarketPlace().getValue() )
+                    .assetPair  ( applicationAssetPair  )
+                    .price      ( price                 )
+                    .at         ( LocalDateTime.now()   )
+                    .build      ()
         );
     }
 
@@ -42,23 +47,13 @@ public class MarketOfferServiceImpl implements MarketOfferService {
         return  marketOfferHelper
                 .newMarketOfferHistorySearchRequestForYesterday(applicationAssetPair)
                 .flatMap(this::getTickerExtremumPriceOfYesterday);
-
     }
 
     private Mono<MarketExtremumPrice> getTickerExtremumPriceOfYesterday(final MarketOfferHistorySearchRequest marketOfferHistorySearchRequest) {
-
         return Mono.zip(
-            marketOfferHistoryRepository.getLowestOffer     (marketOfferHistorySearchRequest),
-            marketOfferHistoryRepository.getHighestOffer    (marketOfferHistorySearchRequest)
-        ).map(objects -> {
-            final MarketOfferHistorySearchResponse lowestOfferSearchResponse    = objects.getT1();
-            final MarketOfferHistorySearchResponse highestOfferSearchResponse   = objects.getT2();
-            return MarketExtremumPrice
-                    .builder()
-                    .highest(highestOfferSearchResponse.getPrice())
-                    .lowest (lowestOfferSearchResponse.getPrice())
-                    .build  ();
-        });
+            tickerHistoryRepository.getLowestPrice( marketOfferHistorySearchRequest ),
+            tickerHistoryRepository.getHighestPrice( marketOfferHistorySearchRequest )
+        ).map(objects -> MarketExtremumPrice.builder().lowest( objects.getT1() ).highest( objects.getT2() ).build());
     }
 
     @AllArgsConstructor

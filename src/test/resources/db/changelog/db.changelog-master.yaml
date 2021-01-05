@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: CRY-026
+      author: anis
+      changes:
+      - createTable:
+          tableName: TICKER_HISTORY
+          columns:
+          - column:
+              name: ID
+              type: INTEGER
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: MARKET
+              type: VARCHAR(16)
+              constraints:
+                nullable: false
+          - column:
+              name: ASSET_PAIR
+              type: VARCHAR(32)
+              constraints:
+                nullable: false
+          - column:
+              name: PRICE
+              type: DECIMAL(10, 5)
+              constraints:
+                nullable: false
+          - column:
+              name: AT
+              type: DATETIME
+              constraints:
+                nullable: false

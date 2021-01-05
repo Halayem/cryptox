@@ -2,9 +2,7 @@ package fr.enix;
 
 import fr.enix.exchanges.event.WebSocketClientConnectionTerminatedEvent;
 import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
-import fr.enix.exchanges.model.repository.Ticker;
 import fr.enix.exchanges.monitor.ApplicationMonitor;
-import fr.enix.exchanges.repository.TickerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,9 +12,7 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.Disposable;
 
-import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -28,35 +24,21 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
     private final TickerWebSocketClientManager tickerWebSocketClientManager;
     private final ApplicationMonitor heartbeatMonitor;
     private final ApplicationMonitor pongMonitor;
-    private final TickerRepository tickerRepository;
 
     public CryptoxCommandLineRunnerImpl(final ApplicationRepositoryProperties applicationRepositoryProperties,
                                         final WebSocketHandler      webSocketHandler,
                                         final ApplicationMonitor    heartbeatMonitor,
-                                        final ApplicationMonitor    pongMonitor,
-                                        final TickerRepository tickerRepository) {
+                                        final ApplicationMonitor    pongMonitor) {
 
         this.tickerWebSocketClientManager   = new TickerWebSocketClientManager( URI.create( applicationRepositoryProperties.getWebSocket().getUrl() ), webSocketHandler );
         this.heartbeatMonitor               = heartbeatMonitor;
         this.pongMonitor                    = pongMonitor;
-        this.tickerRepository               = tickerRepository;
     }
 
     @Override
     public void run(String... args)  {
-        //testSaveTicker();
-    }
-
-    public void testSaveTicker() {
-        tickerRepository.save(
-            Ticker
-            .builder()
-            .market("kraken")
-            .assetPair("litecoin-euro")
-            .price(new BigDecimal("18467.54679"))
-            .at(LocalDateTime.now())
-            .build()
-        ).subscribe(ticker -> log.info("ticker saved in database, response: {}", ticker));
+        startWebSocketClient();
+        startMonitoring();
     }
 
     @EventListener(WebSocketClientConnectionTerminatedEvent.class)
