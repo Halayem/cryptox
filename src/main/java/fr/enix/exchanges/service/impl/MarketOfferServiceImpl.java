@@ -1,6 +1,5 @@
 package fr.enix.exchanges.service.impl;
 
-import fr.enix.common.MarketPlace;
 import fr.enix.exchanges.model.business.MarketExtremumPrice;
 import fr.enix.exchanges.model.business.MarketOfferHistorySearchRequest;
 import fr.enix.exchanges.model.repository.Ticker;
@@ -15,19 +14,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@AllArgsConstructor
 public class MarketOfferServiceImpl implements MarketOfferService {
 
-    private final TickerHistoryRepository   tickerHistoryRepository;
     private final MarketPlaceService        marketPlaceService;
-    private final MarketOfferHelper         marketOfferHelper;
-
-    public MarketOfferServiceImpl(final MarketPlaceService marketPlaceService,
-                                  final TickerHistoryRepository tickerHistoryRepository) {
-
-        this.tickerHistoryRepository    = tickerHistoryRepository;
-        this.marketPlaceService         = marketPlaceService;
-        this.marketOfferHelper          = new MarketOfferHelper(this.marketPlaceService.getMarketPlace());
-    }
+    private final TickerHistoryRepository   tickerHistoryRepository;
 
     @Override
     public Mono<Ticker> saveApplicationAssetPairTicker( final String applicationAssetPair, final BigDecimal price ) {
@@ -44,9 +35,22 @@ public class MarketOfferServiceImpl implements MarketOfferService {
 
     @Override
     public Mono<MarketExtremumPrice> getTickerExtremumPriceOfYesterday(final String applicationAssetPair) {
-        return  marketOfferHelper
-                .newMarketOfferHistorySearchRequestForYesterday(applicationAssetPair)
+        return  newMarketOfferHistorySearchRequestForRelativeYesterday(applicationAssetPair, LocalDate.now())
                 .flatMap(this::getTickerExtremumPriceOfYesterday);
+    }
+
+    protected Mono<MarketOfferHistorySearchRequest> newMarketOfferHistorySearchRequestForRelativeYesterday(final String applicationAssetPair,
+                                                                                                           final LocalDate dateReference) {
+        final LocalDate yesterday = dateReference.minusDays(1L);
+        return Mono.just(
+                MarketOfferHistorySearchRequest
+                        .builder                ()
+                        .marketPlace            ( marketPlaceService.getMarketPlace()   )
+                        .applicationAssetPair   ( applicationAssetPair                  )
+                        .after                  ( yesterday.atStartOfDay()              )
+                        .before                 ( yesterday.atTime(23, 59, 59)       )
+                        .build()
+        );
     }
 
     private Mono<MarketExtremumPrice> getTickerExtremumPriceOfYesterday(final MarketOfferHistorySearchRequest marketOfferHistorySearchRequest) {
@@ -54,24 +58,5 @@ public class MarketOfferServiceImpl implements MarketOfferService {
             tickerHistoryRepository.getLowestPrice( marketOfferHistorySearchRequest ),
             tickerHistoryRepository.getHighestPrice( marketOfferHistorySearchRequest )
         ).map(objects -> MarketExtremumPrice.builder().lowest( objects.getT1() ).highest( objects.getT2() ).build());
-    }
-
-    @AllArgsConstructor
-    protected static class MarketOfferHelper {
-
-        private final MarketPlace marketPlace;
-
-        protected Mono<MarketOfferHistorySearchRequest> newMarketOfferHistorySearchRequestForYesterday(final String applicationAssetPair) {
-            final LocalDate yesterday = LocalDate.now().minusDays(1L);
-            return Mono.just(
-                    MarketOfferHistorySearchRequest
-                    .builder                ()
-                    .marketPlace            ( marketPlace                    )
-                    .applicationAssetPair   ( applicationAssetPair           )
-                    .after                  ( yesterday.atStartOfDay()       )
-                    .before                 ( yesterday.atTime(LocalTime.MAX))
-                    .build()
-            );
-        }
     }
 }

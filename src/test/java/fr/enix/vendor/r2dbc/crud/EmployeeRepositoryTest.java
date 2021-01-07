@@ -11,12 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static fr.enix.utility.ApplicationDateTimeFormatter.parseDatetimeFromString;
 
 @SpringBootTest
 @Slf4j
@@ -126,10 +126,5 @@ public class EmployeeRepositoryTest {
                  .hiringDate (parseDatetimeFromString("2019-12-31 14:30:00"))
                  .build      ()
         );
-    }
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private LocalDateTime parseDatetimeFromString(final String datetime) {
-        return LocalDateTime.parse(datetime, formatter);
     }
 }
