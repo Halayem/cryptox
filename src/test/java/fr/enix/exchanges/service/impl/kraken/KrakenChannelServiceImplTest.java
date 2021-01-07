@@ -22,13 +22,13 @@ class KrakenChannelServiceImplTest {
     @Test
     @Order(0)
     void testSaveChannelSubscriptionTickerForLitecoinEuroAssetPairHavingInvalidJsonRepresentation_shouldThrowException() {
-        Exception exception = assertThrows(
-                JsonProcessingException.class,
-                () -> krakenChannelService.saveChannel(
-                        ApplicationFileUtils.getStringFileContentFromResources(
-                                "kraken/subscription/ticker/ltc_eur.invalid.json"
-                        )
-                )
+        assertThrows(
+            JsonProcessingException.class,
+            () -> krakenChannelService.saveChannel(
+                    ApplicationFileUtils.getStringFileContentFromResources(
+                            "kraken/subscription/ticker/ltc_eur.invalid.json"
+                    )
+            )
         );
     }
 

@@ -10,17 +10,17 @@ import java.math.BigDecimal;
 
 public interface TickerHistoryRepository extends ReactiveCrudRepository<Ticker, Long> {
 
-    @Query ("SELECT MAX(PRICE) FROM TICKER_HISTORY "                                            +
-            "WHERE MARKET   = :marketOfferHistorySearchRequest.marketPlace "            +
-            "AND ASSET_PAIR = :marketOfferHistorySearchRequest.applicationAssetPair "   +
-            "AND AT > :marketOfferHistorySearchRequest.after"                           +
-            "AND AT < :marketOfferHistorySearchRequest.before")
+    @Query (" SELECT MAX(PRICE) FROM TICKER_HISTORY "                                        +
+            " WHERE MARKET   = :#{#marketOfferHistorySearchRequest.marketPlace} "            +
+            " AND ASSET_PAIR = :#{#marketOfferHistorySearchRequest.applicationAssetPair} "   +
+            " AND AT > :#{#marketOfferHistorySearchRequest.after} "                          +
+            " AND AT < :#{#marketOfferHistorySearchRequest.before} ")
     Mono<BigDecimal> getHighestPrice(final MarketOfferHistorySearchRequest marketOfferHistorySearchRequest);
 
-    @Query ("SELECT MIN(PRICE) FROM TICKER_HISTORY "                                            +
-            "WHERE MARKET   = :marketOfferHistorySearchRequest.marketPlace "            +
-            "AND ASSET_PAIR = :marketOfferHistorySearchRequest.applicationAssetPair "   +
-            "AND AT > :marketOfferHistorySearchRequest.after"                           +
-            "AND AT < :marketOfferHistorySearchRequest.before")
+    @Query (" SELECT MIN(PRICE) FROM TICKER_HISTORY "                                        +
+            " WHERE MARKET   = :#{#marketOfferHistorySearchRequest.marketPlace} "            +
+            " AND ASSET_PAIR = :#{#marketOfferHistorySearchRequest.applicationAssetPair} "   +
+            " AND AT > :#{#marketOfferHistorySearchRequest.after} "                          +
+            " AND AT < :#{#marketOfferHistorySearchRequest.before} ")
     Mono<BigDecimal> getLowestPrice(final MarketOfferHistorySearchRequest marketOfferHistorySearchRequest);
 }
