@@ -2,7 +2,7 @@ package fr.enix.exchanges.service.impl;
 
 import fr.enix.exchanges.model.business.MarketExtremumPrice;
 import fr.enix.exchanges.model.business.MarketOfferHistorySearchRequest;
-import fr.enix.exchanges.model.repository.Ticker;
+import fr.enix.exchanges.model.repository.TickerHistory;
 import fr.enix.exchanges.repository.TickerHistoryRepository;
 import fr.enix.exchanges.service.MarketOfferService;
 import fr.enix.exchanges.service.MarketPlaceService;
@@ -12,7 +12,6 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @AllArgsConstructor
 public class MarketOfferServiceImpl implements MarketOfferService {
@@ -21,9 +20,9 @@ public class MarketOfferServiceImpl implements MarketOfferService {
     private final TickerHistoryRepository   tickerHistoryRepository;
 
     @Override
-    public Mono<Ticker> saveApplicationAssetPairTicker( final String applicationAssetPair, final BigDecimal price ) {
+    public Mono<TickerHistory> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price ) {
         return tickerHistoryRepository.save(
-                    Ticker
+                    TickerHistory
                     .builder    ()
                     .market     ( marketPlaceService.getMarketPlace().getValue() )
                     .assetPair  ( applicationAssetPair  )

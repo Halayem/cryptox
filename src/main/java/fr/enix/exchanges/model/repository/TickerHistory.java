@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @Builder
-public class Ticker {
+public class TickerHistory {
 
     @Id
     private Long id;

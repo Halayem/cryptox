@@ -1,14 +1,14 @@
 package fr.enix.exchanges.repository;
 
 import fr.enix.exchanges.model.business.MarketOfferHistorySearchRequest;
-import fr.enix.exchanges.model.repository.Ticker;
+import fr.enix.exchanges.model.repository.TickerHistory;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
-public interface TickerHistoryRepository extends ReactiveCrudRepository<Ticker, Long> {
+public interface TickerHistoryRepository extends ReactiveCrudRepository<TickerHistory, Long> {
 
     @Query (" SELECT MAX(PRICE) FROM TICKER_HISTORY "                                        +
             " WHERE MARKET   = :#{#marketOfferHistorySearchRequest.marketPlace} "            +

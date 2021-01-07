@@ -5,6 +5,9 @@
 *.log
 logs/**
 
+# application
+dev-env.json
+
 # BlueJ files
 *.ctxt
 
