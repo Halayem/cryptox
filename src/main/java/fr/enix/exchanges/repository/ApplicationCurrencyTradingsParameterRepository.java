@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public interface ApplicationCurrencyTradingsParameterRepository {
     Flux<String> getEnabledApplicationAssetPairForTrading();
-    Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair);
+    Mono<ApplicationCurrencyTradingsStrategy> getStrategyForApplicationAssetPair(final String applicationAssetPair);
 
     // -------------------------------------------------------------------------------------------------------
     // --------------------------- B E A R I N G   S T R A T E G Y -------------------------------------------

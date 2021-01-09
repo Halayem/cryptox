@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
+// @TODO rename to TradingBearingStrategyDecisionStrategy
 @AllArgsConstructor
 public class TradingBearingStrategyDecisionFactory {
 

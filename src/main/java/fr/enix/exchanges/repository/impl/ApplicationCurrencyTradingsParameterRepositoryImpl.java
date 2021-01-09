@@ -2,6 +2,7 @@ package fr.enix.exchanges.repository.impl;
 
 import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
+import fr.enix.exchanges.repository.ApplicationCurrencyTradingsStrategy;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,12 +32,11 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
     }
 
     @Override
-    public Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair) {
-        List<String> strategies = new ArrayList<>();
-        if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { strategies.add("bearing");   }
-        if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { strategies.add("threshold"); }
+    public Mono<ApplicationCurrencyTradingsStrategy> getStrategyForApplicationAssetPair(final String applicationAssetPair) {
+        if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.STATIC_BEARING);    }
+        if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.THRESHOLD);         }
 
-        return Flux.fromIterable(strategies);
+        throw new RuntimeException("unhandled trading strategy for application asset pair: " + applicationAssetPair);
     }
 
     @Override

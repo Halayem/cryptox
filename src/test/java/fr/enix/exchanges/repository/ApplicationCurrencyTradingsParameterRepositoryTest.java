@@ -25,7 +25,7 @@ class ApplicationCurrencyTradingsParameterRepositoryTest {
     @Test
     void testGetStrategiesByApplicationAssetPair_litecoinToEuro() {
         StepVerifier
-                .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("litecoin-euro"))
+                .create(applicationCurrencyTradingsParameterRepository.getStrategyForApplicationAssetPair("litecoin-euro"))
                 .expectNext("bearing")
                 .expectComplete()
                 .verify();
@@ -34,7 +34,7 @@ class ApplicationCurrencyTradingsParameterRepositoryTest {
     @Test
     void testGetStrategiesByApplicationAssetPair_bitcoinToEuro() {
         StepVerifier
-                .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("bitcoin-euro"))
+                .create(applicationCurrencyTradingsParameterRepository.getStrategyForApplicationAssetPair("bitcoin-euro"))
                 .expectNext("bearing")
                 .expectNext("threshold")
                 .expectComplete()
@@ -44,7 +44,7 @@ class ApplicationCurrencyTradingsParameterRepositoryTest {
     @Test
     void testGetStrategiesByApplicationAssetPair_rippleToEuro() {
         StepVerifier
-                .create(applicationCurrencyTradingsParameterRepository.getStrategiesByApplicationAssetPair("ripple-euro"))
+                .create(applicationCurrencyTradingsParameterRepository.getStrategyForApplicationAssetPair("ripple-euro"))
                 .expectNext("threshold")
                 .expectComplete()
                 .verify();
