@@ -4,7 +4,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
-public interface ApplicationCurrencyTradingsParameterService {
+public interface ApplicationCurrencyTradingsBearingStrategyService {
 
     Mono<BigDecimal> getGapScaleByApplicationAssetPair          (final String applicationAssetPair);
     Mono<BigDecimal> getAmountToBuyByApplicationAssetPair       (final String applicationAssetPair);

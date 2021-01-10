@@ -2,6 +2,7 @@ package fr.enix.exchanges.configuration.service;
 
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.TickerMapper;
+import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.ExchangeRepository;
 import fr.enix.exchanges.repository.PriceReferenceRepository;
 import fr.enix.exchanges.repository.TickerHistoryRepository;
@@ -51,5 +52,13 @@ public class ApplicationServiceConfiguration {
                     tickerMapper,
                     addOrderMapper
             );
+    }
+
+    @Bean
+    public ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy(final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
+        return new ApplicationCurrencyTradingsBearingStrategy(
+                        new ApplicationCurrencyTradingsDynamicBearingStrategyServiceImpl(),
+                        new ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl(applicationCurrencyTradingsParameterRepository)
+        );
     }
 }
