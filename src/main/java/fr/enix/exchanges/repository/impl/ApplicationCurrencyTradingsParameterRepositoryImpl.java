@@ -8,8 +8,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                     applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getGap               ()
                 );
     }
@@ -56,7 +54,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                     applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getAmountToSell      ()
                 );
     }
@@ -67,7 +65,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                 applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getAmountToBuy      ()
         );
     }
@@ -77,7 +75,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         return applicationCurrencyTradingsParameter
                 .getTradings()
                 .get(applicationAssetPair)
-                .getBearingStrategy()
+                .getStaticBearingStrategy()
                 .getAmountEnhanceStep();
     }
 
@@ -93,7 +91,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         return applicationCurrencyTradingsParameter
                 .getTradings()
                 .get(applicationAssetPair)
-                .getBearingStrategy() != null;
+                .getStaticBearingStrategy() != null;
     }
 
     private boolean isThresholdStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
