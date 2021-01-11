@@ -3,6 +3,7 @@ package fr.enix.exchanges.configuration.strategy;
 import fr.enix.exchanges.mapper.ApplicationAssetPairTickerMapper;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
+import fr.enix.exchanges.service.ApplicationCurrencyTradingsBearingStrategy;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
@@ -41,16 +42,16 @@ public class BearingStrategyConfiguration {
     public TradingBearingStrategyDecision lowGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                    final ExchangeService exchangeService,
                                                                                    final AmountEnhancerService amountEnhancerService,
+                                                                                   final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy,
                                                                                    final AssetOrderIntervalRepository assetOrderIntervalRepository,
-                                                                                   final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                    final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
 
         return new LowGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
                         amountEnhancerService,
+                        applicationCurrencyTradingsBearingStrategy,
                         assetOrderIntervalRepository,
-                        applicationCurrencyTradingsParameterRepository,
                         applicationAssetPairTickerMapper
         );
     }

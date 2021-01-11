@@ -31,8 +31,8 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
 
     @Override
     public Mono<ApplicationCurrencyTradingsStrategy> getStrategyForApplicationAssetPair(final String applicationAssetPair) {
-        if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.STATIC_BEARING);    }
-        if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.THRESHOLD);         }
+        if ( isStaticBearingStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.STATIC_BEARING);    }
+        if ( isThresholdStrategyConfiguredForApplicationAssetPair       (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.THRESHOLD);         }
 
         throw new RuntimeException("unhandled trading strategy for application asset pair: " + applicationAssetPair);
     }
@@ -87,7 +87,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         return tradingParameters.getKey();
     }
 
-    private boolean isBearingStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
+    private boolean isStaticBearingStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
         return applicationCurrencyTradingsParameter
                 .getTradings()
                 .get(applicationAssetPair)

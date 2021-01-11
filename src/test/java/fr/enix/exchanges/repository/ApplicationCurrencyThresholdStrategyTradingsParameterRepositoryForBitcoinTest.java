@@ -14,14 +14,14 @@ class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinT
 
     @Autowired
     private ApplicationThresholdStrategyParameterRepository applicationThresholdStrategyParameterRepository;
-    private final String applicationAssetPairToTest = "bitcoin-euro";
+    private final String applicationAssetPairToTest = "ripple-euro";
 
     @Test
     void testGetTriggerPriceToBuy() {
         StepVerifier
         .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToBuyByApplicationAssetPair(applicationAssetPairToTest))
         .consumeNextWith(triggerPriceToBuy -> {
-            assertEquals(new BigDecimal("8612"), triggerPriceToBuy);
+            assertEquals(new BigDecimal("0.20122"), triggerPriceToBuy);
         })
         .verifyComplete();
     }
@@ -31,7 +31,7 @@ class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinT
         StepVerifier
         .create(applicationThresholdStrategyParameterRepository.getAmountToBuyByApplicationAssetPair(applicationAssetPairToTest))
         .consumeNextWith(amountToBuy -> {
-            assertEquals(new BigDecimal("0.001"), amountToBuy);
+            assertEquals(new BigDecimal("445"), amountToBuy);
         })
         .verifyComplete();
     }
@@ -41,7 +41,7 @@ class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinT
         StepVerifier
         .create(applicationThresholdStrategyParameterRepository.getTriggerPriceToSellByApplicationAssetPair(applicationAssetPairToTest))
         .consumeNextWith(triggerPriceToSell -> {
-            assertEquals(new BigDecimal("8725"), triggerPriceToSell);
+            assertEquals(new BigDecimal("0.21242"), triggerPriceToSell);
         })
         .verifyComplete();
     }
@@ -51,7 +51,7 @@ class ApplicationCurrencyThresholdStrategyTradingsParameterRepositoryForBitcoinT
         StepVerifier
         .create(applicationThresholdStrategyParameterRepository.getAmountToSellByApplicationAssetPair(applicationAssetPairToTest))
         .consumeNextWith(amountToSell -> {
-            assertEquals(new BigDecimal("0.001"), amountToSell);
+            assertEquals(new BigDecimal("285"), amountToSell);
         })
         .verifyComplete();
     }

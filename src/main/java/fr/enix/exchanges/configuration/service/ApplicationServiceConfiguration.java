@@ -56,9 +56,11 @@ public class ApplicationServiceConfiguration {
 
     @Bean
     public ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy(final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
-        return new ApplicationCurrencyTradingsBearingStrategy(
-                        new ApplicationCurrencyTradingsDynamicBearingStrategyServiceImpl(),
-                        new ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl(applicationCurrencyTradingsParameterRepository)
-        );
+        return
+            new ApplicationCurrencyTradingsBearingStrategy(
+                new ApplicationCurrencyTradingsDynamicBearingStrategyServiceImpl(),
+                new ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl(applicationCurrencyTradingsParameterRepository),
+                applicationCurrencyTradingsParameterRepository
+            );
     }
 }
