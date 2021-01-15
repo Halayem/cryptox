@@ -1,8 +1,10 @@
 package fr.enix.exchanges.strategy.bearing.impl;
 
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
+import fr.enix.exchanges.service.ApplicationCurrencyTradingsBearingStrategy;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -15,57 +17,64 @@ public class AmountEnhancerServiceImpl implements AmountEnhancerService {
      * key is application asset pair
      */
     private Map<String, BigDecimal> computedAmountEnhance;
-    private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
+    private final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy;
 
-    public AmountEnhancerServiceImpl(final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
+    public AmountEnhancerServiceImpl(final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy) {
         this.computedAmountEnhance = new ConcurrentHashMap<>();
-        this.applicationCurrencyTradingsParameterRepository = applicationCurrencyTradingsParameterRepository;
+        this.applicationCurrencyTradingsBearingStrategy = applicationCurrencyTradingsBearingStrategy;
     }
 
     @Override
-    public BigDecimal getNewAmountEnhanceForSell(final String applicationAssetPair) {
-        updateAmountEnhance(applicationAssetPair, CurveDirection.UP);
-        return computedAmountEnhance.get(applicationAssetPair);
+    public Mono<BigDecimal> getNewAmountEnhanceForSell(final String applicationAssetPair) {
+        return updateAmountEnhance(applicationAssetPair, CurveDirection.UP);
     }
 
     @Override
-    public BigDecimal getNewAmountEnhanceForBuy(final String applicationAssetPair) {
-        updateAmountEnhance(applicationAssetPair, CurveDirection.DOWN);
-        return computedAmountEnhance.get(applicationAssetPair).abs();
+    public Mono<BigDecimal> getNewAmountEnhanceForBuy(final String applicationAssetPair) {
+        return updateAmountEnhance(applicationAssetPair, CurveDirection.DOWN);
     }
 
-    protected void resetAllComputedAmountEnhance() {
-        computedAmountEnhance = new ConcurrentHashMap<>();
-    }
+    private Mono<BigDecimal> updateAmountEnhance(final String applicationAssetPair, final CurveDirection curveDirection) {
 
-    private void updateAmountEnhance(final String applicationAssetPair, final CurveDirection curveDirection) {
-        computedAmountEnhance.put(
-            applicationAssetPair,
+        return
             amountEnhanceRedux(
                 curveDirection,
-                getCurrentAmountEnhance( applicationAssetPair ),
-                applicationCurrencyTradingsParameterRepository.getAmountEnhanceStepByApplicationAssetPair(applicationAssetPair)
-            )
-        );
-        log.info("application asset pair: {} has new amount enhance: {} for curve direction: {}", applicationAssetPair, computedAmountEnhance.get(applicationAssetPair).abs(), curveDirection.toString());
+                getCurrentAmountEnhance ( applicationAssetPair ),
+                getStepAmountEnhance    ( applicationAssetPair )
+            ).map( amountEnhanceReduced -> {
+                log.debug("application asset pair: {} computed new amount enhance: {} for curve direction: {}", applicationAssetPair, amountEnhanceReduced.abs(), curveDirection.toString());
+                computedAmountEnhance.put( applicationAssetPair, amountEnhanceReduced );
+                return computedAmountEnhance.get(applicationAssetPair).abs();
+            });
     }
 
-    private BigDecimal amountEnhanceRedux(final CurveDirection curveDirection, final BigDecimal currentAmountEnhance, final BigDecimal stepAmountEnhancer) {
+    private Mono<BigDecimal> getStepAmountEnhance(final String applicationAssetPair) {
+        return  applicationCurrencyTradingsBearingStrategy
+                .getApplicationCurrencyTradingsBearingStrategyService(applicationAssetPair)
+                .flatMap(applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getAmountEnhanceStepByApplicationAssetPair(applicationAssetPair));
+    }
+
+    private Mono<BigDecimal> amountEnhanceRedux(final CurveDirection curveDirection, final BigDecimal currentAmountEnhance, final Mono<BigDecimal> stepAmountEnhancer) {
         if( currentAmountEnhance == null ) {
-            return BigDecimal.ZERO;
-        }
-        switch (curveDirection) {
-            case UP:    return currentAmountEnhance.compareTo(BigDecimal.ZERO) >= 0 ? currentAmountEnhance.add      (stepAmountEnhancer) : BigDecimal.ZERO;
-            case DOWN:  return currentAmountEnhance.compareTo(BigDecimal.ZERO) <= 0 ? currentAmountEnhance.subtract (stepAmountEnhancer) : BigDecimal.ZERO;
-            default:    throw new IllegalArgumentException("unhandled curve direction: " + curveDirection.toString());
+            return Mono.just(BigDecimal.ZERO);
         }
 
+        return stepAmountEnhancer.map( amountEnhancer -> {
+            switch (curveDirection) {
+                case UP:    return currentAmountEnhance.compareTo(BigDecimal.ZERO) >= 0 ? currentAmountEnhance.add(amountEnhancer)      : BigDecimal.ZERO;
+                case DOWN:  return currentAmountEnhance.compareTo(BigDecimal.ZERO) <= 0 ? currentAmountEnhance.subtract(amountEnhancer) : BigDecimal.ZERO;
+                default:    throw new IllegalArgumentException("unhandled curve direction: " + curveDirection.toString());
+            }
+        });
     }
 
     private BigDecimal getCurrentAmountEnhance(final String applicationAssetPair) {
         return computedAmountEnhance.get(applicationAssetPair);
     }
 
+    protected void resetAllComputedAmountEnhance() {
+        computedAmountEnhance = new ConcurrentHashMap<>();
+    }
     private enum CurveDirection {
         UP, DOWN
     }

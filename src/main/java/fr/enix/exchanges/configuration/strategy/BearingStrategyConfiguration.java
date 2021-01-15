@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 public class BearingStrategyConfiguration {
 
     @Bean
-    public AmountEnhancerService amountEnhancerService(final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository) {
-        return new AmountEnhancerServiceImpl(applicationCurrencyTradingsParameterRepository);
+    public AmountEnhancerService amountEnhancerService(final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy) {
+        return new AmountEnhancerServiceImpl(applicationCurrencyTradingsBearingStrategy);
     }
 
     @Bean

@@ -56,9 +56,15 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
     protected Mono<BigDecimal> getComputedAmountToSell(final String applicationAssetPair) {
         return
             applicationCurrencyTradingsBearingStrategy
-            .getApplicationCurrencyTradingsBearingStrategyService(applicationAssetPair)
+            .getApplicationCurrencyTradingsBearingStrategyService( applicationAssetPair )
             .flatMap( applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getAmountToSellByApplicationAssetPair(applicationAssetPair))
-            .map    (configuredAmountToSell -> configuredAmountToSell.add( amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ) ) );
+            .zipWith( amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ) )
+            .map    ( objects -> {
+                final BigDecimal configuredAmountToSell     = objects.getT1();
+                final BigDecimal newAmountEnhanceForSell    = objects.getT2();
+
+                return configuredAmountToSell.add(newAmountEnhanceForSell) ;
+            });
     }
 
 }

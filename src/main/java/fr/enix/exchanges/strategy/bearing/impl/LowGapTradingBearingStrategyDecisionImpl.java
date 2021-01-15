@@ -67,9 +67,15 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private Mono<BigDecimal> getComputedAmountToBuy(final String applicationAssetPair) {
         return
             applicationCurrencyTradingsBearingStrategy
-            .getApplicationCurrencyTradingsBearingStrategyService(applicationAssetPair)
+            .getApplicationCurrencyTradingsBearingStrategyService( applicationAssetPair )
             .flatMap( applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getAmountToBuyByApplicationAssetPair(applicationAssetPair))
-            .map    ( configuredAmountToBuy -> configuredAmountToBuy.add( amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ) ) );
+            .zipWith( amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ) )
+            .map    ( objects -> {
+                final BigDecimal configuredAmountToBuy  = objects.getT1();
+                final BigDecimal newAmountEnhanceForBuy = objects.getT2();
+
+                return configuredAmountToBuy.add(newAmountEnhanceForBuy);
+            });
     }
 
     private boolean isAvailableAssetCanBuyTheComputedAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,

@@ -1,7 +1,6 @@
 package fr.enix.exchanges.service;
 
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
-import fr.enix.exchanges.repository.ApplicationCurrencyTradingsStrategy;
 import fr.enix.exchanges.service.impl.ApplicationCurrencyTradingsDynamicBearingStrategyServiceImpl;
 import fr.enix.exchanges.service.impl.ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl;
 import lombok.AllArgsConstructor;
