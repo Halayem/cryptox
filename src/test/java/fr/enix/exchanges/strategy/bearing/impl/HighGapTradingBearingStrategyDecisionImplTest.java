@@ -69,7 +69,7 @@ class HighGapTradingBearingStrategyDecisionImplTest {
     }
 
     @Test
-    void testGetAmountToSell_shouldReturnTheConfiguredAmountWhenBuyIsPossible() {
+    void testGetAmountToSell_shouldReturnTheConfiguredAmountWhenIitIsLessThanTheAvailableAssetForSell() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
 
         doReturn( Mono.just(new BigDecimal("5")))
@@ -77,7 +77,8 @@ class HighGapTradingBearingStrategyDecisionImplTest {
 
         StepVerifier
         .create         (highGapTradingBearingStrategyDecision.getAmountToSell("litecoin-euro"))
-        .consumeNextWith(amountToSell -> assertEquals(new BigDecimal("0.1"), amountToSell));
+        .consumeNextWith(amountToSell -> assertEquals(new BigDecimal("0.5"), amountToSell))
+        .verifyComplete ();
     }
 
     @Test
@@ -89,7 +90,8 @@ class HighGapTradingBearingStrategyDecisionImplTest {
 
         StepVerifier
         .create         ( highGapTradingBearingStrategyDecision.getAmountToSell("litecoin-euro") )
-        .consumeNextWith( amountToSell -> assertEquals(new BigDecimal("0.099999"), amountToSell) );
+        .consumeNextWith( amountToSell -> assertEquals(new BigDecimal("0.099999"), amountToSell) )
+        .verifyComplete ();
     }
 
     private ApplicationAssetPairTicker newApplicationAssetPairTickerForLitecoinEuro(final BigDecimal price,

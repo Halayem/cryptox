@@ -25,15 +25,15 @@ public class BearingStrategyConfiguration {
     public TradingBearingStrategyDecision highGapTradingBearingStrategyDecisionImpl(final PriceReferenceService priceReferenceService,
                                                                                     final ExchangeService exchangeService,
                                                                                     final AmountEnhancerService amountEnhancerService,
+                                                                                    final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy,
                                                                                     final AssetOrderIntervalRepository assetOrderIntervalRepository,
-                                                                                    final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository,
                                                                                     final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper) {
         return new HighGapTradingBearingStrategyDecisionImpl(
                         priceReferenceService,
                         exchangeService,
                         amountEnhancerService,
+                        applicationCurrencyTradingsBearingStrategy,
                         assetOrderIntervalRepository,
-                        applicationCurrencyTradingsParameterRepository,
                         applicationAssetPairTickerMapper
         );
     }

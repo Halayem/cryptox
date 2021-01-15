@@ -3,8 +3,8 @@ package fr.enix.exchanges.strategy.bearing.impl;
 import fr.enix.exchanges.mapper.ApplicationAssetPairTickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
-import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
+import fr.enix.exchanges.service.ApplicationCurrencyTradingsBearingStrategy;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
@@ -21,8 +21,8 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
     private final AmountEnhancerService amountEnhancerService;
+    private final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
-    private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
@@ -53,11 +53,12 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
             );
     }
 
-    private Mono<BigDecimal> getComputedAmountToSell(final String applicationAssetPair) {
+    protected Mono<BigDecimal> getComputedAmountToSell(final String applicationAssetPair) {
         return
-            applicationCurrencyTradingsParameterRepository
-            .getAmountToSellForBearingStrategyByApplicationAssetPair( applicationAssetPair )
-            .map(configuredAmountToSell -> configuredAmountToSell.add( amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ) ) );
+            applicationCurrencyTradingsBearingStrategy
+            .getApplicationCurrencyTradingsBearingStrategyService(applicationAssetPair)
+            .flatMap( applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getAmountToSellByApplicationAssetPair(applicationAssetPair))
+            .map    (configuredAmountToSell -> configuredAmountToSell.add( amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ) ) );
     }
 
 }

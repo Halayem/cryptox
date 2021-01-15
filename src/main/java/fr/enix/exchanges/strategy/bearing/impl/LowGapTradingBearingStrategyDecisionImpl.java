@@ -23,9 +23,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private final ExchangeService exchangeService;
     private final AmountEnhancerService amountEnhancerService;
     private final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy;
-
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
-
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override

@@ -16,48 +16,50 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AmountEnhancerServiceTest {
 
     @Autowired
-    AmountEnhancerServiceImpl amountEnhancerService;
+    private AmountEnhancerServiceImpl amountEnhancerService;
+
+    private final String applicationAssetPair = "bitcoin-euro";
 
     @Test
     @Order(0)
     void testGetNewAmountEnhanceForSell_shouldReturnZeroForFirstSellRequest() {
-        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForSell("litecoin-euro"));
+        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ));
     }
 
     @Test
     @Order(1)
     void testGetNewAmountEnhanceForSell_shouldBeTheConfiguredStepForSecondConsecutiveSellRequest() {
-        assertEquals( new BigDecimal("0.2"), amountEnhancerService.getNewAmountEnhanceForSell("litecoin-euro"));
+        assertEquals( new BigDecimal("0.00000001"), amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ));
     }
 
     @Test
     @Order(2)
     void testGetNewAmountEnhanceForSell_shouldBeTheDoubleOfConfiguredStepForThirdConsecutiveSellRequest() {
-        assertEquals( new BigDecimal("0.4"), amountEnhancerService.getNewAmountEnhanceForSell("litecoin-euro"));
+        assertEquals( new BigDecimal("0.00000002"), amountEnhancerService.getNewAmountEnhanceForSell( applicationAssetPair ));
     }
 
     @Test
     @Order(3)
     void testGetNewAmountEnhanceForBuy_shouldReturnZeroForFirstBuyRequestComingAfterOneOrMultipleSellRequests() {
-        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForBuy("litecoin-euro"));
+        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ));
     }
 
     @Test
     @Order(4)
     void testGetNewAmountEnhanceForBuy_shouldBeTheConfiguredStepForSecondConsecutiveBuyRequest() {
-        assertEquals( new BigDecimal("0.2"), amountEnhancerService.getNewAmountEnhanceForBuy("litecoin-euro"));
+        assertEquals( new BigDecimal("0.00000001"), amountEnhancerService.getNewAmountEnhanceForBuy(applicationAssetPair));
     }
 
     @Test
     @Order(5)
     void testGetNewAmountEnhanceForBuy_shouldBeTheDoubleOfConfiguredStepForThirdConsecutiveBuyRequest() {
-        assertEquals( new BigDecimal("0.4"), amountEnhancerService.getNewAmountEnhanceForBuy("litecoin-euro"));
+        assertEquals( new BigDecimal("0.00000002"), amountEnhancerService.getNewAmountEnhanceForBuy(applicationAssetPair));
     }
 
     @Test
     @Order(6)
     void testGetNewAmountEnhanceForSell_shouldReturnZeroForFirstSellRequestComingAfterOneOrMultipleBuyRequests() {
-        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForSell("litecoin-euro"));
+        assertEquals( BigDecimal.ZERO, amountEnhancerService.getNewAmountEnhanceForSell(applicationAssetPair));
     }
 
     @BeforeAll
