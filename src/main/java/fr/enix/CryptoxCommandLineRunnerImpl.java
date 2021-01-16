@@ -37,8 +37,8 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args)  {
-        startWebSocketClient();
-        startMonitoring();
+        //startWebSocketClient();
+        //startMonitoring();
     }
 
     @EventListener(WebSocketClientConnectionTerminatedEvent.class)

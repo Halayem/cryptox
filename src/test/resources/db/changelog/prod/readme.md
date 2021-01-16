@@ -1,0 +1,1 @@
+do not delete this empty folder, liquibase resources will be copied here on process-classes phase
