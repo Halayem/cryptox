@@ -2,4 +2,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/db.changelog.schema-test.yaml
   - include:
-      file: db/changelog/1.0/db.changelog.schema.yaml
+      file: db/changelog/prod/1.0/db.changelog.schema.yaml
+  - include:
+      file: db/changelog/1.0/db.changelog.test-data.yaml

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: CRY-026
+      id: SC-CRY-026
       author: anis
       changes:
         - createTable:
