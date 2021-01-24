@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 public class ApplicationAssetPairTicker implements Comparable<ApplicationAssetPairTicker> {
+    private String          market;
     private String          applicationAssetPair;
     private BigDecimal      price;
     private LocalDateTime   dateTime;

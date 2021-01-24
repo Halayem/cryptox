@@ -60,10 +60,17 @@ public class TickerServiceImpl implements TickerService {
                 ApplicationAssetPairTickerTradingDecision.Decision.BUY.equals   (decision);
     }
 
-    Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker( final TickerOutput tickerOutput ) {
+    private Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker( final TickerOutput tickerOutput ) {
         return marketOfferService.saveApplicationAssetPairTicker(
                 currenciesRepresentationService.getApplicationAssetPairCurrencyRepresentationByMarketAssetPair(tickerOutput.getAssetPair()),
                 tickerOutput.getAsk().getPrice()
+        ).map(ticker -> ApplicationAssetPairTicker
+                        .builder()
+                        .market                 ( ticker.getMarket()     )
+                        .applicationAssetPair   ( ticker.getAssetPair()  )
+                        .price                  ( ticker.getPrice()      )
+                        .dateTime               ( ticker.getAt()         )
+                        .build()
         );
     }
 

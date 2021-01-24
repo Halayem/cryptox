@@ -1,0 +1,18 @@
+{
+  "APPLICATION_REPOSITORY_WEBSERVICE_APIKEY":     "",
+  "APPLICATION_REPOSITORY_WEBSERVICE_PRIVATEKEY": "",
+
+  "SPRING_SECURITY_USER_NAME":      "",
+  "SPRING_SECURITY_USER_PASSWORD":  "",
+
+  "SMTP_HOST":                        "",
+  "SMTP_PORT":                        "",
+  "SMTP_USERNAME":                    "",
+  "SMTP_PASSWORD":                    "",
+  "APPLICATION_REPORTING_MAIL_FROM":  "",
+  "APPLICATION_REPORTING_MAIL_TO":    "",
+
+  "DB_USERNAME":  "",
+  "DB_PASSWORD":  "",
+  "DB_URL":       ""
+}

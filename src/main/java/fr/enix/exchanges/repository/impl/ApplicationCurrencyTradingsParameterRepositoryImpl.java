@@ -2,13 +2,12 @@ package fr.enix.exchanges.repository.impl;
 
 import fr.enix.exchanges.model.parameters.ApplicationCurrencyTradingsParameter;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
+import fr.enix.exchanges.repository.ApplicationCurrencyTradingsStrategy;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,12 +30,11 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
     }
 
     @Override
-    public Flux<String> getStrategiesByApplicationAssetPair(final String applicationAssetPair) {
-        List<String> strategies = new ArrayList<>();
-        if ( isBearingStrategyConfiguredForApplicationAssetPair     (applicationAssetPair) ) { strategies.add("bearing");   }
-        if ( isThresholdStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { strategies.add("threshold"); }
+    public Mono<ApplicationCurrencyTradingsStrategy> getStrategyForApplicationAssetPair(final String applicationAssetPair) {
+        if ( isStaticBearingStrategyConfiguredForApplicationAssetPair   (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.STATIC_BEARING);    }
+        if ( isThresholdStrategyConfiguredForApplicationAssetPair       (applicationAssetPair) ) { return Mono.just(ApplicationCurrencyTradingsStrategy.THRESHOLD);         }
 
-        return Flux.fromIterable(strategies);
+        throw new RuntimeException("unhandled trading strategy for application asset pair: " + applicationAssetPair);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                     applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getGap               ()
                 );
     }
@@ -56,7 +54,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                     applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getAmountToSell      ()
                 );
     }
@@ -67,7 +65,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                 applicationCurrencyTradingsParameter
                         .getTradings          ()
                         .get                  (applicationAssetPair)
-                        .getBearingStrategy   ()
+                        .getStaticBearingStrategy()
                         .getAmountToBuy      ()
         );
     }
@@ -77,7 +75,7 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         return applicationCurrencyTradingsParameter
                 .getTradings()
                 .get(applicationAssetPair)
-                .getBearingStrategy()
+                .getStaticBearingStrategy()
                 .getAmountEnhanceStep();
     }
 
@@ -89,11 +87,11 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
         return tradingParameters.getKey();
     }
 
-    private boolean isBearingStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
+    private boolean isStaticBearingStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {
         return applicationCurrencyTradingsParameter
                 .getTradings()
                 .get(applicationAssetPair)
-                .getBearingStrategy() != null;
+                .getStaticBearingStrategy() != null;
     }
 
     private boolean isThresholdStrategyConfiguredForApplicationAssetPair(final String applicationAssetPair) {

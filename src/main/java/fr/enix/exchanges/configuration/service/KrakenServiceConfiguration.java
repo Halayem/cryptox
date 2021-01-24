@@ -1,10 +1,13 @@
 package fr.enix.exchanges.configuration.service;
 
+import fr.enix.common.MarketPlace;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.ChannelRepository;
 import fr.enix.exchanges.service.ApplicationTradingConfigurationService;
 import fr.enix.exchanges.service.ChannelService;
 import fr.enix.exchanges.service.CurrenciesRepresentationService;
+import fr.enix.exchanges.service.MarketPlaceService;
+import fr.enix.exchanges.service.impl.MarketPlaceServiceImpl;
 import fr.enix.exchanges.service.impl.kraken.KrakenCurrenciesRepresentationServiceImpl;
 import fr.enix.exchanges.service.impl.kraken.KrakenTradingConfigurationServiceImpl;
 import fr.enix.exchanges.service.impl.kraken.KrakenChannelServiceImpl;
@@ -31,5 +34,10 @@ public class KrakenServiceConfiguration {
     public ApplicationTradingConfigurationService applicationTradingConfigurationService(final CurrenciesRepresentationService currenciesRepresentationService,
                                                                                          final ApplicationCurrencyTradingsParameterRepository applicationTradingConfigurationRepository) {
         return new KrakenTradingConfigurationServiceImpl(currenciesRepresentationService, applicationTradingConfigurationRepository);
+    }
+
+    @Bean
+    public MarketPlaceService marketPlace() {
+        return new MarketPlaceServiceImpl(MarketPlace.KRAKEN);
     }
 }
