@@ -6,6 +6,7 @@ import fr.enix.exchanges.monitor.ApplicationMonitor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Profile("production")
 @Slf4j
 @EnableConfigurationProperties(ApplicationRepositoryProperties.class)
 public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
@@ -37,8 +39,8 @@ public class CryptoxCommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args)  {
-        //startWebSocketClient();
-        //startMonitoring();
+        startWebSocketClient();
+        startMonitoring();
     }
 
     @EventListener(WebSocketClientConnectionTerminatedEvent.class)

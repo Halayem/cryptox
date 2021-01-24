@@ -21,9 +21,20 @@ public class ApplicationServiceConfiguration {
     }
 
     @Bean
-    public MarketOfferService marketOfferService(final MarketPlaceService marketPlaceService,
-                                                 final TickerHistoryRepository tickerHistoryRepository) {
-        return new MarketOfferServiceImpl(marketPlaceService, tickerHistoryRepository);
+    public PriceVariationService priceVariationService() {
+        return new PriceVariationServiceImpl();
+    }
+
+    @Bean
+    public MarketOfferService marketOfferService(final MarketPlaceService       marketPlaceService,
+                                                 final PriceVariationService    priceVariationService,
+                                                 final TickerHistoryRepository  tickerHistoryRepository) {
+
+        return new MarketOfferServiceDBAccessOptimizerImpl(
+                    marketPlaceService,
+                    priceVariationService,
+                    tickerHistoryRepository
+        );
     }
 
     @Bean
@@ -63,4 +74,5 @@ public class ApplicationServiceConfiguration {
                 applicationCurrencyTradingsParameterRepository
             );
     }
+
 }

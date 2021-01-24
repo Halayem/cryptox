@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MarketOfferServiceImpl implements MarketOfferService {
 
-    private final MarketPlaceService        marketPlaceService;
-    private final TickerHistoryRepository   tickerHistoryRepository;
+    protected final MarketPlaceService        marketPlaceService;
+    protected final TickerHistoryRepository   tickerHistoryRepository;
 
     @Override
-    public Mono<TickerHistory> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price ) {
+    public Mono<TickerHistory> saveApplicationAssetPairTicker(final String applicationAssetPair, final BigDecimal price) {
         return tickerHistoryRepository.save(
                     TickerHistory
                     .builder    ()
