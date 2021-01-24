@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: DT-CRY-026
+      author: anis
+      changes:
+        - insert:
+            catalogName: crypto
+            tableName: TICKER_HISTORY
+            columns:
+              -  column:
+                   name: MARKET
+                   value: kraken
+              - column:
+                  name: ASSET_PAIR
+                  value: litecoin-euro
+              - column:
+                  name: PRICE
+                  value: 128.156
+              - column:
+                  name: AT
+                  value: "2020-12-12 12:12:12"

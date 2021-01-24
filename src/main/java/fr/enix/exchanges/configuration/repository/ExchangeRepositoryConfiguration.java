@@ -30,11 +30,6 @@ public class ExchangeRepositoryConfiguration {
     }
 
     @Bean
-    public MarketOfferHistoryRepository marketOfferHistoryRepository() {
-        return new MarketOfferHistoryRepositoryImpl();
-    }
-
-    @Bean
     public ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository(final ApplicationCurrencyTradingsParameter applicationCurrencyTradingsParameter) {
         return new ApplicationCurrencyTradingsParameterRepositoryImpl(applicationCurrencyTradingsParameter);
     }

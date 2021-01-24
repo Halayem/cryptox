@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: CRY-026
+      author: anis
+      changes:
+        - createTable:
+            tableName: EMPLOYEE
+            columns:
+              - column:
+                  name: ID
+                  type: INTEGER
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: NAME
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SALARY
+                  type: DECIMAL(10, 5)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: HIRING_DATE
+                  type: DATETIME
+                  constraints:
+                    nullable: false

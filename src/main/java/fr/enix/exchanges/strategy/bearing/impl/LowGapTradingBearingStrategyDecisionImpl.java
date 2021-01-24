@@ -4,8 +4,8 @@ import fr.enix.common.utils.math.ApplicationMathUtils;
 import fr.enix.exchanges.mapper.ApplicationAssetPairTickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
-import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
 import fr.enix.exchanges.repository.AssetOrderIntervalRepository;
+import fr.enix.exchanges.service.ApplicationCurrencyTradingsBearingStrategy;
 import fr.enix.exchanges.service.ExchangeService;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
@@ -22,8 +22,8 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private final PriceReferenceService priceReferenceService;
     private final ExchangeService exchangeService;
     private final AmountEnhancerService amountEnhancerService;
+    private final ApplicationCurrencyTradingsBearingStrategy applicationCurrencyTradingsBearingStrategy;
     private final AssetOrderIntervalRepository assetOrderIntervalRepository;
-    private final ApplicationCurrencyTradingsParameterRepository applicationCurrencyTradingsParameterRepository;
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
@@ -66,9 +66,16 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
 
     private Mono<BigDecimal> getComputedAmountToBuy(final String applicationAssetPair) {
         return
-            applicationCurrencyTradingsParameterRepository
-            .getAmountToBuyForBearingStrategyByApplicationAssetPair( applicationAssetPair )
-            .map(configuredAmountToBuy -> configuredAmountToBuy.add( amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ) ) );
+            applicationCurrencyTradingsBearingStrategy
+            .getApplicationCurrencyTradingsBearingStrategyService( applicationAssetPair )
+            .flatMap( applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getAmountToBuyByApplicationAssetPair(applicationAssetPair))
+            .zipWith( amountEnhancerService.getNewAmountEnhanceForBuy( applicationAssetPair ) )
+            .map    ( objects -> {
+                final BigDecimal configuredAmountToBuy  = objects.getT1();
+                final BigDecimal newAmountEnhanceForBuy = objects.getT2();
+
+                return configuredAmountToBuy.add(newAmountEnhanceForBuy);
+            });
     }
 
     private boolean isAvailableAssetCanBuyTheComputedAmount(final ApplicationAssetPairTicker applicationAssetPairTicker,

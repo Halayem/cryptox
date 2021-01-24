@@ -18,13 +18,13 @@ public class ApplicationCurrencyTradingsParameter {
     @Setter
     public static class TradingParameters {
         private boolean enabled;
-        private BearingStrategy bearingStrategy;
+        private StaticBearingStrategy staticBearingStrategy;
         private ThresholdStrategy thresholdStrategy;
     }
 
     @Getter
     @Setter
-    public static class BearingStrategy {
+    public static class StaticBearingStrategy {
         private BigDecimal gap;
         private BigDecimal amountToSell;
         private BigDecimal amountToBuy;
