@@ -4,32 +4,32 @@ databaseChangeLog:
       author: anis
       changes:
         - createTable:
-            tableName: TICKER_HISTORY
+            tableName: ticker_history
             columns:
               - column:
-                  name: ID
+                  name: id
                   type: INTEGER
                   autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: MARKET
+                  name: market
                   type: VARCHAR(16)
                   constraints:
                     nullable: false
               - column:
-                  name: ASSET_PAIR
+                  name: asset_pair
                   type: VARCHAR(32)
                   constraints:
                     nullable: false
               - column:
-                  name: PRICE
+                  name: price
                   type: DECIMAL(10, 5)
                   constraints:
                     nullable: false
               - column:
-                  name: AT
+                  name: at
                   type: DATETIME
                   constraints:
                     nullable: false
