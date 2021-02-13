@@ -21,25 +21,33 @@ public class ExchangeServiceImpl implements ExchangeService  {
 
     @Override
     public Mono<BigDecimal> getAvailableAssetForBuyPlacementByApplicationAssetPair(final String applicationAssetPair) {
-        return exchangeRepository.getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPair);
+        return Mono.defer       ( () -> exchangeRepository.getAvailableAssetForBuyPlacementByApplicationAssetPair( applicationAssetPair ) )
+                   .retryWhen   ( retryStrategy );
     }
 
     @Override
     public Mono<BigDecimal> getAvailableAssetForSellPlacementByApplicationAssetPair(final String applicationAssetPair) {
-        return exchangeRepository.getAvailableAssetForSellPlacementByApplicationAssetPair(applicationAssetPair);
+        return Mono.defer       ( () -> exchangeRepository.getAvailableAssetForSellPlacementByApplicationAssetPair( applicationAssetPair ) )
+                   .retryWhen   ( retryStrategy );
     }
 
     @Override
     public Mono<AddOrderOutput> addOrder(final AddOrderInput addOrderInput) {
-        return Mono.defer       ( () -> exchangeRepository.addOrder  (addOrderInput) )
-                   .retryWhen   ( retryAddOrderStrategy );
+        return Mono.defer       ( () -> exchangeRepository.addOrder ( addOrderInput ) )
+                   .retryWhen   ( retryStrategy );
     }
 
-    private final long retryAddOrderMaxAttempts         = 5L;
-    private final long retryAddOrderFixedDelayInSeconds = 1L;
-    private final Retry retryAddOrderStrategy = Retry
-                                                .fixedDelay     (retryAddOrderMaxAttempts, Duration.ofSeconds(retryAddOrderFixedDelayInSeconds))
-                                                .filter         (exception -> exception instanceof KrakenEapiInvalidNonceException)
-                                                .doAfterRetry   (exception -> log.warn("retry add order, max attempts: {}, fixed delay: {} seconds", retryAddOrderMaxAttempts, retryAddOrderFixedDelayInSeconds));
+    private final long retryStrategyMaxAttempts         = 5L;
+    private final long retryStrategyFixedDelayInSeconds = 1L;
+    private final Retry retryStrategy =
+        Retry.fixedDelay     ( retryStrategyMaxAttempts, Duration.ofSeconds(retryStrategyFixedDelayInSeconds) )
+             .filter         ( exception -> exception instanceof KrakenEapiInvalidNonceException)
+             .doAfterRetry   ( exception -> log.warn(
+                                                 "retry strategy due to {}, max attempts: {}, fixed delay: {} seconds",
+                                                 KrakenEapiInvalidNonceException.class.getName(),
+                                                 retryStrategyMaxAttempts,
+                                                 retryStrategyFixedDelayInSeconds
+                                            )
+             );
 
 }
