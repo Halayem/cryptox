@@ -10,5 +10,6 @@ public interface ApplicationCurrencyTradingsBearingStrategyService {
     Mono<BigDecimal> getAmountToBuyByApplicationAssetPair       (final String applicationAssetPair);
     Mono<BigDecimal> getAmountToSellByApplicationAssetPair      (final String applicationAssetPair);
     Mono<BigDecimal> getAmountEnhanceStepByApplicationAssetPair (final String applicationAssetPair);
+    Mono<BigDecimal> getStopLossByApplicationAssetPair          (final String applicationAssetPair);
 
 }

@@ -14,6 +14,7 @@ import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -28,13 +29,17 @@ public class TickerServiceImpl implements TickerService {
     private final AddOrderMapper                    addOrderMapper;
 
     @Override
-    public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
+    public Flux<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
         return
             tickerMapper
             .mapStringToTickerOutput    ( payload                               )
             .flatMap                    ( this::saveApplicationAssetPairTicker  )
-            .flatMap                    ( tradingDecisionService::getDecision   )
-            .flatMap                    ( this::placeOrder                      );
+            .flatMapMany                ( tradingDecisionService::getDecisions   )
+            .flatMap                    ( applicationAssetPairTickerTradingDecision -> placeOrder( applicationAssetPairTickerTradingDecision ) )
+            .collectList                ()
+            .flatMapMany                ( Flux::fromIterable );
+
+
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {

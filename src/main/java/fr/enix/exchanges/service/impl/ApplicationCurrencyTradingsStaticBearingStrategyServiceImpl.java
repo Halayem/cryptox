@@ -23,6 +23,11 @@ public class ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl impleme
     }
 
     @Override
+    public Mono<BigDecimal> getStopLossByApplicationAssetPair(final String applicationAssetPair) {
+        return applicationCurrencyTradingsParameterRepository.getStopLossForBearingStrategyByApplicationAssetPair(applicationAssetPair);
+    }
+
+    @Override
     public Mono<BigDecimal> getAmountToSellByApplicationAssetPair(final String applicationAssetPair) {
         return applicationCurrencyTradingsParameterRepository.getAmountToSellForBearingStrategyByApplicationAssetPair(applicationAssetPair);
     }

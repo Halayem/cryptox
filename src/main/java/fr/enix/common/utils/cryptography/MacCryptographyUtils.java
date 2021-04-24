@@ -16,7 +16,7 @@ public class MacCryptographyUtils {
     public MacCryptographyUtils(byte[] key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         mac = Mac.getInstance (algorithm);
         mac.init(new SecretKeySpec(key, algorithm));
-        log.info("MAC cryptography object created using, key: {}, algorithm: {}", Arrays.toString(key), algorithm);
+        log.info("MAC cryptography object created using, key, having length {}, algorithm: {}", Arrays.toString(key).length(), algorithm);
     }
 
     public byte[] encrypt(byte[] message) {

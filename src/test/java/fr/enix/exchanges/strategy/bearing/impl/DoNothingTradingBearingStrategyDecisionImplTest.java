@@ -22,7 +22,7 @@ class DoNothingTradingBearingStrategyDecisionImplTest {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
 
         StepVerifier
-        .create(doNothingTradingBearingStrategyDecision.getDecision(applicationAssetPairTicker))
+        .create(doNothingTradingBearingStrategyDecision.getDecisions(applicationAssetPairTicker))
         .consumeNextWith(applicationAssetPairTickerTradingDecision -> {
             assertNull(applicationAssetPairTickerTradingDecision.getAmount(), "amount should be null for do nothing decision");
             assertNull(applicationAssetPairTickerTradingDecision.getPrice(),  "price should be null for do nothing decision");

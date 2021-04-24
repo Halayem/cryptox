@@ -11,6 +11,7 @@ import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -27,40 +28,56 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
-        priceReferenceService.updatePriceReference(applicationAssetPairTicker);
+    public Flux<ApplicationAssetPairTickerTradingDecision> getDecisions( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
+        return  getAmountToBuy  ( applicationAssetPairTicker)
+                .flatMapMany( computedAmountToBuy -> {
+                    if ( amountToBuyIsLessThanTheMinimumOrder(applicationAssetPairTicker.getApplicationAssetPair(), computedAmountToBuy) ) {
+                        return  Flux.just(applicationAssetPairTickerMapper.mapDoNothingDecision(
+                                    applicationAssetPairTicker,
+                                    String.format( Locale.FRANCE, "the computed amount to buy: <%.6f>, is less than the minimum order by market", computedAmountToBuy)
+                                ));
+                    } else {
+                                return Flux.just(
+                                        applicationAssetPairTickerMapper.mapBuyDecision(
+                                                applicationAssetPairTicker,
+                                                computedAmountToBuy,
+                                                applicationAssetPairTicker.getPrice()
+                                        ),
+                                        buildStopLossDecision(applicationAssetPairTicker, computedAmountToBuy)
+                                );
+                    }});
+    }
 
+    protected ApplicationAssetPairTickerTradingDecision buildStopLossDecision( final ApplicationAssetPairTicker applicationAssetPairTicker,
+                                                                               final BigDecimal amountToSell ) {
         return
-            getAmountToBuy  ( applicationAssetPairTicker)
-            .flatMap        ( amountToBuy -> {
-                if ( amountToBuyIsLessThanTheMinimumOrder(applicationAssetPairTicker.getApplicationAssetPair(), amountToBuy) ) {
-                    return applicationAssetPairTickerMapper.mapDoNothingDecision(
-                            applicationAssetPairTicker,
-                            String.format( Locale.FRANCE, "the computed amount to buy: <%.6f>, is less than the minimum order by market", amountToBuy)
-                    );
-                }
-
-                return applicationAssetPairTickerMapper.mapBuyDecision(
-                        applicationAssetPairTicker,
-                        amountToBuy,
-                        applicationAssetPairTicker.getPrice()
-                );
-            });
+                applicationCurrencyTradingsBearingStrategy
+                .getApplicationCurrencyTradingsBearingStrategyService( applicationAssetPairTicker.getApplicationAssetPair() )
+                .flatMap( applicationCurrencyTradingsBearingStrategyService ->
+                    applicationCurrencyTradingsBearingStrategyService.getStopLossByApplicationAssetPair(
+                        applicationAssetPairTicker.getApplicationAssetPair( )
+                    )
+                ).map( stopLoss -> applicationAssetPairTickerMapper.mapSellDecision(
+                                        applicationAssetPairTicker,
+                                        amountToSell,
+                                        applicationAssetPairTicker.getPrice().subtract(stopLoss)
+                                   )
+                ).block();
     }
 
     protected Mono<BigDecimal> getAmountToBuy(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         return
             Mono.zip(
-                getComputedAmountToBuy(applicationAssetPairTicker.getApplicationAssetPair()),
-                exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair(applicationAssetPairTicker.getApplicationAssetPair())
+                getComputedAmountToBuy( applicationAssetPairTicker.getApplicationAssetPair() ),
+                exchangeService.getAvailableAssetForBuyPlacementByApplicationAssetPair( applicationAssetPairTicker.getApplicationAssetPair() )
             )
             .flatMap( objects -> {
                 final BigDecimal computedAmountToBuy    = objects.getT1();
                 final BigDecimal availableAssetForBuy   = objects.getT2();
 
-                return isAvailableAssetCanBuyTheComputedAmount(applicationAssetPairTicker, availableAssetForBuy, computedAmountToBuy )
+                return isAvailableAssetCanBuyTheComputedAmount( applicationAssetPairTicker, availableAssetForBuy, computedAmountToBuy )
                         ? Mono.just( computedAmountToBuy )
-                        : Mono.just(ApplicationMathUtils.doDivision(availableAssetForBuy, applicationAssetPairTicker.getPrice()));
+                        : Mono.just( ApplicationMathUtils.doDivision( availableAssetForBuy, applicationAssetPairTicker.getPrice() ) );
             });
     }
 

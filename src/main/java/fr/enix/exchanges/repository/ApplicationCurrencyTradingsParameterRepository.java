@@ -16,4 +16,5 @@ public interface ApplicationCurrencyTradingsParameterRepository {
     Mono<BigDecimal> getAmountToBuyForBearingStrategyByApplicationAssetPair(final String applicationAssetPair);
     Mono<BigDecimal> getAmountToSellForBearingStrategyByApplicationAssetPair(final String applicationAssetPair);
     BigDecimal getAmountEnhanceStepByApplicationAssetPair(final String applicationAssetPair);
+    Mono<BigDecimal> getStopLossForBearingStrategyByApplicationAssetPair(final String applicationAssetPair);
 }

@@ -5,7 +5,7 @@ import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @AllArgsConstructor
 public class ErrorTradingBearingStrategyDecisionImpl implements TradingBearingStrategyDecision {
@@ -13,18 +13,18 @@ public class ErrorTradingBearingStrategyDecisionImpl implements TradingBearingSt
     private final PriceReferenceService priceReferenceService;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    public Flux<ApplicationAssetPairTickerTradingDecision> getDecisions(final ApplicationAssetPairTicker applicationAssetPairTicker) {
         priceReferenceService.updatePriceReference(applicationAssetPairTicker);
 
-        return newTradingDecisionError(
+        return Flux.just(newTradingDecisionError(
                 applicationAssetPairTicker,
                 String.format( "price reference was not set for this application asset pair: <%s>", applicationAssetPairTicker.getApplicationAssetPair() )
-        );
+        ));
     }
 
-    private Mono<ApplicationAssetPairTickerTradingDecision> newTradingDecisionError(final ApplicationAssetPairTicker applicationAssetPairTicker,
+    private ApplicationAssetPairTickerTradingDecision newTradingDecisionError(final ApplicationAssetPairTicker applicationAssetPairTicker,
                                                                                     final String message) {
-        return Mono.just(
+        return
                 ApplicationAssetPairTickerTradingDecision
                     .builder    ()
                     .operation  (
@@ -36,7 +36,6 @@ public class ErrorTradingBearingStrategyDecisionImpl implements TradingBearingSt
                             .build    ()
                     )
                     .applicationAssetPairTickerReference(applicationAssetPairTicker.toBuilder().build())
-                    .build()
-        );
+                    .build();
     }
 }

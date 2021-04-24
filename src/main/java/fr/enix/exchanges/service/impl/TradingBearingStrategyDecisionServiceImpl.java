@@ -5,7 +5,7 @@ import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.service.TradingDecisionService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecisionFactory;
 import lombok.AllArgsConstructor;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @AllArgsConstructor
 public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisionService {
@@ -13,11 +13,11 @@ public class TradingBearingStrategyDecisionServiceImpl implements TradingDecisio
     private final TradingBearingStrategyDecisionFactory tradingBearingStrategyDecisionFactory;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+    public Flux<ApplicationAssetPairTickerTradingDecision> getDecisions(final ApplicationAssetPairTicker applicationAssetPairTicker) {
 
         return  tradingBearingStrategyDecisionFactory
                 .getTradingBearingStrategy  (applicationAssetPairTicker)
-                .flatMap                    (tradingBearingStrategyDecision -> tradingBearingStrategyDecision.getDecision(applicationAssetPairTicker));
+                .flatMapMany                (tradingBearingStrategyDecision -> tradingBearingStrategyDecision.getDecisions(applicationAssetPairTicker));
 
     }
 
