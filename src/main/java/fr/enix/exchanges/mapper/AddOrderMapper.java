@@ -36,8 +36,7 @@ public class AddOrderMapper {
             addOrderRequestBuilder.close(
               AddOrderRequest.Close.builder     ()
                                    .ordertype   (addOrderInput.getClose().getOrderType().getValue())
-                                   .price       ("#" + addOrderInput.getClose().getStopLossPriceRelativePercentageDelta() + "%")
-                                   .price2      ("#" + addOrderInput.getClose().getTakeProfitPriceRelativeDelta())
+                                   .price       ( addOrderInput.getClose().getStopLossPrice())
                                    .build       ()
             );
         }
@@ -64,6 +63,27 @@ public class AddOrderMapper {
                         .orderType              (OrderType.LIMIT        )
                         .price                  (priceToBuy             )
                         .volume                 (amountToBuy            )
+                        .build()
+        );
+    }
+
+    public Mono<AddOrderInput> newAddOrderInputForBuyPlacementWithStopLoss(final String     applicationAssetPair,
+                                                                           final BigDecimal amountToBuy,
+                                                                           final BigDecimal priceToBuy,
+                                                                           final BigDecimal buyStopLossPrice) {
+        return Mono.just(
+                AddOrderInput
+                        .builder                ()
+                        .applicationAssetPair   ( applicationAssetPair   )
+                        .addOrderType           ( AddOrderType.BUY       )
+                        .orderType              ( OrderType.STOP_LOSS    )
+                        .price                  ( priceToBuy             )
+                        .volume                 ( amountToBuy            )
+                        .close                  ( AddOrderInput.Close.builder       ()
+                                                                     .orderType     ( OrderType.STOP_LOSS )
+                                                                     .stopLossPrice ( buyStopLossPrice )
+                                                                     .build         ()
+                        )
                         .build()
         );
     }

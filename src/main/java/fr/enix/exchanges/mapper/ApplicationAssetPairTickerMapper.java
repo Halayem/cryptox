@@ -26,14 +26,16 @@ public class ApplicationAssetPairTickerMapper {
         );
     }
 
-    public Mono<ApplicationAssetPairTickerTradingDecision> mapBuyDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
-                                                                          final BigDecimal amount,
-                                                                          final BigDecimal price) {
+    public Mono<ApplicationAssetPairTickerTradingDecision> mapBuyStopLossDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+                                                                                  final BigDecimal amount,
+                                                                                  final BigDecimal price,
+                                                                                  final BigDecimal stopLossPrice) {
         return mapDecision(
-                ApplicationAssetPairTickerTradingDecision.Decision.BUY,
+                ApplicationAssetPairTickerTradingDecision.Decision.BUY_STOP_LOSS,
                 applicationAssetPairTickerReference,
                 amount,
-                price
+                price,
+                stopLossPrice
         );
     }
 
@@ -44,20 +46,23 @@ public class ApplicationAssetPairTickerMapper {
                 ApplicationAssetPairTickerTradingDecision.Decision.SELL,
                 applicationAssetPairTickerReference,
                 amount,
-                price
+                price,
+                null
         );
     }
 
     private Mono<ApplicationAssetPairTickerTradingDecision> mapDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision,
                                                                         final ApplicationAssetPairTicker applicationAssetPairTickerReference,
                                                                         final BigDecimal amount,
-                                                                        final BigDecimal price) {
+                                                                        final BigDecimal price,
+                                                                        final BigDecimal stopLossPrice) {
         return Mono.just(
                 ApplicationAssetPairTickerTradingDecision
-                .builder    ()
-                .amount     ( amount )
-                .price      ( price  )
-                .operation  (
+                .builder        ()
+                .amount         ( amount )
+                .price          ( price  )
+                .stopLossPrice  ( stopLossPrice )
+                .operation      (
                     ApplicationAssetPairTickerTradingDecision
                     .Operation
                     .builder    ()

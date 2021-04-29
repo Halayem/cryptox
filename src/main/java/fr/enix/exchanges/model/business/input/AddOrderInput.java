@@ -25,8 +25,7 @@ public class AddOrderInput {
     @Getter
     public static class Close {
         private OrderType   orderType;
-        private Integer     stopLossPriceRelativePercentageDelta;
-        private Integer     takeProfitPriceRelativeDelta;
+        private BigDecimal  stopLossPrice;
     }
 
 }

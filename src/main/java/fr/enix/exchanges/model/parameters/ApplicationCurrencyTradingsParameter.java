@@ -29,6 +29,7 @@ public class ApplicationCurrencyTradingsParameter {
         private BigDecimal amountToSell;
         private BigDecimal amountToBuy;
         private BigDecimal amountEnhanceStep;
+        private BigDecimal buyStopLoss;
     }
 
     @Getter

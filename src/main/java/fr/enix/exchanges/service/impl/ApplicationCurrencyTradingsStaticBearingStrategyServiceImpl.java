@@ -28,6 +28,11 @@ public class ApplicationCurrencyTradingsStaticBearingStrategyServiceImpl impleme
     }
 
     @Override
+    public Mono<BigDecimal> getBuyStopLossByApplicationAssetPair(final String applicationAssetPair) {
+        return applicationCurrencyTradingsParameterRepository.getBuyStopLossByApplicationAssetPair(applicationAssetPair);
+    }
+
+    @Override
     public Mono<BigDecimal> getAmountEnhanceStepByApplicationAssetPair(final String applicationAssetPair) {
         return Mono.just(applicationCurrencyTradingsParameterRepository.getAmountEnhanceStepByApplicationAssetPair(applicationAssetPair));
     }

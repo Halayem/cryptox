@@ -27,7 +27,7 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
+    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision( final ApplicationAssetPairTicker applicationAssetPairTicker ) {
         priceReferenceService.updatePriceReference(applicationAssetPairTicker);
 
         return
@@ -40,11 +40,14 @@ public class LowGapTradingBearingStrategyDecisionImpl implements TradingBearingS
                     );
                 }
 
-                return applicationAssetPairTickerMapper.mapBuyDecision(
-                        applicationAssetPairTicker,
-                        amountToBuy,
-                        applicationAssetPairTicker.getPrice()
-                );
+                return  applicationCurrencyTradingsBearingStrategy.getApplicationCurrencyTradingsBearingStrategyService( applicationAssetPairTicker.getApplicationAssetPair() )
+                                                                  .flatMap( applicationCurrencyTradingsBearingStrategyService -> applicationCurrencyTradingsBearingStrategyService.getBuyStopLossByApplicationAssetPair( applicationAssetPairTicker.getApplicationAssetPair()))
+                                                                  .flatMap( buyStopLoss -> applicationAssetPairTickerMapper.mapBuyStopLossDecision(
+                                                                        applicationAssetPairTicker,
+                                                                        amountToBuy,
+                                                                        applicationAssetPairTicker.getPrice(),
+                                                                        applicationAssetPairTicker.getPrice().subtract( buyStopLoss )
+                                                                  ));
             });
     }
 

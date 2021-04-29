@@ -15,6 +15,7 @@ public class ApplicationAssetPairTickerTradingDecision {
     private final Operation     operation;
     private final BigDecimal    amount;
     private final BigDecimal    price;
+    private final BigDecimal    stopLossPrice;
 
     @Getter
     @Builder
@@ -24,7 +25,7 @@ public class ApplicationAssetPairTickerTradingDecision {
     }
 
     public enum Decision {
-        BUY, SELL, DO_NOTHING, ERROR
+        BUY, BUY_STOP_LOSS, SELL, DO_NOTHING, ERROR
     }
 
     public String getFormattedLogMessage() {
@@ -35,12 +36,14 @@ public class ApplicationAssetPairTickerTradingDecision {
                 "\n\t - decision ---------------- <%s>" +
                 "\n\t - message ----------------- <%s>" +
                 "\n\t - transaction amount ------ <%f>" +
-                "\n\t - transaction price ------- <%f>",
+                "\n\t - transaction price ------- <%f>" +
+                "\n\t - buy stop loss price ----- <%f>",
                 applicationAssetPairTickerReference.getApplicationAssetPair(),
                 applicationAssetPairTickerReference.getPrice(),
                 operation.getDecision(),
                 operation.getMessage(),
                 amount,
-                price );
+                price,
+                stopLossPrice);
     }
 }
