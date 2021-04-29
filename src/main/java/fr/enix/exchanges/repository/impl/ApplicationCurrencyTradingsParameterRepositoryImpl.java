@@ -71,6 +71,17 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
     }
 
     @Override
+    public Mono<BigDecimal> getStopLossForBearingStrategyByApplicationAssetPair(final String applicationAssetPair) {
+        return Mono.justOrEmpty(
+                applicationCurrencyTradingsParameter
+                .getTradings                ()
+                .get                        ( applicationAssetPair )
+                .getStaticBearingStrategy   ()
+                .getStopLoss                ()
+        );
+    }
+
+    @Override
     public BigDecimal getAmountEnhanceStepByApplicationAssetPair(final String applicationAssetPair) {
         return applicationCurrencyTradingsParameter
                 .getTradings()

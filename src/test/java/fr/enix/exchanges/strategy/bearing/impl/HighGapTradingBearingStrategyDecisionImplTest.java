@@ -36,7 +36,7 @@ class HighGapTradingBearingStrategyDecisionImplTest {
         .when   ( highGapTradingBearingStrategyDecisionSpy).getAmountToSell("litecoin-euro");
 
         StepVerifier
-        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecisions(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.SELL, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
             assertEquals(new BigDecimal("0.1"), applicationAssetPairTickerTradingDecision.getAmount());
@@ -56,7 +56,7 @@ class HighGapTradingBearingStrategyDecisionImplTest {
                 .when   ( highGapTradingBearingStrategyDecisionSpy).getAmountToSell("litecoin-euro");
 
         StepVerifier
-        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( highGapTradingBearingStrategyDecisionSpy.getDecisions(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertNull(applicationAssetPairTickerTradingDecision.getAmount(), "amount should be null for do nothing decision");
             assertNull(applicationAssetPairTickerTradingDecision.getPrice(),  "price should be null for do nothing decision");

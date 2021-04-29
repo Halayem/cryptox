@@ -28,7 +28,7 @@ class LowGapTradingBearingStrategyDecisionImplTest {
     @MockBean private PriceReferenceService priceReferenceService;
 
     @Test
-    void testGetDecision_shouldReturnBuyDecisionWithComputedAmountToBuyWhenItIsGreaterOrEqualsThanTheMinimumOrder() {
+    void testGetDecision_shouldReturnBuyAndStopLossDecisionsWithComputedAmountToBuyWhenItIsGreaterOrEqualsThanTheMinimumOrder() {
         final ApplicationAssetPairTicker applicationAssetPairTicker = newApplicationAssetPairTickerForLitecoinEuro(new BigDecimal("42.05"), LocalDateTime.now());
         final LowGapTradingBearingStrategyDecisionImpl lowGapTradingBearingStrategyDecisionSpy = spy(lowGapTradingBearingStrategyDecisionImpl);
 
@@ -36,12 +36,21 @@ class LowGapTradingBearingStrategyDecisionImplTest {
         .when   ( lowGapTradingBearingStrategyDecisionSpy).getAmountToBuy(applicationAssetPairTicker);
 
         StepVerifier
-        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecisions(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
-            assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.BUY, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
-            assertEquals(new BigDecimal("0.1"), applicationAssetPairTickerTradingDecision.getAmount());
-            assertEquals(new BigDecimal("42.05"), applicationAssetPairTickerTradingDecision.getPrice());
-            assertEquals(applicationAssetPairTicker, applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
+
+            assertEquals( ApplicationAssetPairTickerTradingDecision.Decision.BUY,   applicationAssetPairTickerTradingDecision.getOperation().getDecision());
+            assertEquals( new BigDecimal("0.1"),                                applicationAssetPairTickerTradingDecision.getAmount());
+            assertEquals( new BigDecimal("42.05"),                              applicationAssetPairTickerTradingDecision.getPrice());
+            assertEquals( applicationAssetPairTicker,                               applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
+            assertNull(applicationAssetPairTickerTradingDecision.getOperation().getMessage());
+        })
+        .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
+
+            assertEquals( ApplicationAssetPairTickerTradingDecision.Decision.SELL,   applicationAssetPairTickerTradingDecision.getOperation().getDecision());
+            assertEquals( new BigDecimal("0.1"),                                applicationAssetPairTickerTradingDecision.getAmount());
+            assertEquals( new BigDecimal("41.55"),                              applicationAssetPairTickerTradingDecision.getPrice());
+            assertEquals( applicationAssetPairTicker,                               applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
             assertNull(applicationAssetPairTickerTradingDecision.getOperation().getMessage());
         })
         .verifyComplete();
@@ -56,7 +65,7 @@ class LowGapTradingBearingStrategyDecisionImplTest {
         .when   ( lowGapTradingBearingStrategyDecisionSpy).getAmountToBuy(applicationAssetPairTicker);
 
         StepVerifier
-        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
+        .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecisions(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
             assertNull(applicationAssetPairTickerTradingDecision.getAmount(), "amount should be null for do nothing decision");
             assertNull(applicationAssetPairTickerTradingDecision.getPrice(),  "price should be null for do nothing decision");

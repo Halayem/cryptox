@@ -7,10 +7,10 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 public class ApplicationAssetPairTickerMapper {
 
-    public Mono<ApplicationAssetPairTickerTradingDecision> mapDoNothingDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+    public ApplicationAssetPairTickerTradingDecision mapDoNothingDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
                                                                                 final String message) {
 
-        return Mono.just(
+        return
                 ApplicationAssetPairTickerTradingDecision
                 .builder    ()
                 .operation  (
@@ -22,11 +22,10 @@ public class ApplicationAssetPairTickerMapper {
                         .build      ()
                 )
                 .applicationAssetPairTickerReference(applicationAssetPairTickerReference.toBuilder().build())
-                .build()
-        );
+                .build();
     }
 
-    public Mono<ApplicationAssetPairTickerTradingDecision> mapBuyDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+    public ApplicationAssetPairTickerTradingDecision mapBuyDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
                                                                           final BigDecimal amount,
                                                                           final BigDecimal price) {
         return mapDecision(
@@ -37,9 +36,9 @@ public class ApplicationAssetPairTickerMapper {
         );
     }
 
-    public Mono<ApplicationAssetPairTickerTradingDecision> mapSellDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
-                                                                           final BigDecimal amount,
-                                                                           final BigDecimal price) {
+    public ApplicationAssetPairTickerTradingDecision mapSellDecision(final ApplicationAssetPairTicker applicationAssetPairTickerReference,
+                                                                     final BigDecimal amount,
+                                                                     final BigDecimal price) {
         return mapDecision(
                 ApplicationAssetPairTickerTradingDecision.Decision.SELL,
                 applicationAssetPairTickerReference,
@@ -48,11 +47,11 @@ public class ApplicationAssetPairTickerMapper {
         );
     }
 
-    private Mono<ApplicationAssetPairTickerTradingDecision> mapDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision,
+    private ApplicationAssetPairTickerTradingDecision mapDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision,
                                                                         final ApplicationAssetPairTicker applicationAssetPairTickerReference,
                                                                         final BigDecimal amount,
                                                                         final BigDecimal price) {
-        return Mono.just(
+        return
                 ApplicationAssetPairTickerTradingDecision
                 .builder    ()
                 .amount     ( amount )
@@ -65,7 +64,6 @@ public class ApplicationAssetPairTickerMapper {
                     .build      ()
                 )
                 .applicationAssetPairTickerReference(applicationAssetPairTickerReference.toBuilder().build())
-                .build()
-        );
+                .build();
     }
 }

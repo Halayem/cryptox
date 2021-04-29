@@ -10,6 +10,7 @@ import fr.enix.exchanges.service.PriceReferenceService;
 import fr.enix.exchanges.strategy.bearing.AmountEnhancerService;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -26,19 +27,19 @@ public class HighGapTradingBearingStrategyDecisionImpl implements TradingBearing
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(ApplicationAssetPairTicker applicationAssetPairTicker) {
+    public Flux<ApplicationAssetPairTickerTradingDecision> getDecisions(ApplicationAssetPairTicker applicationAssetPairTicker) {
         priceReferenceService.updatePriceReference(applicationAssetPairTicker);
 
         return
             getAmountToSell(applicationAssetPairTicker.getApplicationAssetPair())
-            .flatMap(amountToSell -> {
+            .flatMapMany(amountToSell -> {
                 if ( amountToSell.compareTo(assetOrderIntervalRepository.getMinimumOrderForApplicationAsset(applicationAssetPairTicker.getApplicationAssetPair())) < 0 ) {
-                    return applicationAssetPairTickerMapper.mapDoNothingDecision(
+                    return Flux.just(applicationAssetPairTickerMapper.mapDoNothingDecision(
                             applicationAssetPairTicker,
                             String.format( Locale.FRANCE,"the computed amount to sell: <%.6f>, is less than the minimum order by market", amountToSell)
-                    );
+                    ));
                 } else {
-                    return applicationAssetPairTickerMapper.mapSellDecision(applicationAssetPairTicker, amountToSell, applicationAssetPairTicker.getPrice() );
+                    return Flux.just(applicationAssetPairTickerMapper.mapSellDecision(applicationAssetPairTicker, amountToSell, applicationAssetPairTicker.getPrice() ));
                 }
             });
     }

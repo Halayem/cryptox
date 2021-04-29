@@ -5,7 +5,7 @@ import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecisio
 import fr.enix.exchanges.model.repository.ApplicationAssetPairTicker;
 import fr.enix.exchanges.strategy.bearing.TradingBearingStrategyDecision;
 import lombok.AllArgsConstructor;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.util.Locale;
 
@@ -15,10 +15,10 @@ public class DoNothingTradingBearingStrategyDecisionImpl implements TradingBeari
     private final ApplicationAssetPairTickerMapper applicationAssetPairTickerMapper;
 
     @Override
-    public Mono<ApplicationAssetPairTickerTradingDecision> getDecision(final ApplicationAssetPairTicker applicationAssetPairTicker) {
-        return applicationAssetPairTickerMapper.mapDoNothingDecision(
+    public Flux<ApplicationAssetPairTickerTradingDecision> getDecisions(final ApplicationAssetPairTicker applicationAssetPairTicker) {
+        return Flux.just(applicationAssetPairTickerMapper.mapDoNothingDecision(
                 applicationAssetPairTicker,
                 String.format( Locale.FRANCE, "price: <%.6f> (%s) did not reach the gap", applicationAssetPairTicker.getPrice(), applicationAssetPairTicker.getApplicationAssetPair())
-        );
+        ));
     }
 }

@@ -26,4 +26,9 @@ public class ApplicationCurrencyTradingsDynamicBearingStrategyServiceImpl implem
     public Mono<BigDecimal> getAmountEnhanceStepByApplicationAssetPair(String applicationAssetPair) {
         throw new RuntimeException("method not yet implemented");
     }
+
+    @Override
+    public Mono<BigDecimal> getStopLossByApplicationAssetPair(String applicationAssetPair) {
+        throw new RuntimeException("method not yet implemented");
+    }
 }
