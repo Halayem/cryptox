@@ -24,15 +24,13 @@ class AddOrderRequestTest {
                                                                 .nonce      (nonce)
                                                                 .pair       ("XLTCZEUR")
                                                                 .type       ("buy")
-                                                                .ordertype  ("limit")
+                                                                .ordertype  ("stop-loss")
                                                                 .price      (new BigDecimal("40"))
                                                                 .volume     (new BigDecimal("1"))
-                                                                .leverage   ("2:1")
                                                                 .close      (AddOrderRequest.Close
                                                                         .builder    ()
-                                                                        .ordertype  ("stop-loss-profit")
-                                                                        .price      ("#5%")
-                                                                        .price2     ("#10")
+                                                                        .ordertype  ("stop-loss")
+                                                                        .price      (new BigDecimal("39"))
                                                                         .build      ()
                                                                 )
                                                                 .build      ();
@@ -41,13 +39,11 @@ class AddOrderRequestTest {
                     new StringBuilder("nonce"           ).append("=").append(nonce              ).append("&")
                               .append("pair"            ).append("=").append("XLTCZEUR"         ).append("&")
                               .append("type"            ).append("=").append("buy"              ).append("&")
-                              .append("ordertype"       ).append("=").append("limit"            ).append("&")
+                              .append("ordertype"       ).append("=").append("stop-loss"            ).append("&")
                               .append("volume"          ).append("=").append(1                  ).append("&")
                               .append("price"           ).append("=").append(40                 ).append("&")
-                              .append("leverage"        ).append("=").append("2:1"              ).append("&")
-                              .append("close[ordertype]").append("=").append("stop-loss-profit" ).append("&")
-                              .append("close[price]"    ).append("=").append("#5%"              ).append("&")
-                              .append("close[price2]"   ).append("=").append("#10"              ).toString(),
+                              .append("close[ordertype]").append("=").append("stop-loss" ).append("&")
+                              .append("close[price]"    ).append("=").append(39              ).toString(),
                             "UTF-8"
                 ),
                 addOrderRequest.getQueryParametersRepresentation()

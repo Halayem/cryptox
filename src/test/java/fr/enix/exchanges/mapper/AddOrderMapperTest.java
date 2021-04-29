@@ -56,17 +56,15 @@ class AddOrderMapperTest {
                     .nonce      (nonce)
                     .pair       ("XLTCZEUR")
                     .type       ("buy")
-                    .ordertype  ("limit")
+                    .ordertype  ("stop-loss")
                     .price      (new BigDecimal("40"))
                     .volume     (new BigDecimal("1"))
-                    .leverage   ("2:1")
                     .close      (
                         AddOrderRequest
                         .Close
                         .builder    ()
-                        .ordertype  ("stop-loss-profit")
-                        .price      ("#5%")
-                        .price2     ("#10")
+                        .ordertype  ("stop-loss")
+                        .price      (new BigDecimal("39"))
                         .build      ()
                     )
                     .build      (),
@@ -75,17 +73,15 @@ class AddOrderMapperTest {
                             .builder   ()
                             .applicationAssetPair ("litecoin-euro")
                             .addOrderType   (AddOrderType.BUY)
-                            .orderType      (OrderType.LIMIT)
+                            .orderType      (OrderType.STOP_LOSS)
                             .price          (new BigDecimal(40  ))
                             .volume         (new BigDecimal(1   ))
-                            .leverage       ("2:1")
                             .close          (
                                 AddOrderInput
                                     .Close
                                     .builder()
-                                    .orderType(OrderType.STOP_LOSS_PROFIT)
-                                    .stopLossPriceRelativePercentageDelta   ( 5  )
-                                    .takeProfitPriceRelativeDelta           ( 10 )
+                                    .orderType(OrderType.STOP_LOSS)
+                                    .stopLossPrice   ( new BigDecimal("39") )
                                     .build())
                             .build(),
                         nonce

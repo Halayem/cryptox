@@ -38,10 +38,14 @@ class LowGapTradingBearingStrategyDecisionImplTest {
         StepVerifier
         .create         ( lowGapTradingBearingStrategyDecisionSpy.getDecision(applicationAssetPairTicker) )
         .consumeNextWith( applicationAssetPairTickerTradingDecision -> {
-            assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.BUY, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
-            assertEquals(new BigDecimal("0.1"), applicationAssetPairTickerTradingDecision.getAmount());
-            assertEquals(new BigDecimal("42.05"), applicationAssetPairTickerTradingDecision.getPrice());
-            assertEquals(applicationAssetPairTicker, applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference());
+
+            assertEquals(ApplicationAssetPairTickerTradingDecision.Decision.BUY_STOP_LOSS, applicationAssetPairTickerTradingDecision.getOperation().getDecision());
+
+            assertEquals( new BigDecimal( "0.1"   ),    applicationAssetPairTickerTradingDecision.getAmount()       );
+            assertEquals( new BigDecimal( "42.05" ),  applicationAssetPairTickerTradingDecision.getPrice()          );
+            assertEquals( new BigDecimal( "41.65" ),  applicationAssetPairTickerTradingDecision.getStopLossPrice()  );
+            assertEquals( applicationAssetPairTicker,   applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference() );
+
             assertNull(applicationAssetPairTickerTradingDecision.getOperation().getMessage());
         })
         .verifyComplete();

@@ -47,7 +47,7 @@ class TickerServiceImplTest {
             assertEquals(new BigDecimal("0.5"), addOrderInput.getVolume());
             assertEquals(new BigDecimal("45.12524585"), addOrderInput.getPrice());
             assertEquals(AddOrderType.BUY, addOrderInput.getAddOrderType());
-            assertEquals(OrderType.LIMIT, addOrderInput.getOrderType() );
+            assertEquals(OrderType.STOP_LOSS, addOrderInput.getOrderType() );
         })
         .verifyComplete();
     }

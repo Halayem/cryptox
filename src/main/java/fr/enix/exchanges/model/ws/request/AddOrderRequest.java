@@ -31,8 +31,7 @@ public class AddOrderRequest {
     @ToString
     public static class Close {
         private String ordertype;
-        private String price;
-        private String price2;
+        private BigDecimal price;
     }
 
     public String getQueryParametersRepresentation() {
@@ -50,8 +49,7 @@ public class AddOrderRequest {
         }
         if ( close != null ) {
             stringBuilder.append("&").append("close[ordertype]" ).append("=").append(close.ordertype)
-                         .append("&").append("close[price]"     ).append("=").append(close.price    )
-                         .append("&").append("close[price2]"    ).append("=").append(close.price2   );
+                         .append("&").append("close[price]"     ).append("=").append(close.price    );
         }
 
         log.info(

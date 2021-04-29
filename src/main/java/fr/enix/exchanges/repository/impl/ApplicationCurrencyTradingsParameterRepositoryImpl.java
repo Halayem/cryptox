@@ -79,6 +79,17 @@ public class ApplicationCurrencyTradingsParameterRepositoryImpl implements Appli
                 .getAmountEnhanceStep();
     }
 
+    @Override
+    public Mono<BigDecimal> getBuyStopLossByApplicationAssetPair(final String applicationAssetPair) {
+        return Mono.justOrEmpty(
+                    applicationCurrencyTradingsParameter
+                    .getTradings                ()
+                    .get                        ( applicationAssetPair )
+                    .getStaticBearingStrategy   ()
+                    .getBuyStopLoss             ()
+        );
+    }
+
     private boolean isCurrencyEnabledForTrading(Map.Entry<String, ApplicationCurrencyTradingsParameter.TradingParameters> tradingParameters) {
         return tradingParameters.getValue().isEnabled();
     }

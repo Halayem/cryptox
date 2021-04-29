@@ -38,7 +38,7 @@ public class TickerServiceImpl implements TickerService {
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        log.debug("getting this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage() );
+        log.info("getting this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage() );
 
         return
             Mono
@@ -48,16 +48,16 @@ public class TickerServiceImpl implements TickerService {
                 log.info("order will be placed based on this decision: {}", applicationAssetPairTickerTradingDecision.getFormattedLogMessage());
 
                 switch (decision) {
-                    case SELL:  return placeSellOrder  ( applicationAssetPairTickerTradingDecision );
-                    case BUY:   return placeBuyOrder   ( applicationAssetPairTickerTradingDecision );
-                    default:    return Mono.empty();
+                    case SELL:          return placeSellOrder  ( applicationAssetPairTickerTradingDecision );
+                    case BUY_STOP_LOSS: return placeBuyOrder   ( applicationAssetPairTickerTradingDecision );
+                    default:            return Mono.empty();
                 }
             });
     }
 
     private boolean isSellOrBuyDecision(final ApplicationAssetPairTickerTradingDecision.Decision decision) {
         return  ApplicationAssetPairTickerTradingDecision.Decision.SELL.equals  (decision) ||
-                ApplicationAssetPairTickerTradingDecision.Decision.BUY.equals   (decision);
+                ApplicationAssetPairTickerTradingDecision.Decision.BUY_STOP_LOSS.equals   (decision);
     }
 
     private Mono<ApplicationAssetPairTicker> saveApplicationAssetPairTicker( final TickerOutput tickerOutput ) {
@@ -76,38 +76,28 @@ public class TickerServiceImpl implements TickerService {
 
 
     protected Mono<AddOrderOutput> placeSellOrder( final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision ) {
-        return
-            newAddOrderInputForSellPlacement( applicationAssetPairTickerTradingDecision )
-            .flatMap( exchangeService::addOrder);
+        return newAddOrderInputForSellPlacement( applicationAssetPairTickerTradingDecision ).flatMap( exchangeService::addOrder );
     }
 
     protected Mono<AddOrderOutput> placeBuyOrder( final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision ) {
-        return
-            newAddOrderInputForBuyPlacement(applicationAssetPairTickerTradingDecision)
-            .flatMap( exchangeService::addOrder );
+        return newAddOrderInputForBuyPlacement(applicationAssetPairTickerTradingDecision).flatMap( exchangeService::addOrder );
     }
 
     protected Mono<AddOrderInput> newAddOrderInputForBuyPlacement(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        return
-            Mono.just   ( applicationAssetPairTickerTradingDecision.getAmount() )
-            .flatMap    ( amountToBuy ->
-                addOrderMapper.newAddOrderInputForBuyPlacement(
-                    applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
-                    amountToBuy,
-                    applicationAssetPairTickerTradingDecision.getPrice()
-                )
-            );
+
+        return  addOrderMapper.newAddOrderInputForBuyPlacementWithStopLoss(
+                            applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
+                            applicationAssetPairTickerTradingDecision.getAmount(),
+                            applicationAssetPairTickerTradingDecision.getPrice(),
+                            applicationAssetPairTickerTradingDecision.getStopLossPrice()
+                );
     }
 
     protected Mono<AddOrderInput> newAddOrderInputForSellPlacement(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {
-        return
-            Mono.just   ( applicationAssetPairTickerTradingDecision.getAmount() )
-            .flatMap    ( amountToSell ->
-                addOrderMapper.newAddOrderInputForSellPlacement(
+        return addOrderMapper.newAddOrderInputForSellPlacement(
                     applicationAssetPairTickerTradingDecision.getApplicationAssetPairTickerReference().getApplicationAssetPair(),
-                    amountToSell,
+                    applicationAssetPairTickerTradingDecision.getAmount(),
                     applicationAssetPairTickerTradingDecision.getPrice()
-                )
-            );
+               );
     }
 }
