@@ -1,0 +1,27 @@
+{
+  "request": {
+    "urlPath": "/0/private/CancelOrder",
+    "method": "POST",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/x-www-form-urlencoded"
+      },
+      "API-Key": {
+        "equalTo": "ARhllSp+6hRurZfDbK64sXliA7th+/hGg5aTKXo/MP0Tlb0GikZUtg6K"
+      },
+      "API-Sign": {
+        "matches": "[0-9A-Za-z/+]{86,86}==$"
+      }
+    },
+    "bodyPatterns": [{
+      "matches": "nonce=[0-9]{16,16}&txid=ERROR_TEST-OUF4EM-FRGI2-MQMWZD"
+    }]
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200,
+    "body": "{\"error\": [\"error message\"] }"
+  }
+}

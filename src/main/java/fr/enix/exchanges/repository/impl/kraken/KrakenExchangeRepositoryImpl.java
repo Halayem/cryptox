@@ -6,10 +6,12 @@ import fr.enix.common.service.EncryptionService;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
 import fr.enix.exchanges.model.business.output.AddOrderOutput;
+import fr.enix.exchanges.model.ws.response.CancelOrderResponse;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.AssetClass;
 import fr.enix.exchanges.model.repository.ApplicationRepositoryProperties;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
+import fr.enix.exchanges.model.ws.request.CancelOrderRequest;
 import fr.enix.exchanges.model.ws.request.NonceRequest;
 import fr.enix.exchanges.model.ws.request.TradeBalanceRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
@@ -79,6 +81,19 @@ public class KrakenExchangeRepositoryImpl implements ExchangeRepository {
                 AddOrderResponse.class
             )
             .map(addOrderMapper::mapAddOrderResponseToAddOrderOutput);
+    }
+
+    @Override
+    public Mono<CancelOrderResponse> cancelOrder(final String transactionId) {
+        final CancelOrderRequest cancelOrderRequest = addOrderMapper.mapCancelOrderRequest( transactionId, encryptionService.getNewNonce() );
+
+        return
+            executeWebClientMono(
+                applicationRepositoryProperties.getWebservice().getUrn().get("cancelOrder"),
+                cancelOrderRequest.getQueryParametersRepresentation(),
+                cancelOrderRequest.getNonce(),
+                CancelOrderResponse.class
+            );
     }
 
     protected Mono<BigDecimal> getTotalSellOpenOrders(final String applicationAssetPair) {

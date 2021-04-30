@@ -5,6 +5,7 @@ import fr.enix.exchanges.model.business.output.AddOrderOutput;
 import fr.enix.exchanges.model.parameters.AddOrderType;
 import fr.enix.exchanges.model.parameters.OrderType;
 import fr.enix.exchanges.model.ws.request.AddOrderRequest;
+import fr.enix.exchanges.model.ws.request.CancelOrderRequest;
 import fr.enix.exchanges.model.ws.response.AddOrderResponse;
 import fr.enix.exchanges.service.CurrenciesRepresentationService;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,14 @@ public class AddOrderMapper {
         }
 
         return addOrderRequestBuilder.build();
+    }
+
+    public CancelOrderRequest mapCancelOrderRequest( final String transactionId,
+                                                     final String nonce ) {
+        return CancelOrderRequest.builder   ()
+                                 .nonce     ( nonce         )
+                                 .txid      ( transactionId )
+                                 .build     ();
     }
 
     public AddOrderOutput mapAddOrderResponseToAddOrderOutput(final AddOrderResponse addOrderResponse) {
