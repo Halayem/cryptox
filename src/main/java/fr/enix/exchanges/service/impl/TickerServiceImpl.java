@@ -4,6 +4,7 @@
 package fr.enix.exchanges.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.enix.exchanges.adaptor.ApplicationAssetPairTickerDecisionAdaptor;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.model.business.ApplicationAssetPairTickerTradingDecision;
@@ -20,21 +21,23 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class TickerServiceImpl implements TickerService {
 
-    private final ExchangeService                   exchangeService;
-    private final TradingDecisionService            tradingDecisionService;
-    private final MarketOfferService                marketOfferService;
-    private final CurrenciesRepresentationService   currenciesRepresentationService;
-    private final TickerMapper                      tickerMapper;
-    private final AddOrderMapper                    addOrderMapper;
+    private final ExchangeService                           exchangeService;
+    private final TradingDecisionService                    tradingDecisionService;
+    private final MarketOfferService                        marketOfferService;
+    private final CurrenciesRepresentationService           currenciesRepresentationService;
+    private final ApplicationAssetPairTickerDecisionAdaptor applicationAssetPairTickerDecisionAdaptor;
+    private final TickerMapper      tickerMapper;
+    private final AddOrderMapper    addOrderMapper;
 
     @Override
     public Mono<AddOrderOutput> marketOfferUpdateHandler(final String payload) throws JsonProcessingException {
         return
             tickerMapper
-            .mapStringToTickerOutput    ( payload                               )
-            .flatMap                    ( this::saveApplicationAssetPairTicker  )
-            .flatMap                    ( tradingDecisionService::getDecision   )
-            .flatMap                    ( this::placeOrder                      );
+            .mapStringToTickerOutput    ( payload                                           )
+            .flatMap                    ( this::saveApplicationAssetPairTicker              )
+            .flatMap                    ( tradingDecisionService::getDecision               )
+            .flatMap                    ( applicationAssetPairTickerDecisionAdaptor::adapt  )
+            .flatMap                    ( this::placeOrder                                  );
     }
 
     private Mono<AddOrderOutput> placeOrder(final ApplicationAssetPairTickerTradingDecision applicationAssetPairTickerTradingDecision) {

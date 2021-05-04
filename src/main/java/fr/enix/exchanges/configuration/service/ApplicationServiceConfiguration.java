@@ -1,5 +1,6 @@
 package fr.enix.exchanges.configuration.service;
 
+import fr.enix.exchanges.adaptor.ApplicationAssetPairTickerDecisionAdaptor;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.mapper.TickerMapper;
 import fr.enix.exchanges.repository.ApplicationCurrencyTradingsParameterRepository;
@@ -52,6 +53,7 @@ public class ApplicationServiceConfiguration {
                                        final TradingDecisionService tradingDecisionService,
                                        final MarketOfferService marketOfferService,
                                        final CurrenciesRepresentationService currenciesRepresentationService,
+                                       final ApplicationAssetPairTickerDecisionAdaptor applicationAssetPairTickerDecisionAdaptor,
                                        final TickerMapper tickerMapper,
                                        final AddOrderMapper addOrderMapper) {
         return
@@ -60,6 +62,7 @@ public class ApplicationServiceConfiguration {
                     tradingDecisionService,
                     marketOfferService,
                     currenciesRepresentationService,
+                    applicationAssetPairTickerDecisionAdaptor,
                     tickerMapper,
                     addOrderMapper
             );

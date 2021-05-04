@@ -1,6 +1,7 @@
 package fr.enix.exchanges.repository.impl.kraken;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import fr.enix.common.exception.KrakenUnknownException;
 import fr.enix.common.exception.eapi.KrakenEapiInvalidNonceException;
 import fr.enix.exchanges.mapper.AddOrderMapper;
 import fr.enix.exchanges.model.business.input.AddOrderInput;
@@ -15,6 +16,8 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest
 @Slf4j
 class KrakenExchangeRepositoryIntegrationTest {
@@ -28,6 +31,22 @@ class KrakenExchangeRepositoryIntegrationTest {
         .create     (newOrderInputForSellPlacementThatActivateAddOrderInvalidNonceStub().flatMap(krakenExchangeRepository::addOrder))
         .expectError(KrakenEapiInvalidNonceException.class)
         .verify     ();
+    }
+
+    @Test
+    void testCancelOrder_shouldBeOk() {
+        StepVerifier
+        .create         ( krakenExchangeRepository.cancelOrder("SUCCESS_TEST-OUF4EM-FRGI2-MQMWZD" ) )
+        .consumeNextWith( cancelOrderResponse -> assertEquals(1, cancelOrderResponse.getResult().getCount() ) )
+        .verifyComplete ();
+    }
+
+    @Test
+    void testCancelOrder_shouldThrowExceptionWhenResponseContainErrors() {
+        StepVerifier
+        .create         ( krakenExchangeRepository.cancelOrder("ERROR_TEST-OUF4EM-FRGI2-MQMWZD" ) )
+        .expectError    ( NullPointerException.class )
+        .verify ();
     }
 
     private Mono<AddOrderInput> newOrderInputForSellPlacementThatActivateAddOrderInvalidNonceStub() {
