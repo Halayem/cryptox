@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class ApplicationAssetPairTickerTradingDecision {
 
     // used as a reference for taking decision
